@@ -1,4 +1,5 @@
-# Journey-To-Fairy-City - A game by Shyr (or ShyrTheFirst) aka Eduardo Pinho.
+# Journey-To-Fairy-City - 
+A game by Shyr (or ShyrTheFirst) aka Eduardo Pinho.
 -----------------------------------------------------------------------------------------------------------------
 Game created for the contest "PyWeek GameJam number 35"
 

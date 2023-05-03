@@ -174,3 +174,6 @@ char = Personagem(350,200,arvore_grupo)
 char_grupo.add(char)
 machadinho_no_chao = pygame.image.load(r'graphics/machado.png')
 machado_rect = machadinho_no_chao.get_rect(topleft=(350,300))
+
+
+COLOCAR AS ARVORES DAQUI E CONTINUAR DAI!!!!!! DPS ADICIONAR MAIS INFOS DO CODIGO DO CHATGPT

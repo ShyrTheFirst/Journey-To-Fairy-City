@@ -22,7 +22,7 @@ fundo = pygame.image.load(r'graphics/first_map.png')
 arvore = pygame.image.load(r'graphics/arvore.png')
 
 #fontes pro HUD
-font = pygame.font.SysFont(None, 30)
+font = pygame.font.SysFont('Arial', 30)
 
 #variaveis e grupos de sprites
 score = 0
@@ -97,15 +97,19 @@ class Player(pygame.sprite.Sprite):
             keys = pygame.key.get_pressed()
             if keys[pygame.K_UP]:            
                 self.dir.y = -1
+                self.direction = 'up'
             elif keys[pygame.K_DOWN]:
                 self.dir.y = 1
+                self.direction = 'down'
             else:
                 self.dir.y = 0
 
             if keys[pygame.K_RIGHT]:
                 self.dir.x = 1
+                self.direction = 'right'
             elif keys[pygame.K_LEFT]:
                 self.dir.x = -1
+                self.direction = 'left'
             else:
                 self.dir.x = 0
 
@@ -134,7 +138,7 @@ class Player(pygame.sprite.Sprite):
             adir = self.direction
             attack = Attack(ax,ay,adir)
             attack_grupo.add(attack)
-
+#####TIRAR O FIM DE JOGO DA DEF DA CLASS PERSONAGEM E COLOCAR NO LOOP PRINCIPAL
     def morreu(self):
             if self.health <= 0:
                 self.rect = self.old_rect
@@ -258,7 +262,7 @@ class Monstro(pygame.sprite.Sprite):
 class Attack(pygame.sprite.Sprite):
         def __init__(self, x, y, direction):
             super().__init__()
-            self.image = pygame.image.load(r'graphics/right.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/empty.png').convert_alpha()
             self.image_right = pygame.image.load(r'graphics/right.png').convert_alpha()
             self.image_up = pygame.image.load(r'graphics/up.png').convert_alpha()
             self.image_left = pygame.image.load(r'graphics/left.png').convert_alpha()
@@ -301,7 +305,15 @@ class Attack(pygame.sprite.Sprite):
             hit_enemies = pygame.sprite.spritecollide(self, monstro_grupo, False)
             for enemy in hit_enemies:
                 enemy.health -= 1
-                enemy.rect.x += 10 #move pra um lado, preciso definir a posição que ta atacando pra mudar a direção que move*******************
+                if self.direction == 'right':
+                    enemy.rect.x += 10
+                if self.direction == 'left':
+                    enemy.rect.x -= 10
+                if self.direction == 'up':
+                    enemy.rect.y -= 10
+                if self.direction == 'down':
+                    enemy.rect.y += 10
+                    
                 if enemy.health <= 0:
                     global score
                     enemy.kill()
@@ -320,7 +332,8 @@ class Attack(pygame.sprite.Sprite):
 class HUD:
     def draw(self):
 # Desenha as informações na tela
-            health_text = font.render('Health: ' + str(char.health), True, black)
+            health_text = font.render('Health: ', True, red)
+            pygame.draw.rect(tela, red, (10, 50, char.health*10, 10))
             score_text = font.render('Score: ' + str(score), True, black)
             tela.blit(health_text, (10, 10))
             tela.blit(score_text, (screen_width - score_text.get_width() - 10, 10))
@@ -382,7 +395,7 @@ while v.run_game:
                 v.criar_monstro = False
 
         char.morreu()
-        hud.draw()
+        
         char_grupo.draw(tela)
         arvore_grupo.draw(tela)
         monstro_grupo.draw(tela)
@@ -390,6 +403,7 @@ while v.run_game:
         attack_grupo.update(0,0)
         monstro_grupo.update(0,0)
         char_grupo.update()
+        hud.draw()
         
         pygame.display.update()
 

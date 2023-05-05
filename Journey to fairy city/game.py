@@ -157,35 +157,7 @@ class Player(pygame.sprite.Sprite):
             adir = self.direction
             attack = Attack(ax,ay,adir)
             attack_grupo.add(attack)
-#####TIRAR O FIM DE JOGO DA DEF DA CLASS PERSONAGEM E COLOCAR NO LOOP PRINCIPAL
-    def morreu(self):
-            if self.health <= 0:
-                self.rect = self.old_rect
-                self.image = pygame.image.load(r'graphics/charmorto.png').convert_alpha()
-                end_game = pygame.image.load(r'graphics/endgame.png')
-                tela.blit(end_game,(0,0))
-                continue_game = pygame.image.load(r'graphics/continue.png')
-                tela.blit(continue_game,(220,300))
-                sim_bot = pygame.image.load(r'graphics/YES.png')
-                nao_bot = pygame.image.load(r'graphics/NO.png')
-                tela.blit(sim_bot,(350,350))
-                tela.blit(nao_bot,(450,350))
-                clicou_sim = pygame.Rect(350,350,50,50)
-                clicou_nao = pygame.Rect(450,350,50,50)
-                if pygame.mouse.get_pressed() == (1,0,0):
-                    mouseposition = pygame.mouse.get_pos()
-                    if clicou_sim.collidepoint(mouseposition):
-                        tela.fill((0,0,0))
-                        pygame.display.update()
-                        v.game = False
-                        v.menu = True
-                        v.run_game = False
-                        v.machadinho = True
-                        v.equipamento = False
-                        import main
-                    if clicou_nao.collidepoint(mouseposition):
-                        pygame.quit()
-                        sys.exit()
+  
 
 class Arvore(pygame.sprite.Sprite):
         def __init__(self,pos):
@@ -281,7 +253,7 @@ class Monstro(pygame.sprite.Sprite):
 class Attack(pygame.sprite.Sprite):
         def __init__(self, x, y, direction):
             super().__init__()
-            self.image = pygame.image.load(r'graphics/empty.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/right.png').convert_alpha()
             self.image_right = pygame.image.load(r'graphics/right.png').convert_alpha()
             self.image_up = pygame.image.load(r'graphics/up.png').convert_alpha()
             self.image_left = pygame.image.load(r'graphics/left.png').convert_alpha()
@@ -353,7 +325,7 @@ class HUD:
 # Desenha as informações na tela
             health_text = font.render('Health: ', True, red)
             pygame.draw.rect(tela, red, (10, 50, char.health*10, 10))
-            score_text = font.render('Score: ' + str(score), True, black)
+            score_text = font.render('Score: ' + str(score), True, red)
             tela.blit(health_text, (10, 10))
             tela.blit(score_text, (screen_width - score_text.get_width() - 10, 10))
             for i, enemy in enumerate(monstro_grupo.sprites()):
@@ -392,6 +364,7 @@ hud = HUD()
 v.run_game = True
 
 while v.run_game:
+        frames.tick(60)
         tela.blit(fundo,(0,0))
         if v.machadinho:
             tela.blit(machadinho_no_chao,(350,300))
@@ -412,7 +385,7 @@ while v.run_game:
                 monstro_grupo.add(monstro)
                 v.criar_monstro = False
 
-        char.morreu()
+        
         
         char_grupo.draw(tela)
         arvore_grupo.draw(tela)
@@ -424,8 +397,52 @@ while v.run_game:
         hud.draw()
         
         pygame.display.update()
+        if char.health <= 0:
+            char.image = pygame.image.load(r'graphics/charmorto.png').convert_alpha()
+            end_game = pygame.image.load(r'graphics/endgame.png')
+            tela.blit(end_game,(0,0))
+            continue_game = pygame.image.load(r'graphics/continue.png')
+            tela.blit(continue_game,(220,300))
+            sim_bot = pygame.image.load(r'graphics/YES.png')
+            nao_bot = pygame.image.load(r'graphics/NO.png')
+            tela.blit(sim_bot,(350,350))
+            tela.blit(nao_bot,(450,350))
+            clicou_sim = pygame.Rect(350,350,50,50)
+            clicou_nao = pygame.Rect(450,350,50,50)
+            pygame.display.update()
+            if pygame.mouse.get_pressed() == (1,0,0):
+                mouseposition = pygame.mouse.get_pos()
+                if clicou_sim.collidepoint(mouseposition):
+                    grupos = [attack_grupo, char_grupo, arvore_grupo, monstro_grupo]
+                    for grupo in grupos:
+                        for sprites in grupo:
+                            sprites.kill()
+                    score = 0
+                    char.health = 50
+                    v.machadinho = True
+                    v.equipamento = False
+                    arvore1 = [Arvore(arvores) for arvores in pos_arvores]
+                    arvore_grupo.add(arvore1)
+                    char_grupo.add(char)
+                    char.image = pygame.image.load(r'graphics/char.png').convert_alpha()
+                    char.rect.x = screen_width / 2
+                    char.rect.y = screen_height / 2
+                    pygame.display.update()
+                if clicou_nao.collidepoint(mouseposition):
+                    pygame.quit()
+                    sys.exit()
+    
+    
+    
+    
+        
+        
+            
+        
+            
+            
 
 
-frames.tick(60)
+
 
 

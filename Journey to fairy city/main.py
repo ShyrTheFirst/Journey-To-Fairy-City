@@ -28,7 +28,6 @@ while v.menu:
         mouseposition = pygame.mouse.get_pos()
         if clicou_iniciar.collidepoint(mouseposition):
             v.menu = False
-            v.game = True
             import game
         if clicou_sair.collidepoint(mouseposition):
             v.menu = False

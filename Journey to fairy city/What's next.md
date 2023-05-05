@@ -1,0 +1,7 @@
+- Criar sistema de compra e venda de itens
+- Criar sistema de Craft
+- Criar sistema de save e loadgame
+- Expandir mapa * permitir exploração? warp de mapa ao chegar nos cantos? 
+- Criar cidade das fadas 
+-   Criar quests para a cidade das fadas, levando a niveis mais dificeis
+- Melhorar animações

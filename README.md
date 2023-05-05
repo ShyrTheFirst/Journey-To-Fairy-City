@@ -28,6 +28,7 @@ Known Issues
 You want to help me with the bugs? I would love that! You can make push requests and help me with those basic things I don't know!
 
 So let's list everything that I know that is not working:
+
 ~~1. Yeah, you can't play forever (in a single run)... You can only once click the "continue" button, the second time the game freezes :(~~ You can play like there is no tomorrow now!!!!!
 
 ~~2. The spiders can kill you and everything in the game ...... if they get inside you. It's creepy, but it's true. (It's because the code I'm using for the spiders to follow you, if they reach the same position as you, it can't calculate where to go...)~~ It's all good now!!! But you still die if the spider get to you... yeah, it's part of the game, okay?

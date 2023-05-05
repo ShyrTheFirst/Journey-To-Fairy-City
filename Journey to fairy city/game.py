@@ -132,9 +132,28 @@ class Player(pygame.sprite.Sprite):
             elif self.rect.y > screen_height - 50:
                 self.rect.y = screen_height - 50
 
-    def attack(self):               
+    def attack(self):
+        if self.direction == 'right':
             ax = self.rect.x +25
-            ay = self.rect.y +25
+            ay = self.rect.y
+            adir = self.direction
+            attack = Attack(ax,ay,adir)
+            attack_grupo.add(attack)
+        if self.direction == 'left':
+            ax = self.rect.x
+            ay = self.rect.y
+            adir = self.direction
+            attack = Attack(ax,ay,adir)
+            attack_grupo.add(attack)
+        if self.direction == 'up':
+            ax = self.rect.x
+            ay = self.rect.y
+            adir = self.direction
+            attack = Attack(ax,ay,adir)
+            attack_grupo.add(attack)
+        if self.direction == 'down':
+            ax = self.rect.x
+            ay = self.rect.y +10
             adir = self.direction
             attack = Attack(ax,ay,adir)
             attack_grupo.add(attack)
@@ -187,7 +206,7 @@ class Monstro(pygame.sprite.Sprite):
             self.rect.y = posy
             self.pos = pygame.math.Vector2(self.rect.topleft)
             self.health = 50
-            self.speed = 0.7
+            self.speed = 1
             self.old_rect = self.rect.copy()
             self.jogador = char
             self.dx = 0
@@ -270,7 +289,7 @@ class Attack(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.x = x
             self.rect.y = y
-            self.speed = 5
+            self.speed = 15
             self.direction = direction
         def update(self,x,y):
     # Movimenta o ataque na direção em que o jogador está se movendo
@@ -299,20 +318,20 @@ class Attack(pygame.sprite.Sprite):
                             
                             v.criar_monstro = True
                     elif v.randomgen() == 'dinheiro':
-                        pass
+                        print("dinheirinho")
 
     # Verifica colisão com os inimigos
             hit_enemies = pygame.sprite.spritecollide(self, monstro_grupo, False)
             for enemy in hit_enemies:
                 enemy.health -= 1
                 if self.direction == 'right':
-                    enemy.rect.x += 10
+                    enemy.rect.x += 2
                 if self.direction == 'left':
-                    enemy.rect.x -= 10
+                    enemy.rect.x -= 2
                 if self.direction == 'up':
-                    enemy.rect.y -= 10
+                    enemy.rect.y -= 2
                 if self.direction == 'down':
-                    enemy.rect.y += 10
+                    enemy.rect.y += 2
                     
                 if enemy.health <= 0:
                     global score
@@ -323,8 +342,8 @@ class Attack(pygame.sprite.Sprite):
             player_pos = char.rect.center
             player_posxd = player_pos[0] + 50 #direita
             player_posyb = player_pos[1] + 50 #baixo
-            player_posxe = player_pos[0] - 50 #esquerda
-            player_posyc = player_pos[1] - 50 #cima
+            player_posxe = player_pos[0] - 80 #esquerda
+            player_posyc = player_pos[1] - 80 #cima
             if self.rect.x > player_posxd or self.rect.y > player_posyb or self.rect.x < player_posxe or self.rect.y < player_posyc:
                     self.kill()
 
@@ -384,7 +403,6 @@ while v.run_game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     char.attack()
-                    #char.cortar()
                     if char.rect.colliderect(machado_rect):
                         v.machadinho = False
                         char.equipamento()

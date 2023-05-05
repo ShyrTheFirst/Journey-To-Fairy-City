@@ -28,15 +28,15 @@ Known Issues
 You want to help me with the bugs? I would love that! You can make push requests and help me with those basic things I don't know!
 
 So let's list everything that I know that is not working:
-1. Yeah, you can't play forever (in a single run)... You can only once click the "continue" button, the second time the game freezes :( 
+~~1. Yeah, you can't play forever (in a single run)... You can only once click the "continue" button, the second time the game freezes :(~~ You can play like there is no tomorrow now!!!!!
 
-[s]2. The spiders can kill you and everything in the game ...... if they get inside you. It's creepy, but it's true. (It's because the code I'm using for the spiders to follow you, if they reach the same position as you, it can't calculate where to go...)[/s]
+~~2. The spiders can kill you and everything in the game ...... if they get inside you. It's creepy, but it's true. (It's because the code I'm using for the spiders to follow you, if they reach the same position as you, it can't calculate where to go...)~~ It's all good now!!! But you still die if the spider get to you... yeah, it's part of the game, okay?
 
 3. Sometimes the spiders get lazy and just stay in their place... Sometimes it's because they can't see you, sometimes it's because they don't know how to get to you.
  
-4. You can pass all the trees if you use the action button and arrow keys at the same time in some situations. It looks like you are cheating hehe.
+~~4. You can pass all the trees if you use the action button and arrow keys at the same time in some situations. It looks like you are cheating hehe.~~ You can't cheat anymore ):)
  
-5. The spritecollide don't work all the time with the spiders and sometimes it takes a lot of attacks to kill one... I could say it's a feature, but I don't know how exactly I could fix it... I needed to redo all the sprites, maybe?
+~~5. The spritecollide don't work all the time with the spiders and sometimes it takes a lot of attacks to kill one... I could say it's a feature, but I don't know how exactly I could fix it... I needed to redo all the sprites, maybe?~~ You even have the spiders health bar above them now!! You don't need to worry anymore!
 
 6. There is no sound. I know it's sad... But I didn't have time to do that :((((
 
@@ -44,7 +44,7 @@ So let's list everything that I know that is not working:
  
 8. There is no fairy city...yet. If you finish the game, you can only see the beatiful emptyness and think about your life choices. I hope it's not much for you.
 
-9. There is no movements. BUT 99% of this is not an issue. I just need movement for the attacks and repel the spiders so the player don't die so fast...
+9. There is no movements. BUT 99% of this is not an issue. ~~I just need movement for the attacks and repel the spiders so the player don't die so fast...~~ At least some of the movements are done now. But we will get better!
 
 
 Thanks!

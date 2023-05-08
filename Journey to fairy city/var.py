@@ -25,3 +25,9 @@ def randomgen():
     elif randomizando > 5:
         return 'dinheiro'
 
+def randomtree():
+    randomgen1 = random.randrange(0,750,50)
+    randomgen2 = random.randrange(0,550,50)
+    randomgen_location = (randomgen1,randomgen2)
+
+    return randomgen_location

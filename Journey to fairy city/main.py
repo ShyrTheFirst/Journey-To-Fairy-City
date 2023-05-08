@@ -43,6 +43,3 @@ while v.menu:
 
     pygame.display.update()
     frames.tick(60)
-
-
-

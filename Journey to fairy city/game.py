@@ -99,18 +99,34 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_UP]:            
                 self.dir.y = -1
                 self.direction = 'up'
+                if v.equipamento == True:
+                    self.image = pygame.image.load(r'graphics/charequipadocima.png').convert_alpha()
+                else:
+                    self.image = pygame.image.load(r'graphics/charcima.png').convert_alpha()
             elif keys[pygame.K_DOWN]:
                 self.dir.y = 1
                 self.direction = 'down'
+                if v.equipamento == True:
+                    self.image = pygame.image.load(r'graphics/charequipadobaixo.png').convert_alpha()
+                else:
+                    self.image = pygame.image.load(r'graphics/charbaixo.png').convert_alpha()
             else:
                 self.dir.y = 0
 
             if keys[pygame.K_RIGHT]:
                 self.dir.x = 1
                 self.direction = 'right'
+                if v.equipamento == True:
+                    self.image = pygame.image.load(r'graphics/charequipadodireita.png').convert_alpha()
+                else:
+                    self.image = pygame.image.load(r'graphics/chardireita.png').convert_alpha()
             elif keys[pygame.K_LEFT]:
                 self.dir.x = -1
                 self.direction = 'left'
+                if v.equipamento == True:
+                    self.image = pygame.image.load(r'graphics/charequipadoesquerda.png').convert_alpha()
+                else:
+                    self.image = pygame.image.load(r'graphics/charesquerda.png').convert_alpha()
             else:
                 self.dir.x = 0
 
@@ -293,7 +309,7 @@ class Attack(pygame.sprite.Sprite):
                     elif v.randomgen() == 'dinheiro':
                         global money
                         money += 10
-                        ############# FAZER APARECER BOLSINHA DE DINHEIRO, IGUAL MONSTRO E SOMAR DINHEIRO QUANDO ENCOSTAR, FAZENDO-A SUMIR (facil de fazer, né)
+                        ############# FAZER APARECER BOLSINHA DE DINHEIRO, IGUAL MONSTRO E SOMAR DINHEIRO QUANDO ENCOSTAR, FAZENDO-A SUMIR OU TALVEZ GERAR RECURSOS QUANDO CORTA. MAIS CONDIZENTE COM CORTAR A ARVORE
 
     # Verifica colisão com os inimigos
             hit_enemies = pygame.sprite.spritecollide(self, monstro_grupo, False)
@@ -344,26 +360,17 @@ machadinho_no_chao = pygame.image.load(r'graphics/machado.png')
 machado_rect = machadinho_no_chao.get_rect(topleft=(350,300))
 
 pygame.display.update()
+num_arvores = random.randrange(20,100)
+while num_arvores > 0:
+    random_arvore = v.randomtree()
+    if random_arvore == (350,300) or random_arvore == (400,300) or random_arvore == (400,350):
+        random_arvore = v.randomtree()
+    else:
+        pass
+    arvore1 = Arvore(random_arvore)
+    arvore_grupo.add(arvore1)
+    num_arvores -= 1
 
-pos_arvores = [(0,0),(50,0),(100,0),(150,0),(200,0),(250,0),(300,0),(350,0),(400,0),(450,0),(500,0),(550,0),(600,0),(650,0),(700,0),(750,0),
-                   (0,50),(0,100),(0,150),(0,200),(0,250),(0,300),(0,350),(0,400),(0,450),(0,500),(0,550),
-                   (50,50),(100,50),(150,50),(200,50),(250,50),(300,50),(350,50),(400,50),(450,50),(500,50),(550,50),(600,50),(650,50),(700,50),(750,50),
-                   (50,100),(100,100),(150,100),(200,100),(250,100),(300,100),(350,100),(400,100),(450,100),(500,100),(550,100),(600,100),(650,100),(700,100),(750,100),
-                   (50,150),(100,150),(150,150),(200,150),(250,150),(300,150),(350,150),(400,150),(450,150),(500,150),(550,150),(600,150),(650,150),(700,150),(750,150),
-                   (50,200),(100,200),(150,200),(200,200),(250,200),
-                   (550,200),(600,200),(650,200),(700,200),(750,200),
-                   (50,250),(100,250),(150,250),(200,250),(250,250),
-                   (550,250),(600,250),(650,250),(700,250),(750,250),
-                   (50,300),(100,300),(150,300),(200,300),(250,300),
-                   (550,300),(600,300),(650,300),(700,300),(750,300),
-                   (50,350),(100,350),(150,350),(200,350),(250,350),
-                   (550,350),(600,350),(650,350),(700,350),(750,350),
-                   (50,400),(100,400),(150,400),(200,400),(250,400),(300,400),(350,400),(400,400),(450,400),(500,400),(550,400),(600,400),(650,400),(700,400),(750,400),
-                   (50,450),(100,450),(150,450),(200,450),(250,450),(300,450),(350,450),(400,450),(450,450),(500,450),(550,450),(600,450),(650,450),(700,450),(750,450),
-                   (50,500),(100,500),(150,500),(200,500),(250,500),(300,500),(350,500),(400,500),(450,500),(500,500),(550,500),(600,500),(650,500),(700,500),(750,500),
-                   (50,550),(100,550),(150,550),(200,550),(250,550),(300,550),(350,550),(400,550),(450,550),(500,550),(550,550),(600,550),(650,550),(700,550),(750,550)]
-arvore1 = [Arvore(arvores) for arvores in pos_arvores]
-arvore_grupo.add(arvore1)
 
 hud = HUD()
 v.run_game = True
@@ -406,13 +413,18 @@ while v.run_game:
         
         pygame.display.update()
         if char.health <= 0:
+            char.image = pygame.image.load(r'graphics/charmorto.png').convert_alpha()
+            endgame = pygame.image.load(r'graphics/endgame.png')
+            tela.blit(endgame,(0,0))
+            pygame.display.update()
+            char_grupo.draw(tela)
             while char.health <= 0:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         v.run_game = False
                         pygame.quit()
                         sys.exit()
-                char.image = pygame.image.load(r'graphics/charmorto.png').convert_alpha()
+                
                 continue_game = pygame.image.load(r'graphics/continue.png')
                 tela.blit(continue_game,(220,300))
                 sim_bot = pygame.image.load(r'graphics/YES.png')
@@ -444,18 +456,3 @@ while v.run_game:
                     if clicou_nao.collidepoint(mouseposition):
                         pygame.quit()
                         sys.exit()
-    
-    
-    
-    
-        
-        
-            
-        
-            
-            
-
-
-
-
-

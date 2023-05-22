@@ -277,8 +277,9 @@ class Attack(pygame.sprite.Sprite):
                             v.monstrinhoy = sprites.old_rect.y
                             
                             v.criar_monstro = True
-                    elif v.randomgen() == 'dinheiro':
-                        v.money += 10
+                    elif v.randomgen() == 'troncos':
+                        #tronco_img = pygame.image.load(r'graphics/tronco.png')
+                        v.troncos += random.randrange(0,4)
                         ############# FAZER APARECER BOLSINHA DE DINHEIRO, IGUAL MONSTRO E SOMAR DINHEIRO QUANDO ENCOSTAR, FAZENDO-A SUMIR OU TALVEZ GERAR RECURSOS QUANDO CORTA. MAIS CONDIZENTE COM CORTAR A ARVORE
 
     # Verifica colisão com os inimigos
@@ -298,7 +299,7 @@ class Attack(pygame.sprite.Sprite):
                     enemy.kill()
                     v.score += 1
 
-    # Remove o ataque da v.tela quando atinge as bordas
+    # Remove o ataque da v.tela quando atinge o limite da distância
             player_pos = char.rect.center
             player_posxd = player_pos[0] + 50 #direita
             player_posyb = player_pos[1] + 50 #baixo
@@ -314,18 +315,24 @@ class HUD:
             health_text = v.font.render('Health: ', True, v.red)
             pygame.draw.rect(v.tela, v.red, (10, 50, char.health*10, 10))
             score_text = v.font.render('Score: ' + str(v.score), True, v.red)
-            money_text = v.font.render('Money: ' + str(v.money), True, v.red)
             v.tela.blit(health_text, (10, 10))
             v.tela.blit(score_text, (v.screen_width - score_text.get_width() - 10, 10))
-            v.tela.blit(money_text, (v.screen_width - money_text.get_width() -10, 50))
             for i, enemy in enumerate(v.monstro_grupo.sprites()):
                     enemy.draw_health(enemy.rect.x, enemy.rect.y - 10)
 
     def inventario(self):
-        print("inventario")
+        caixa_inv = pygame.image.load(r'graphics/fundo_inv.png')
+        caixa_inv.set_alpha(10)
+        inv_text = v.font.render('Inventory', False, v.red)
+        v.tela.blit(inv_text, (50,50))
+        v.tela.blit(caixa_inv,(50,50))
+        pygame.display.update()
 
     def busola(self):
-        print("busola")
+        busola = pygame.image.load(r'graphics/busola.png')
+        busola.set_alpha(50)
+        v.tela.blit(busola, (v.screen_width/2,v.screen_height/2))
+        pygame.display.update()
 
 ################################################## BORDA TOPO ######################################################
 class Borda_topo(pygame.sprite.Sprite):

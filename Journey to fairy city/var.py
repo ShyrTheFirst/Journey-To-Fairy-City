@@ -34,7 +34,7 @@ run_game = False
 posinitix = screen_width / 2
 posinitiy = screen_height / 2
 score = 0
-money = 0
+troncos = 0
 
 #variaveis do mapa
 Norte = 0
@@ -56,10 +56,10 @@ font = pygame.font.SysFont('Arial', 30)
 
 def randomgen():
     randomizando = random.randrange(0,10)
-    if randomizando <= 5:
+    if randomizando <= 4:
         return 'monstro'
-    elif randomizando > 5:
-        return 'dinheiro'
+    elif randomizando > 4:
+        return 'troncos'
 
 def randomtree():
     randomgen1 = random.randrange(0,750,50)
@@ -67,3 +67,18 @@ def randomtree():
     randomgen_location = (randomgen1,randomgen2)
 
     return randomgen_location
+
+
+################# ITENS ###################### - CRIAR CLASS INVENTARIO
+i_tronco = 0
+i_metal = 0
+i_couro = 0
+i_moeda = 0
+i_arma = 0
+i_armadura = 0
+grupo_itens = []
+
+
+def itens_inventario(item):
+    grupo_itens.append(item)
+    return grupo_itens

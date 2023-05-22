@@ -84,6 +84,34 @@ while v.run_game:
                         #isso aqui vai precisar sofrer umas alterações quando o update do inventario vier
                         char.equipamento()
             #faz o que o nome diz... cria monstrinho haha quando derruba arvore, há chances de gerar monstro, e isso acontece aqui
+                if event.key == pygame.K_i:
+                        inventario_aberto = True
+                        while inventario_aberto:
+                                hud.inventario()
+                                for event in pygame.event.get():
+                                        if event.type == pygame.QUIT:
+                                                v.run_game = False
+                                                pygame.quit()
+                                                sys.exit()
+                                        if event.type == pygame.KEYDOWN:
+                                                if event.key == pygame.K_i:
+                                                        inventario_aberto = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_m:
+                        busola_aberta = True
+                        while busola_aberta:
+                                hud.busola()
+                                for event in pygame.event.get():
+                                        if event.type == pygame.QUIT:
+                                                v.run_game = False
+                                                pygame.quit()
+                                                sys.exit()
+                                        if event.type == pygame.KEYDOWN:
+                                                if event.key == pygame.K_m:
+                                                        busola_aberta = False
+                                                        
+                
+                
             if v.criar_monstro == True:
                 monstro = c.Monstro(v.monstrinhox, v.monstrinhoy)
                 v.monstro_grupo.add(monstro)

@@ -53,6 +53,7 @@ borda_grupo = pygame.sprite.Group()
 
 #fontes pro HUD
 font = pygame.font.SysFont('Arial', 30)
+font_inv = pygame.font.SysFont('Arial',18)
 
 def randomgen():
     randomizando = random.randrange(0,10)
@@ -69,16 +70,15 @@ def randomtree():
     return randomgen_location
 
 
-################# ITENS ###################### - CRIAR CLASS INVENTARIO
+################# ITENS - INVENTARIO ######################
 i_tronco = 0
 i_metal = 0
 i_couro = 0
 i_moeda = 0
 i_arma = 0
 i_armadura = 0
-grupo_itens = []
+
+i_level = 0
+i_fama = 0
 
 
-def itens_inventario(item):
-    grupo_itens.append(item)
-    return grupo_itens

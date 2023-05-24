@@ -98,9 +98,9 @@ while v.run_game:
                                                         inventario_aberto = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
-                        busola_aberta = True
-                        while busola_aberta:
-                                hud.busola()
+                        bussola_aberta = True
+                        while bussola_aberta:
+                                hud.bussola()
                                 for event in pygame.event.get():
                                         if event.type == pygame.QUIT:
                                                 v.run_game = False
@@ -108,7 +108,7 @@ while v.run_game:
                                                 sys.exit()
                                         if event.type == pygame.KEYDOWN:
                                                 if event.key == pygame.K_m:
-                                                        busola_aberta = False
+                                                        bussola_aberta = False
                                                         
                 
                 

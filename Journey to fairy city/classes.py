@@ -314,24 +314,72 @@ class HUD:
 # Desenha as informações na v.tela
             health_text = v.font.render('Health: ', True, v.red)
             pygame.draw.rect(v.tela, v.red, (10, 50, char.health*10, 10))
-            score_text = v.font.render('Score: ' + str(v.score), True, v.red)
+            score_text = v.font.render('Score: ' + str(v.score), True, v.white)
             v.tela.blit(health_text, (10, 10))
             v.tela.blit(score_text, (v.screen_width - score_text.get_width() - 10, 10))
             for i, enemy in enumerate(v.monstro_grupo.sprites()):
                     enemy.draw_health(enemy.rect.x, enemy.rect.y - 10)
 
     def inventario(self):
+        #Criando a base do inventario
         caixa_inv = pygame.image.load(r'graphics/fundo_inv.png')
         caixa_inv.set_alpha(10)
-        inv_text = v.font.render('Inventory', False, v.red)
-        v.tela.blit(inv_text, (50,50))
+
+        #Textos do inventario
+        score_text = v.font.render(str(v.score), True, v.white)
+        level_text = v.font.render(str(v.i_level), True, v.white)
+        gold_text = v.font.render(str(v.i_moeda), True, v.white)
+        fame_text = v.font.render(str(v.i_fama), True, v.white)
+        
+        #Adicionando itens ao inventario
+        madeirinha = pygame.image.load(r'graphics/madeira.png')
+        madeirinha_text = v.font_inv.render(str(v.i_tronco), True, v.white)
+
+        #Mostrando itens do inventario
+        v.tela.blit(madeirinha, (65,220))
+        v.tela.blit(madeirinha_text,(105,225))
+
+        #Mostrando os textos do inventario
+        v.tela.blit(score_text, (140,55))
+        v.tela.blit(level_text, (140,115))
+        v.tela.blit(gold_text, (550,55))
+        v.tela.blit(fame_text, (550,115))
+
+        #Mostrando o fundo do inventario
         v.tela.blit(caixa_inv,(50,50))
         pygame.display.update()
 
-    def busola(self):
-        busola = pygame.image.load(r'graphics/busola.png')
-        busola.set_alpha(50)
-        v.tela.blit(busola, (v.screen_width/2,v.screen_height/2))
+    def bussola(self):
+        bussola = pygame.image.load(r'graphics/bussola.png')
+        bussola.set_alpha(50)
+        v.tela.blit(bussola, (0,0))
+
+        bnorte = 0
+        bsul = 0
+        bleste = 0
+        boeste = 0
+        if v.Norte >= 0:
+            bnorte = v.Norte
+        elif v.Norte < 0:
+            bnorte = 0
+            
+        if v.Sul >= 0:
+            bsul = v.Sul
+        elif v.Sul < 0:
+            bsul = 0
+
+        if v.Leste >= 0:
+            bleste = v.Leste
+        elif v.Leste < 0:
+            bleste = 0
+
+        if v.Oeste >= 0:
+            boeste = v.Oeste
+        elif v.Oeste < 0:
+            boeste = 0
+
+        localizacao = v.font.render("N: " + str(bnorte) + " S: " + str(bsul) + " E: " + str(bleste) + " W: " + str(boeste), True, v.white) 
+        v.tela.blit(localizacao, (50,50))
         pygame.display.update()
 
 ################################################## BORDA TOPO ######################################################

@@ -12,12 +12,23 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = v.posinitix
             self.rect.y = v.posinitiy
             self.old_rect = self.rect.copy()
-            self.health = 50
+            self.health = 100
             self.direction = 'right'
             self.dir = pygame.math.Vector2()
             self.speed = 2
             self.obstaculo = v.colisao_grupo
             self.pos = pygame.math.Vector2(self.rect.topleft)
+            self.exp = v.exp
+            self.level = 1
+
+    def levelup(self):
+        calc_lvlup = self.level * 100
+        lvlup_cond = self.exp / calc_lvlup
+        if lvlup_cond >= 1:
+            #mostrar tela de lvlup?!
+            self.level += 1
+            self.exp = 0
+        
 
     def equipamento(self):
             self.image = pygame.image.load(r'graphics/charequipado.png').convert_alpha()
@@ -28,6 +39,8 @@ class Player(pygame.sprite.Sprite):
             if collision_sprites:
                 if direction == 'horizontal':
                     for sprite in collision_sprites:
+                        if sprite.type == 'monstro':
+                            self.health -= sprite.dano
                         # colisão na direita
                         if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:                                                       
                             self.rect.right = sprite.rect.left
@@ -40,6 +53,8 @@ class Player(pygame.sprite.Sprite):
 
                 if direction == 'vertical':
                     for sprite in collision_sprites:
+                        if sprite.type == 'monstro':
+                            self.health -= sprite.dano
                         # colisão em baixo
                         if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
                             self.rect.bottom = sprite.rect.top
@@ -90,6 +105,8 @@ class Player(pygame.sprite.Sprite):
                 self.dir.x = 0
 
     def update(self):
+            self.levelup()
+            self.old_rect = self.rect.copy()
             self.entrada()
             self.pos.x += self.dir.x * self.speed
             self.rect.x = round(self.pos.x)
@@ -143,6 +160,7 @@ class Arvore(pygame.sprite.Sprite):
             self.rect.x, self.rect.y = pos
             self.direction = pygame.math.Vector2()
             self.old_rect = self.rect.copy()
+            self.type = 'arvore'
 
 
 class Monstro(pygame.sprite.Sprite):
@@ -159,9 +177,18 @@ class Monstro(pygame.sprite.Sprite):
             self.jogador = char
             self.dx = 0
             self.dy = 0
+            self.type = 'monstro'
+            self.dano = 1
+            self.level = 1
 
     def Ataque(self):
-        pass
+        if v.score > 0:
+            self.level = v.score * 0.5
+            self.dano = self.level * 2
+        else:
+            self.dano = 1
+
+        #criar ataque igual ao do player, mas uma mordida. Empurra o player alguns quadros pra trás, evitando dano continuo
 
     
          
@@ -170,6 +197,8 @@ class Monstro(pygame.sprite.Sprite):
             pygame.draw.rect(v.tela, v.red, (x, y, self.health, 5))
 
     def update(self,x,y):
+            self.Ataque()
+            self.old_rect = self.rect.copy()
         # Movimenta o inimigo em direção ao jogador
             player_pos = char.rect.center
             enemy_pos = self.rect.center
@@ -186,31 +215,27 @@ class Monstro(pygame.sprite.Sprite):
 class Attack(pygame.sprite.Sprite):
         def __init__(self, x, y, direction):
             super().__init__()
-            self.image = pygame.image.load(r'graphics/right.png').convert_alpha()
-            self.image_right = pygame.image.load(r'graphics/right.png').convert_alpha()
-            self.image_up = pygame.image.load(r'graphics/up.png').convert_alpha()
-            self.image_left = pygame.image.load(r'graphics/left.png').convert_alpha()
-            self.image_down = pygame.image.load(r'graphics/down.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/vazio.png').convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.x = x
             self.rect.y = y
             self.speed = 15
             self.direction = direction
+            
         def update(self,x,y):
     # Movimenta o ataque na direção em que o jogador está se movendo
             if self.direction == 'left':
                     self.rect.x -= self.speed
-                    self.image = self.image_left
+                    self.image = pygame.image.load(r'graphics/left.png').convert_alpha()
             elif self.direction == 'right':
                     self.rect.x += self.speed
-                    self.image = self.image_right
+                    self.image = pygame.image.load(r'graphics/right.png').convert_alpha()
             elif self.direction == 'up':
                     self.rect.y -= self.speed
-                    self.image = self.image_up
+                    self.image = pygame.image.load(r'graphics/up.png').convert_alpha()
             elif self.direction == 'down':
                     self.rect.y += self.speed
-                    self.image = self.image_down
-                    
+                    self.image = pygame.image.load(r'graphics/down.png').convert_alpha()
     #verifica se o ataque corta a arvore
             if v.equipamento:
                 spriteszinhos = pygame.sprite.spritecollide(self, v.arvore_grupo, True)
@@ -243,6 +268,7 @@ class Attack(pygame.sprite.Sprite):
                 if enemy.health <= 0:
                     enemy.kill()
                     v.score += 1
+                    v.exp += 1
 
     # Remove o ataque da v.tela quando atinge o limite da distância
             player_pos = char.rect.center

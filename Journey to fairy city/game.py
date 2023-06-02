@@ -98,9 +98,9 @@ while v.run_game:
                                                         inventario_aberto = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
-                        bussola_aberta = True
-                        while bussola_aberta:
-                                hud.bussola()
+                        busola_aberta = True
+                        while busola_aberta:
+                                hud.busola()
                                 for event in pygame.event.get():
                                         if event.type == pygame.QUIT:
                                                 v.run_game = False
@@ -108,13 +108,14 @@ while v.run_game:
                                                 sys.exit()
                                         if event.type == pygame.KEYDOWN:
                                                 if event.key == pygame.K_m:
-                                                        bussola_aberta = False
+                                                        busola_aberta = False
                                                         
                 
                 
             if v.criar_monstro == True:
                 monstro = c.Monstro(v.monstrinhox, v.monstrinhoy)
                 v.monstro_grupo.add(monstro)
+                v.colisao_grupo.add(monstro)
                 v.criar_monstro = False
 
         
@@ -193,7 +194,7 @@ while v.run_game:
                             fundo = c.FE.mapa_atual
 
                         #reseta a vida do char... mesma questão dos vars acima
-                        char.health = 50
+                        char.health = 100
 
                         #garante que o jogador não vai começar com o machadinho, então zera tudo
                         v.machadinho = True

@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = v.posinitix
             self.rect.y = v.posinitiy
             self.old_rect = self.rect.copy()
+            self.max_health = 100
             self.health = 100
             self.direction = 'right'
             self.dir = pygame.math.Vector2()
@@ -24,10 +25,12 @@ class Player(pygame.sprite.Sprite):
     def levelup(self):
         calc_lvlup = self.level * 100
         lvlup_cond = self.exp / calc_lvlup
-        if lvlup_cond >= 1:
+        if lvlup_cond >= 1:            
             #mostrar tela de lvlup?!
             self.level += 1
-            self.exp = 0
+            v.exp = 0
+            self.max_health += 10
+            self.health = self.max_health
         
 
     def equipamento(self):
@@ -41,6 +44,9 @@ class Player(pygame.sprite.Sprite):
                     for sprite in collision_sprites:
                         if sprite.type == 'monstro':
                             self.health -= sprite.dano
+                            #talvez eu tire isso pra identificar o ataque do mob e só mantenha a colisão pra não atravessar os mob
+                        if sprite.type == 'arvore':
+                            pass      #colocar som de folhas
                         # colisão na direita
                         if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:                                                       
                             self.rect.right = sprite.rect.left
@@ -55,6 +61,9 @@ class Player(pygame.sprite.Sprite):
                     for sprite in collision_sprites:
                         if sprite.type == 'monstro':
                             self.health -= sprite.dano
+                            #talvez eu tire isso pra identificar o ataque do mob e só mantenha a colisão pra não atravessar os mob
+                        if sprite.type == 'arvore':
+                            pass      #colocar som de folhas
                         # colisão em baixo
                         if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
                             self.rect.bottom = sprite.rect.top
@@ -105,6 +114,7 @@ class Player(pygame.sprite.Sprite):
                 self.dir.x = 0
 
     def update(self):
+            self.exp = v.exp
             self.levelup()
             self.old_rect = self.rect.copy()
             self.entrada()
@@ -180,11 +190,12 @@ class Monstro(pygame.sprite.Sprite):
             self.type = 'monstro'
             self.dano = 1
             self.level = 1
+            
 
     def Ataque(self):
         if v.score > 0:
             self.level = v.score * 0.5
-            self.dano = self.level * 2
+            self.dano = self.level
         else:
             self.dano = 1
 
@@ -194,9 +205,10 @@ class Monstro(pygame.sprite.Sprite):
          
     def draw_health(self, x, y):
     # Desenha a barra de vida do inimigo acima dele
-            pygame.draw.rect(v.tela, v.red, (x, y, self.health, 5))
+            pygame.draw.rect(v.tela, v.red, (x, y, self.health, 1))
 
     def update(self,x,y):
+            v.exp_mob = self.level * 10
             self.Ataque()
             self.old_rect = self.rect.copy()
         # Movimenta o inimigo em direção ao jogador
@@ -268,7 +280,7 @@ class Attack(pygame.sprite.Sprite):
                 if enemy.health <= 0:
                     enemy.kill()
                     v.score += 1
-                    v.exp += 1
+                    v.exp += v.exp_mob
 
     # Remove o ataque da v.tela quando atinge o limite da distância
             player_pos = char.rect.center
@@ -284,10 +296,17 @@ class HUD:
     def draw(self):
 # Desenha as informações na v.tela
             health_text = v.font.render('Health: ', True, v.red)
-            pygame.draw.rect(v.tela, v.red, (10, 50, char.health*10, 10))
+
+            #transformando a vida em % para não criar uma vida super gigante
+            hp = char.health
+            max_hp = char.max_health
+            frac_hp = int((100*hp)/max_hp)
+            pygame.draw.rect(v.tela, v.red, (10, 50, frac_hp*5, 5))
             score_text = v.font.render('Score: ' + str(v.score), True, v.red)
+            level_text = v.font.render('Level: ' + str(char.level), True, v.red)
             v.tela.blit(health_text, (10, 10))
             v.tela.blit(score_text, (v.screen_width - score_text.get_width() - 10, 10))
+            v.tela.blit(level_text, (v.screen_width - level_text.get_width() - 10, 50))
             for i, enemy in enumerate(v.monstro_grupo.sprites()):
                     enemy.draw_health(enemy.rect.x, enemy.rect.y - 10)
 

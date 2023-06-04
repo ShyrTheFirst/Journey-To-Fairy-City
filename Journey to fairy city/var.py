@@ -36,6 +36,7 @@ posinitiy = screen_height / 2
 score = 0
 troncos = 0
 exp = 0
+exp_mob = 0
 
 #variaveis do mapa
 Norte = 0

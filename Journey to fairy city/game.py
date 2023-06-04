@@ -194,7 +194,11 @@ while v.run_game:
                             fundo = c.FE.mapa_atual
 
                         #reseta a vida do char... mesma questão dos vars acima
+                        char.max_health = 100
                         char.health = 100
+                        char.level = 1
+                        v.exp = 0
+                        v.mob_exp = 0
 
                         #garante que o jogador não vai começar com o machadinho, então zera tudo
                         v.machadinho = True

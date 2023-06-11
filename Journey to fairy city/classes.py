@@ -26,7 +26,23 @@ class Player(pygame.sprite.Sprite):
         calc_lvlup = self.level * 100
         lvlup_cond = self.exp / calc_lvlup
         if lvlup_cond >= 1:            
-            #mostrar tela de lvlup?!
+            #mostrar tela de lvlup
+            lvlup1 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
+            lvlup2 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
+            lvlup3 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
+            lvlup_group = [lvlup1,lvlup2,lvlup3]
+            tamanho = (len(lvlup_group)) -1
+
+            ultima_att = pygame.time.get_ticks()
+            animacao_cd = 50
+            frame = 0
+            while frame <= tamanho:
+                v.tela.blit(lvlup_group[frame],(self.rect.x,self.rect.y))
+                pygame.display.flip()
+                tempo_atual = pygame.time.get_ticks()
+                if tempo_atual - ultima_att >= animacao_cd:
+                    frame += 1
+                    
             self.level += 1
             v.exp = 0
             self.max_health += 10
@@ -37,6 +53,9 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.image.load(r'graphics/charequipado.png').convert_alpha()
             v.equipamento = True
 
+    def usar_pocao(self):
+        pass
+
     def collision(self,direction):
             collision_sprites = pygame.sprite.spritecollide(self,self.obstaculo,False)
             if collision_sprites:
@@ -44,7 +63,7 @@ class Player(pygame.sprite.Sprite):
                     for sprite in collision_sprites:
                         if sprite.type == 'monstro':
                             self.health -= sprite.dano
-                            #talvez eu tire isso pra identificar o ataque do mob e só mantenha a colisão pra não atravessar os mob
+                            #talvez eu tire isso pra identificar o ataque do mob e só mantenha a colisão pra não atravessar os mob################################################################################
                         if sprite.type == 'arvore':
                             pass      #colocar som de folhas
                         # colisão na direita
@@ -140,25 +159,25 @@ class Player(pygame.sprite.Sprite):
             ax = self.rect.x +25
             ay = self.rect.y
             adir = self.direction
-            attack = Attack(ax,ay,adir)
+            attack = Attack(ax,ay,adir,self.level)
             v.attack_grupo.add(attack)
         if self.direction == 'left':
             ax = self.rect.x
             ay = self.rect.y
             adir = self.direction
-            attack = Attack(ax,ay,adir)
+            attack = Attack(ax,ay,adir,self.level)
             v.attack_grupo.add(attack)
         if self.direction == 'up':
             ax = self.rect.x
             ay = self.rect.y
             adir = self.direction
-            attack = Attack(ax,ay,adir)
+            attack = Attack(ax,ay,adir,self.level)
             v.attack_grupo.add(attack)
         if self.direction == 'down':
             ax = self.rect.x
             ay = self.rect.y +10
             adir = self.direction
-            attack = Attack(ax,ay,adir)
+            attack = Attack(ax,ay,adir,self.level)
             v.attack_grupo.add(attack)
   
 
@@ -199,7 +218,21 @@ class Monstro(pygame.sprite.Sprite):
         else:
             self.dano = 1
 
+        if self.level >= 10 and self.level <= 19.5:
+            self.image = pygame.image.load(r'graphics/aranha2.png').convert_alpha()
+            self.health = 100
+        if self.level >= 20 and self.level <= 29.5:
+            self.image = pygame.image.load(r'graphics/aranha3.png').convert_alpha()
+            self.health = 150
+        if self.level >= 30 and self.level <= 49.5:
+            self.image = pygame.image.load(r'graphics/aranha4.png').convert_alpha()
+            self.health = 200
+        if self.level >= 50:
+            self.image = pygame.image.load(r'graphics/aranha5.png').convert_alpha()
+            self.health = 500
+
         #criar ataque igual ao do player, mas uma mordida. Empurra o player alguns quadros pra trás, evitando dano continuo
+        #criar def colisao, onde vai detectar a colisao com o player e ativar o ataque de mordida, empurrando o player para trás conforme o local aonde identificou a colisao######################
 
     
          
@@ -225,7 +258,7 @@ class Monstro(pygame.sprite.Sprite):
 
 
 class Attack(pygame.sprite.Sprite):
-        def __init__(self, x, y, direction):
+        def __init__(self, x, y, direction,level):
             super().__init__()
             self.image = pygame.image.load(r'graphics/vazio.png').convert_alpha()
             self.rect = self.image.get_rect()
@@ -233,8 +266,16 @@ class Attack(pygame.sprite.Sprite):
             self.rect.y = y
             self.speed = 15
             self.direction = direction
+            self.level = level
+            self.dano = 1
             
         def update(self,x,y):
+            if self.level == 1:
+                self.dano = 1
+            if self.level == 2:
+                self.dano = 1
+            elif self.dano > 2:
+                self.dano = self.level*0,5
     # Movimenta o ataque na direção em que o jogador está se movendo
             if self.direction == 'left':
                     self.rect.x -= self.speed
@@ -267,7 +308,7 @@ class Attack(pygame.sprite.Sprite):
     # Verifica colisão com os inimigos
             hit_enemies = pygame.sprite.spritecollide(self, v.monstro_grupo, False)
             for enemy in hit_enemies:
-                enemy.health -= 1
+                enemy.health -= self.dano
                 if self.direction == 'right':
                     enemy.rect.x += 2
                 if self.direction == 'left':
@@ -290,6 +331,24 @@ class Attack(pygame.sprite.Sprite):
             player_posyc = player_pos[1] - 80 #cima
             if self.rect.x > player_posxd or self.rect.y > player_posyb or self.rect.x < player_posxe or self.rect.y < player_posyc:
                     self.kill()
+
+class Mordida(pygame.sprite.Sprite):
+    def __init__(self, x, y,dano):
+            super().__init__()
+            self.image = pygame.image.load(r'graphics/vazio.png').convert_alpha()
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+            self.speed = 10
+            self.dano = dano
+            
+        def update(self,x,y):
+    # Verifica colisão com o player
+            hit_player = pygame.sprite.spritecollide(self, v.char_grupo, False)
+            for player in hit_player:
+                player.health -= self.dano
+
+                ##################################################################################################################################### Mordida ainda não ta pronta
 
 #Classe da HUD
 class HUD:

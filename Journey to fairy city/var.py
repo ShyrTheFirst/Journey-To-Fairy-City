@@ -38,6 +38,8 @@ troncos = 0
 exp = 0
 exp_mob = 0
 
+
+
 #variaveis do mapa
 Norte = 0
 Sul = 0
@@ -86,3 +88,6 @@ grupo_itens = []
 def itens_inventario(item):
     grupo_itens.append(item)
     return grupo_itens
+
+
+    

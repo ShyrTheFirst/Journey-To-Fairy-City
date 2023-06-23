@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
                     
             self.level += 1
             v.exp = 0
-            self.max_health += 10
+            self.max_health += v.score *2
             self.health = self.max_health
         
 
@@ -134,6 +134,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
             self.exp = v.exp
+            self.max_health += v.score *2
             self.levelup()
             self.old_rect = self.rect.copy()
             self.entrada()
@@ -332,21 +333,6 @@ class Attack(pygame.sprite.Sprite):
             if self.rect.x > player_posxd or self.rect.y > player_posyb or self.rect.x < player_posxe or self.rect.y < player_posyc:
                     self.kill()
 
-class Mordida(pygame.sprite.Sprite):
-    def __init__(self, x, y,dano):
-            super().__init__()
-            self.image = pygame.image.load(r'graphics/vazio.png').convert_alpha()
-            self.rect = self.image.get_rect()
-            self.rect.x = x
-            self.rect.y = y
-            self.speed = 10
-            self.dano = dano
-            
-        def update(self,x,y):
-    # Verifica colisão com o player
-            hit_player = pygame.sprite.spritecollide(self, v.char_grupo, False)
-            for player in hit_player:
-                player.health -= self.dano
 
                 ##################################################################################################################################### Mordida ainda não ta pronta
 

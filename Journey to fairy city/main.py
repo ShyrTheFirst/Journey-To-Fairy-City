@@ -2,6 +2,12 @@ import pygame, sys
 import var as v
 
 
+try:
+    import pygame_sdl2
+    pygame_sdl2.import_as_pygame()
+except ImportError:
+    pass
+
 pygame.init()
 tela = pygame.display.set_mode([800, 600])
 pygame.display.set_caption("Journey to the Fairy City")

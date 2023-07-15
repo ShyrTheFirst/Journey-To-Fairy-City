@@ -1,6 +1,7 @@
 import pygame, random, sys
 import var as v
 import classes as c
+import npc
 
 #Inicializando o pygame
 pygame.init()
@@ -42,7 +43,7 @@ pygame.display.update()
 c.gerar_arvore()
 
 #cria o HUD todo
-hud = c.HUD()
+hud = c.gamehud
 
 #inicia o jogo de fato
 v.run_game = True
@@ -57,8 +58,11 @@ while v.run_game:
             fundo = c.FA.mapa_atual
         elif v.fase_atual == 'FE':
             fundo = c.FE.mapa_atual
+
+        
         #blita o mapa
         tela.blit(fundo,(0,0))
+                
 
         #define se o personagem ta com ou sem machado
         if v.machadinho:
@@ -73,6 +77,8 @@ while v.run_game:
             #identifica os cliques de teclas, pra ataque ou pra pegar o machado #### futuramente irá identificar interações com NPC, uso da bussola e inventário
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
+                    if v.tecla_acao == True:
+                            print("Hitou mesmo")
                     if v.machadinho == True:
                         pass
                     else:
@@ -83,7 +89,7 @@ while v.run_game:
                         v.machadinho = False
                         #isso aqui vai precisar sofrer umas alterações quando o update do inventario vier
                         char.equipamento()
-            #faz o que o nome diz... cria monstrinho haha quando derruba arvore, há chances de gerar monstro, e isso acontece aqui
+            
                 if event.key == pygame.K_i:
                         inventario_aberto = True
                         while inventario_aberto:
@@ -98,9 +104,9 @@ while v.run_game:
                                                         inventario_aberto = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_m:
-                        busola_aberta = True
-                        while busola_aberta:
-                                hud.busola()
+                        bussola_aberta = True
+                        while bussola_aberta:
+                                hud.bussola()
                                 for event in pygame.event.get():
                                         if event.type == pygame.QUIT:
                                                 v.run_game = False
@@ -108,10 +114,10 @@ while v.run_game:
                                                 sys.exit()
                                         if event.type == pygame.KEYDOWN:
                                                 if event.key == pygame.K_m:
-                                                        busola_aberta = False
+                                                        bussola_aberta = False
                                                         
                 
-                
+            #faz o que o nome diz... cria monstrinho haha quando derruba arvore, há chances de gerar monstro, e isso acontece aqui    
             if v.criar_monstro == True:
                 monstro = c.Monstro(v.monstrinhox, v.monstrinhoy)
                 v.monstro_grupo.add(monstro)
@@ -121,8 +127,10 @@ while v.run_game:
         
         #desenhando os sprites na tela e atualizando eles o tempo todo!
         v.char_grupo.draw(tela)
+        v.npc_grupo.draw(tela)
         v.borda_grupo.draw(tela)
         v.arvore_grupo.draw(tela)
+        v.muro_grupo.draw(tela)
         v.monstro_grupo.draw(tela)
         v.attack_grupo.draw(tela)
         v.attack_grupo.update(0,0)

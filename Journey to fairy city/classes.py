@@ -1,7 +1,11 @@
 import pygame, random, sys
 import var as v
+import muros
 
-
+npc1 = pygame.image.load(r'graphics/npc1.png').convert_alpha()
+npc2 = pygame.image.load(r'graphics/npc2.png').convert_alpha()
+npc3 = pygame.image.load(r'graphics/npc3.png').convert_alpha()
+guarda1  = pygame.image.load(r'graphics/guarda1.png').convert_alpha()
 
 # Classe do jogador
 class Player(pygame.sprite.Sprite):
@@ -44,6 +48,7 @@ class Player(pygame.sprite.Sprite):
                     frame += 1
                     
             self.level += 1
+            v.level = self.level
             v.exp = 0
             self.max_health += v.score *2
             self.health = self.max_health
@@ -134,7 +139,6 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
             self.exp = v.exp
-            self.max_health += v.score *2
             self.levelup()
             self.old_rect = self.rect.copy()
             self.entrada()
@@ -192,6 +196,49 @@ class Arvore(pygame.sprite.Sprite):
             self.old_rect = self.rect.copy()
             self.type = 'arvore'
 
+
+class Muro(pygame.sprite.Sprite):
+        def __init__(self,pos):
+            super().__init__()
+            self.image = pygame.image.load(r'graphics/muro.png').convert_alpha()
+            self.rect = self.image.get_rect()
+            self.rect.x, self.rect.y = pos
+            self.direction = pygame.math.Vector2()
+            self.old_rect = self.rect.copy()
+            self.type = 'arvore'
+
+class NPC(pygame.sprite.Sprite): ############################################################ FINALIZAR NPC
+    def __init__(self,pos,image,quest,craft):
+            super().__init__()
+            self.image = image #criar imagem do npc#
+            self.rect = self.image.get_rect()
+            self.rect.x, self.rect.y = pos
+            self.direction = pygame.math.Vector2()
+            self.old_rect = self.rect.copy()
+            self.type = 'npc'
+            self.quest = quest
+            self.craft = craft
+    def quests(self):
+        print("quest on")
+    #criar quest aqui
+
+    def crafts(self):
+        print("craft on")
+    #criar craft aqui
+        
+    def update(self):
+        print("Diga olá")
+        if self.quest == True and self.craft == False:
+            self.quests()
+        if self.craft == True and self.quest == False:
+            self.crafts()
+        if self.craft == True and self.quest == True:
+            self.quests()
+            self.crafts()
+        if self.craft == False and self.quest == False:
+            print("nada")
+
+    
 
 class Monstro(pygame.sprite.Sprite):
     def __init__(self, posx,posy):
@@ -290,6 +337,12 @@ class Attack(pygame.sprite.Sprite):
             elif self.direction == 'down':
                     self.rect.y += self.speed
                     self.image = pygame.image.load(r'graphics/down.png').convert_alpha()
+            elif v.Norte == 1 and v.Oeste == 3:
+                    self.image = pygame.image.load(r'graphics/vazio.png').convert_alpha()
+
+            npc_hit = pygame.sprite.spritecollide(self,v.npc_grupo,False)
+            for npc in npc_hit:
+                npc.update()
     #verifica se o ataque corta a arvore
             if v.equipamento:
                 spriteszinhos = pygame.sprite.spritecollide(self, v.arvore_grupo, True)
@@ -304,7 +357,7 @@ class Attack(pygame.sprite.Sprite):
                     elif v.randomgen() == 'troncos':
                         #tronco_img = pygame.image.load(r'graphics/tronco.png')
                         v.troncos += random.randrange(0,4)
-                        ############# FAZER APARECER BOLSINHA DE DINHEIRO, IGUAL MONSTRO E SOMAR DINHEIRO QUANDO ENCOSTAR, FAZENDO-A SUMIR OU TALVEZ GERAR RECURSOS QUANDO CORTA. MAIS CONDIZENTE COM CORTAR A ARVORE
+                        ############# FAZER APARECER TRONCO PARA ILUSTRAR QUE GANHOU ALGO
 
     # Verifica colisão com os inimigos
             hit_enemies = pygame.sprite.spritecollide(self, v.monstro_grupo, False)
@@ -338,6 +391,15 @@ class Attack(pygame.sprite.Sprite):
 
 #Classe da HUD
 class HUD:
+    def __init__(self):
+        self.capacete = pygame.image.load(r'graphics/capacetebasico.png')
+        self.busto = pygame.image.load(r'graphics/busto_basico.png')
+        self.bracelete = pygame.image.load(r'graphics/mao_esquerdabasico.png')# 1 = esquerda
+        self.bracelete2 = pygame.image.load(r'graphics/mao_direitabasico.png')# 2 = direita
+        self.pernas = pygame.image.load(r'graphics/perna_esquerdabasica.png')
+        self.pernas2 = pygame.image.load(r'graphics/perna_direitabasica.png')
+        self.arma = pygame.image.load(r'graphics/machadobasico.png')
+        self.arma_secundaria = pygame.image.load(r'graphics/escudobasico.png')#para teste, inicial e vazia
     def draw(self):
 # Desenha as informações na v.tela
             health_text = v.font.render('Health: ', True, v.red)
@@ -358,16 +420,86 @@ class HUD:
     def inventario(self):
         caixa_inv = pygame.image.load(r'graphics/fundo_inv.png')
         caixa_inv.set_alpha(10)
-        inv_text = v.font.render('Inventory', False, v.red)
-        v.tela.blit(inv_text, (50,50))
         v.tela.blit(caixa_inv,(50,50))
         pygame.display.update()
 
-    def busola(self):
-        busola = pygame.image.load(r'graphics/busola.png')
-        busola.set_alpha(50)
-        v.tela.blit(busola, (v.screen_width/2,v.screen_height/2))
+        #definindo os recursos do inventario
+        tronco = pygame.image.load(r'graphics/tronco.png')
+        metal = pygame.image.load(r'graphics/metal.png')
+        tecido = pygame.image.load(r'graphics/tecido.png')
+        couro = pygame.image.load(r'graphics/couro.png')
+
+        #definindo os textos dos recursos
+        quant_tronco = v.font_inv.render(str(v.troncos),True, v.black)
+        quant_metal = v.font_inv.render(str(v.metais),True, v.black)
+        quant_tecido = v.font_inv.render(str(v.tecidos),True, v.black)
+        quant_couro = v.font_inv.render(str(v.couros),True, v.black)
+
+        #definindo os itens do inventario
+        capacete = self.capacete
+        busto = self.busto
+        bracelete = self.bracelete
+        bracelete2 = self.bracelete2
+        pernas = self.pernas
+        pernas2 = self.pernas2
+        arma = self.arma
+        arma_secundaria = self.arma_secundaria
+
+        #blitando os recursos
+        v.tela.blit(tronco,(70,200))
+        v.tela.blit(quant_tronco,(80,185))
+        v.tela.blit(metal,(70,240))
+        v.tela.blit(quant_metal,(80,225))
+        v.tela.blit(tecido,(70,280))
+        v.tela.blit(quant_tecido,(80,265))
+        v.tela.blit(couro,(70,320))
+        v.tela.blit(quant_couro,(80,305))
+
+        #blitando os itens
+        v.tela.blit(capacete,(370,230))
+        v.tela.blit(busto,(350,280))
+        v.tela.blit(bracelete2,(320,330))#2
+        v.tela.blit(bracelete,(420,330))#1
+        v.tela.blit(pernas2,(350,370))#2
+        v.tela.blit(pernas,(390,370))#1
+        v.tela.blit(arma,(300,290))
+        v.tela.blit(arma_secundaria,(440,290))
+
+        #definindo os textos do inventario
+        score_inv = v.font.render(str(v.score), True, v.white)
+        level_inv = v.font.render(str(v.level), True, v.blue)
+        gold_inv = v.font.render(str(v.gold), True, v.yellow)
+
+        #blitando os textos do inventario
+        v.tela.blit(score_inv, (150,50))
+        v.tela.blit(level_inv, (150,110))
+        v.tela.blit(gold_inv, (560,50))
+        
+
+    def bussola(self):
+        bussola = pygame.image.load(r'graphics/bussola.png')
+        bussola.set_alpha(50)
+        v.tela.blit(bussola, (0,0))
         pygame.display.update()
+
+        #definindo a pos do personagem para a bussola
+        #v.Norte
+        norte_texto = v.font.render(str(v.Norte), True, v.white)
+        v.tela.blit(norte_texto, (400, 15))
+        #v.Sul
+        sul_texto = v.font.render(str(v.Sul), True, v.white)
+        v.tela.blit(sul_texto, (400, 560))
+        #v.Leste
+        leste_texto = v.font.render(str(v.Leste), True, v.white)
+        v.tela.blit(leste_texto, (660, 300))
+        #v.Oeste
+        oeste_texto = v.font.render(str(v.Oeste), True, v.white)
+        v.tela.blit(oeste_texto, (130, 320))
+              
+        
+        
+        
+        
 
 ################################################## BORDA TOPO ######################################################
 class Borda_topo(pygame.sprite.Sprite):
@@ -410,17 +542,17 @@ class Borda_baixo(pygame.sprite.Sprite):
         self.rect.y = 590
 
     def update(self):
-        hit = pygame.sprite.spritecollide(self, v.char_grupo, False)
-        for hits in hit:
-            v.Sul += 1
-            v.Norte -= 1
-            char.pos.y = 50           
-            for arvore in v.arvore_grupo:
-                arvore.kill()
-            for spider in v.monstro_grupo:
-                spider.kill()
-            gerar_arvore()
-            self.passar_mapa()
+            hit = pygame.sprite.spritecollide(self, v.char_grupo, False)
+            for hits in hit:
+                v.Sul += 1
+                v.Norte -= 1
+                char.pos.y = 50           
+                for arvore in v.arvore_grupo:
+                    arvore.kill()
+                for spider in v.monstro_grupo:
+                    spider.kill()
+                gerar_arvore()
+                self.passar_mapa()
 
     def passar_mapa(self):
         if v.fase_atual == 'FN':
@@ -441,17 +573,17 @@ class Borda_esquerda(pygame.sprite.Sprite):
         self.rect.y = 0
 
     def update(self):
-        hit = pygame.sprite.spritecollide(self, v.char_grupo, False)
-        for hits in hit:
-            v.Oeste += 1
-            v.Leste -= 1
-            char.pos.x = 700            
-            for arvore in v.arvore_grupo:
-                arvore.kill()
-            for spider in v.monstro_grupo:
-                spider.kill()
-            gerar_arvore()
-            self.passar_mapa()
+            hit = pygame.sprite.spritecollide(self, v.char_grupo, False)
+            for hits in hit:
+                v.Oeste += 1
+                v.Leste -= 1
+                char.pos.x = 700            
+                for arvore in v.arvore_grupo:
+                    arvore.kill()
+                for spider in v.monstro_grupo:
+                    spider.kill()
+                gerar_arvore()
+                self.passar_mapa()
 
     def passar_mapa(self):
         if v.fase_atual == 'FN':
@@ -498,48 +630,61 @@ class Mapa_FN:
         self.mapa_atual = pygame.image.load(r'graphics/first_map.png')
         
     def mudar_mapa(self):
+        
         if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
             self.mapa_atual = pygame.image.load(r'graphics/first_map.png')
-        if v.Norte == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Sul == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Leste == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Oeste == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
+        if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
+            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')
+        if v.Norte == 1 and v.Oeste == 2:
+            for npc in v.npc_grupo:
+                npc.kill()
+            muros.muro_N1O2()
+            self.mapa_atual = pygame.image.load(r'graphics/N1O2.png')
+        elif v.Norte == 1 and v.Oeste == 3:
+                muros.muro_cidade()
+                #####################################################CRIAR OS NPCS NO LUGAR CERTO - +2 guardas no N1O2 e no N1O4
+                muros.npc_cidade((100,80),npc1,True,False)
+                muros.npc_cidade((150,80),npc2,False,True)
+                muros.npc_cidade((200,80),npc3,True,True)
+                muros.npc_cidade((250,80),guarda1,False,False)#Criar mais um guarda para ficar em cada ponta do mapa!
+                self.mapa_atual = pygame.image.load(r'graphics/mapa_cidade1.png')
+        elif v.Norte == 2 and v.Oeste == 3:
+            muros.muro_N2O3()
+        elif v.Norte == 0 and v.Oeste == 3:
+            muros.muro_N0O3()
+        elif v.Norte == 1 and v.Oeste == 4:
+            for npc in v.npc_grupo:
+                npc.kill()
+            muros.muro_N1O4()
+        else:
+            for sprite in v.muro_grupo:
+                sprite.kill()
+            
+            
 
 class Mapa_FA:
     def __init__(self):
-        self.mapa_atual = pygame.image.load(r'graphics/N1.png') #colocar primeiro mapa da Floresta Alta
+        self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png') #colocar primeiro mapa da Floresta Alta - Cidade 1
 
     def mudar_mapa(self):
         if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
-            self.mapa_atual = pygame.image.load(r'graphics/first_map.png')
-        if v.Norte == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Sul == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Leste == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Oeste == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
+            self.mapa_atual = pygame.image.load(r'graphics/first_map.png') # ALTERAR PARA A CIDADE 1 DA FLORESTA ALTA
+        if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
+            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png') # ALTERAR PARA FLORESTA ALTA
+        if v.Oeste == 5 and v.Norte == 0 and v.Sul == 0 :
+            self.mapa_atual = pygame.image.load(r'graphics/first_map.png') #ALTERAR PARA ENTRADA DA CIDADE 2
+        ####Criar entrada da cidade portuaria (3) e as outras entradas da cidade 2#####
 
 class Mapa_FE:
     def __init__(self):
-        self.mapa_atual = pygame.image.load(r'graphics/N1.png') #colocar primeiro mapa da Floresta Encantada
+        self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png') #colocar primeiro mapa da Floresta Encantada - CIDADE
 
     def mudar_mapa(self):
         if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
-            self.mapa_atual = pygame.image.load(r'graphics/first_map.png')
-        if v.Norte == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Sul == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Leste == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
-        if v.Oeste == 1:
-            self.mapa_atual = pygame.image.load(r'graphics/N1.png')
+            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')#ALTERAR PARA CIDADE DAS FADAS       
+        if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
+            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')#ALTERAR PARA FLORESTA ENCANTADO
+        
 
 def gerar_arvore():
     num_arvores = random.randrange(20,100)
@@ -564,4 +709,5 @@ FA = Mapa_FA()
 FE = Mapa_FE()
 
 char = Player()
+gamehud = HUD()
 

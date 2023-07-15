@@ -12,6 +12,8 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 green = (0, 255, 0)
 red = (255, 0, 0)
+blue = (0, 0, 255)
+yellow = (255, 255, 0)
 
 #variaveis do jogo
 
@@ -33,10 +35,21 @@ game = False
 run_game = False
 posinitix = screen_width / 2
 posinitiy = screen_height / 2
+tecla_acao = False
+
+####personagem
 score = 0
-troncos = 0
 exp = 0
+level = 1
 exp_mob = 0
+
+####inventario
+gold = 0
+troncos = 0
+metais = 0
+tecidos = 0
+couros = 0
+
 
 
 
@@ -54,11 +67,13 @@ arvore_grupo = pygame.sprite.Group()
 monstro_grupo = pygame.sprite.Group()
 char_grupo = pygame.sprite.Group()
 borda_grupo = pygame.sprite.Group()
-
+muro_grupo = pygame.sprite.Group()
 colisao_grupo = pygame.sprite.Group()
+npc_grupo = pygame.sprite.Group()
 
 #fontes pro HUD
 font = pygame.font.SysFont('Arial', 30)
+font_inv = pygame.font.SysFont('Arial', 15)
 
 def randomgen():
     randomizando = random.randrange(0,10)
@@ -74,20 +89,6 @@ def randomtree():
 
     return randomgen_location
 
-
-################# ITENS ###################### - CRIAR CLASS INVENTARIO
-i_tronco = 0
-i_metal = 0
-i_couro = 0
-i_moeda = 0
-i_arma = 0
-i_armadura = 0
-grupo_itens = []
-
-
-def itens_inventario(item):
-    grupo_itens.append(item)
-    return grupo_itens
 
 
     

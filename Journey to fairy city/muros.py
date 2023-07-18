@@ -8,6 +8,12 @@ import npc
 def npc_cidade(pos,image,quest,craft):
     npc.Criar_npc(pos,image,quest,craft)
 
+def casa(pos):
+    npc.Criar_casa(pos)
+
+def ferreiro(pos):
+    npc.Criar_ferreiro(pos)
+
 
 def muro_N1O2():
                         grupo_sprites = [v.arvore_grupo, v.muro_grupo]

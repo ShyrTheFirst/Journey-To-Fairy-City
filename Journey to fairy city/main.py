@@ -9,6 +9,10 @@ except ImportError:
     pass
 
 pygame.init()
+pygame.mixer.init()
+menumusic = pygame.mixer.Sound(r'sounds\musica_fundo.mp3')
+pygame.mixer.Sound.set_volume(menumusic,0.05)
+pygame.mixer.Sound.play(menumusic)
 tela = pygame.display.set_mode([800, 600])
 pygame.display.set_caption("Journey to the Fairy City")
 frames = pygame.time.Clock()
@@ -34,6 +38,7 @@ while v.menu:
         mouseposition = pygame.mouse.get_pos()
         if clicou_iniciar.collidepoint(mouseposition):
             v.menu = False
+            pygame.mixer.Sound.stop(menumusic)
             import game
         if clicou_sair.collidepoint(mouseposition):
             v.menu = False

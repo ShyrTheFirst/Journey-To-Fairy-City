@@ -37,6 +37,12 @@ posinitix = screen_width / 2
 posinitiy = screen_height / 2
 tecla_acao = False
 
+####Switch dos mob
+aranha_on = True
+lobo_on = False
+urso_on = False
+rainha_aranha_on = False
+
 ####personagem
 score = 0
 exp = 0
@@ -70,6 +76,7 @@ borda_grupo = pygame.sprite.Group()
 muro_grupo = pygame.sprite.Group()
 colisao_grupo = pygame.sprite.Group()
 npc_grupo = pygame.sprite.Group()
+casa_grupo = pygame.sprite.Group()
 
 #fontes pro HUD
 font = pygame.font.SysFont('Arial', 30)

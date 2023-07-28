@@ -91,6 +91,21 @@ while v.run_game:
                 sys.exit()
             #identifica os cliques de teclas, pra ataque ou pra pegar o machado #### futuramente irá identificar interações com NPC, uso da bussola e inventário
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                        menu_jogo = c.Menu()
+                        menu_aberto = True
+                        while menu_aberto:
+                                menu_jogo.abrir()                                
+                                for event in pygame.event.get():
+                                        if event.type == pygame.QUIT:
+                                                v.run_game = False
+                                                pygame.quit()
+                                                sys.exit()
+                                        if event.type == pygame.KEYDOWN:
+                                                if event.key == pygame.K_ESCAPE:
+                                                        menu_aberto = False
+                        
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     if v.machadinho == True:
                         pass
@@ -148,6 +163,23 @@ while v.run_game:
                                                 if event.key == pygame.K_m:
                                                         pygame.mixer.Sound.stop(abrir_mapa)
                                                         bussola_aberta = False
+            if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                            pygame.mixer.Sound.set_volume(abrir_mapa,0.05)
+                            pygame.mixer.Sound.play(abrir_mapa)
+                            quest_aberta = True
+                            while quest_aberta:
+                                    hud.quest()
+                                    for event in pygame.event.get():
+                                            if event.type == pygame.QUIT:
+                                                    v.run_game = False
+                                                    pygame.quit()
+                                                    sys.exit()
+                                            if event.type == pygame.KEYDOWN:
+                                                    if event.key == pygame.K_q:
+                                                            pygame.mixer.Sound.stop(abrir_mapa)
+                                                            quest_aberta = False
+        
                                                         
                 
             #faz o que o nome diz... cria monstrinho haha quando derruba arvore, há chances de gerar monstro, e isso acontece aqui    
@@ -295,6 +327,10 @@ while v.run_game:
 
                         #zera todas as vars
                         v.score = 0
+                        v.score_aranha = 0
+                        v.score_lobo = 0
+                        v.score_urso = 0
+                        v.score_rainha_aranha = 0
                         v.money = 0
                         v.Norte = 0
                         v.Sul = 0

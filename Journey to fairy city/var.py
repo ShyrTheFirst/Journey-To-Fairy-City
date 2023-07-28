@@ -21,20 +21,27 @@ top = False
 bottom = False
 right = False
 left = False
+
 criar_monstro = False
 equipamento = False
+
 monstrinhox = 0
 monstrinhoy = 0
+
 hit_right = False
 hit_left = False
 hit_bottom = False
 hit_top = False
+
 machadinho = True
+
 menu = True
 game = False
 run_game = False
+
 posinitix = screen_width / 2
 posinitiy = screen_height / 2
+
 tecla_acao = False
 
 ####Switch dos mob
@@ -44,6 +51,11 @@ urso_on = False
 rainha_aranha_on = False
 
 ####personagem
+score_aranha = 0
+score_lobo = 0
+score_urso = 0
+score_rainha_aranha = 0
+
 score = 0
 exp = 0
 level = 1

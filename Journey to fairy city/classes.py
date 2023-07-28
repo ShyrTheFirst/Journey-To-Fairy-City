@@ -312,9 +312,9 @@ class Aranha(pygame.sprite.Sprite):
             
 
     def Ataque(self):      
-        if v.score > 0:
+        if v.score_aranha > 0:
             self.old_level = self.level
-            self.level = v.score * 0.5
+            self.level = v.score_aranha * 0.5
             self.dano = self.level
             if self.old_level < self.level:
                 if self.level >= 10 and self.level <= 19.5:
@@ -398,10 +398,10 @@ class Lobo(pygame.sprite.Sprite):
             
 
     def Ataque(self):
-        if v.score > 0:
+        if v.score_lobo > 0:
             self.old_level = self.level
-            self.level += v.score * 0.5
-            self.dano += self.level
+            self.level = v.score_lobo * 0.5
+            self.dano = self.level
             if self.old_level < self.level:
                 if self.level >= 20 and self.level <= 39.5:
                     self.maxhealth = 200
@@ -488,11 +488,11 @@ class Urso(pygame.sprite.Sprite):
             self.level = 50
             
 
-    def Ataque(self):      
-        if v.score > 0:
+    def Ataque(self):
+        if v.score_urso > 0:
             self.old_level = self.level
-            self.level += v.score * 0.5
-            self.dano += self.level
+            self.level = v.score_urso * 0.5
+            self.dano = self.level
             if self.old_level < self.level:
                 if self.level >= 100 and self.level <= 199.5:
                     self.maxhealth = 2000
@@ -623,11 +623,12 @@ class Attack(pygame.sprite.Sprite):
             
         def update(self,x,y):
             if self.level == 1:
-                self.dano = 1
+                self.dano = 10000
             if self.level == 2:
-                self.dano = 1
+                self.dano = 10000
             elif self.level > 2:
-                self.dano = int(round((self.level*0.5), 1))
+                self.dano = 10000
+                #self.dano = int(round((self.level*0.5), 1))
     # Movimenta o ataque na direção em que o jogador está se movendo
             if self.direction == 'left':
                     self.rect.x -= self.speed
@@ -675,7 +676,15 @@ class Attack(pygame.sprite.Sprite):
                     
                 if enemy.health <= 0:
                     enemy.kill()
-                    v.score += 1
+                    if v.aranha_on == True:
+                        v.score_aranha += 1
+                    if v.urso_on == True:
+                        v.score_urso += 1
+                    if v.lobo_on == True:
+                        v.score_lobo += 1
+                    if v.rainha_aranha_on == True:
+                        v.score_rainha_aranha += 1
+                    v.score = v.score_aranha + v.score_urso + v.score_lobo + v.score_rainha_aranha
                     v.exp += v.exp_mob
 
     # Remove o ataque da v.tela quando atinge o limite da distância
@@ -736,8 +745,8 @@ class HUD:
             frac_hp = int((100*hp)/max_hp)
             #desenhando o restante
             pygame.draw.rect(v.tela, v.red, (10, 50, frac_hp*5, 5))
-            score_text = v.font.render('Score: ' + str(v.score), True, v.red)
-            level_text = v.font.render('Level: ' + str(char.level), True, v.red)
+            score_text = v.font.render('Score: ' + str(v.score), True, v.white)
+            level_text = v.font.render('Level: ' + str(char.level), True, v.blue)
             v.tela.blit(health_text, (10, 10))
             v.tela.blit(score_text, (v.screen_width - score_text.get_width() - 10, 10))
             v.tela.blit(level_text, (v.screen_width - level_text.get_width() - 10, 50))
@@ -821,6 +830,55 @@ class HUD:
         #v.Oeste
         oeste_texto = v.font.render(str(v.Oeste), True, v.white)
         v.tela.blit(oeste_texto, (130, 320))
+
+    def quest(self):
+        quest = pygame.image.load(r'graphics/quest_craft.png')
+        quest.set_alpha(50)
+        v.tela.blit(quest, (0,0))
+        pygame.display.update()
+
+        #####colocar os scores de cada mob morto no total, no topo e embaixo as quests ativas*************** Vou precisar terminar o sistema de quest antes disso
+
+
+
+class Menu:
+    def __init__(self):
+        self.load = pygame.image.load(r'graphics/loadgame.png')
+        self.save = pygame.image.load(r'graphics/savegame.png')
+        self.quit = pygame.image.load(r'graphics/quitgame.png')
+        self.menu = pygame.image.load(r'graphics/menu_jogo.png')
+        
+    def abrir(self):        
+        v.tela.blit(self.menu, (0,0))
+        v.tela.blit(self.load,(40,150))
+        v.tela.blit(self.save,(300,250))
+        v.tela.blit(self.quit,(40,350))
+        clicou_load = pygame.Rect(40,150,250,50)
+        clicou_save = pygame.Rect(300,150,250,50)
+        clicou_quit = pygame.Rect(40,350,250,50)
+        pygame.display.update()
+        if pygame.mouse.get_pressed() == (1,0,0):
+            mouseposition = pygame.mouse.get_pos()
+            if clicou_load.collidepoint(mouseposition):
+                self.loadgame()
+            if clicou_save.collidepoint(mouseposition):
+                self.savegame()                
+            if clicou_quit.collidepoint(mouseposition):
+                self.quitgame()
+
+    def loadgame(self):
+        print("Load")
+        
+    def savegame(self):
+        print("Save")
+
+    def quitgame(self):
+        #criar pop up perguntando se tem certeza
+        v.run_game = False
+        pygame.quit()
+        sys.exit()
+        
+    
               
         
         

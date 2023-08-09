@@ -2,6 +2,7 @@ import pygame, random, sys
 import var as v
 import muros
 import quests
+import pickle
 
 
 #imagem npcs
@@ -283,7 +284,8 @@ class NPC(pygame.sprite.Sprite): ###############################################
                     quests.escrever_dialogo(quests.dialogo_quest(), (250,100)) ### MUDAR ISSO AQUI PARA ESCREVER O DIALOGO COM QUEBRA DE LINHA
 
                     ##################################################MAIN QUEST DEF###########################################################
-                    if v.quest_num == 0:                        
+                    ################################################## ADICIONAR CUTSCENES PARA CADA QUEST! ###################################
+                    if v.quest_num == 0:
                         mob = 'spiders'
                         quests.escrever_dialogo("Please, kill " + str(mob_quest) + " " + str(mob) + " for me", (250,400))
                         
@@ -1003,7 +1005,7 @@ class Menu:
         v.tela.blit(self.save,(300,250))
         v.tela.blit(self.quit,(40,350))
         clicou_load = pygame.Rect(40,150,250,50)
-        clicou_save = pygame.Rect(300,150,250,50)
+        clicou_save = pygame.Rect(300,250,250,50)
         clicou_quit = pygame.Rect(40,350,250,50)
         pygame.display.update()
         if pygame.mouse.get_pressed() == (1,0,0):
@@ -1016,10 +1018,81 @@ class Menu:
                 self.quitgame()
 
     def loadgame(self):
-        print("Load")
+        ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
+        dados_jogo = {}
+        with open('savegame.dat', 'rb') as arquivo:
+            dados_jogo = pickle.load(arquivo)
+            
+            ##########DAR UM SINAL DE QUE O LOAD FUNCIONOU
+        v.score = dados_jogo['score']
+        v.score_aranha = dados_jogo['score_aranha']
+        v.score_lobo = dados_jogo['score_lobo']
+        v.score_urso = dados_jogo['score_urso']
+        v.score_rainha_aranha = dados_jogo['score_rainha_aranha']
+        v.exp = dados_jogo['exp']
+        v.level = dados_jogo['level']
+        v.exp_mob = dados_jogo['exp_mob']
+        v.Norte = dados_jogo['Norte']
+        v.Sul = dados_jogo['Sul']
+        v.Leste = dados_jogo['Leste']
+        v.Oeste = dados_jogo['Oeste']
+        char.rect = dados_jogo['personagem']
+        v.fase_atual = dados_jogo['fase_atual']
+        v.gold = dados_jogo['gold']
+        v.troncos = dados_jogo['troncos']
+        v.metais = dados_jogo['metais']
+        v.tecidos = dados_jogo['tecidos']
+        v.couros = dados_jogo['couros']
+        v.quest_num = dados_jogo['quest_num']
+        v.quest_em_progresso = dados_jogo['quest_em_progresso']
+        v.score_atual_quest = dados_jogo['score_atual_quest']
+        v.score_alvo_quest = dados_jogo['score_alvo_quest']
+        v.mob_atual = dados_jogo['mob_atual']
+        v.rainha_aranha_on = dados_jogo['rainha_aranha_on']
+        v.urso_on = dados_jogo['urso_on']
+        v.lobo_on = dados_jogo['lobo_on']
+        v.aranha_on = dados_jogo['aranha_on']
+        v.machadinho = dados_jogo['machadinho']
+                           
+
+            
         
     def savegame(self):
-        print("Save")
+        ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
+        dados_jogo = {
+            'score' : v.score
+            'score_aranha' : v.score_aranha
+            'score_lobo' : v.score_lobo
+            'score_urso' : v.score_urso
+            'score_rainha_aranha' : v.score_rainha_aranha
+            'exp' : v.exp
+            'level' : v.level
+            'exp_mob' : v.exp_mob
+            'Norte' : v.Norte
+            'Sul' : v.Sul
+            'Leste' : v.Leste
+            'Oeste' : v.Oeste
+            'personagem' : char.rect
+            'fase_atual' : v.fase_atual
+            'gold' : v.gold
+            'troncos' : v.troncos
+            'metais' : v.metais
+            'tecidos' : v.tecidos
+            'couros' : v.couros
+            'quest_num' : v.quest_num
+            'quest_em_progresso' : v.quest_em_progresso
+            'score_atual_quest' : v.score_atual_quest
+            'score_alvo_quest' : v.score_alvo_quest
+            'mob_atual' : v.mob_atual
+            'rainha_aranha_on' : v.rainha_aranha_on
+            'urso_on' : v.urso_on
+            'lobo_on' : v.lobo_on
+            'aranha_on' : v.aranha_on
+            'machadinho' : v.machadinho            
+            }
+        with open('savegame.dat', 'wb') as arquivo:
+            pickle.dump(dados_jogo, arquivo)
+            ##########DAR UM SINAL DE QUE O SAVE FUNCIONOU
 
     def quitgame(self):
         #criar pop up perguntando se tem certeza
@@ -1027,7 +1100,7 @@ class Menu:
         pygame.quit()
         sys.exit()
         
-    
+#############################################################################################################################################################################################################################################################################################################################################################################################################################################    
               
         
         

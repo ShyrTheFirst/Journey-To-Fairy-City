@@ -78,7 +78,7 @@ while v.menu:
                 pygame.mixer.Sound.stop(menumusic)
                 import game
             except FileNotFoundError:
-                pass
+                pass #Mostrar que não há save para carregar
         if clicou_iniciar.collidepoint(mouseposition):
             v.menu = False
             pygame.mixer.Sound.stop(menumusic)

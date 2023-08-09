@@ -1019,40 +1019,43 @@ class Menu:
 
     def loadgame(self):
         ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
-        dados_jogo = {}
-        with open('savegame.dat', 'rb') as arquivo:
-            dados_jogo = pickle.load(arquivo)
-            
-            ##########DAR UM SINAL DE QUE O LOAD FUNCIONOU
-        v.score = dados_jogo['score']
-        v.score_aranha = dados_jogo['score_aranha']
-        v.score_lobo = dados_jogo['score_lobo']
-        v.score_urso = dados_jogo['score_urso']
-        v.score_rainha_aranha = dados_jogo['score_rainha_aranha']
-        v.exp = dados_jogo['exp']
-        v.level = dados_jogo['level']
-        v.exp_mob = dados_jogo['exp_mob']
-        v.Norte = dados_jogo['Norte']
-        v.Sul = dados_jogo['Sul']
-        v.Leste = dados_jogo['Leste']
-        v.Oeste = dados_jogo['Oeste']
-        char.rect = dados_jogo['personagem']
-        v.fase_atual = dados_jogo['fase_atual']
-        v.gold = dados_jogo['gold']
-        v.troncos = dados_jogo['troncos']
-        v.metais = dados_jogo['metais']
-        v.tecidos = dados_jogo['tecidos']
-        v.couros = dados_jogo['couros']
-        v.quest_num = dados_jogo['quest_num']
-        v.quest_em_progresso = dados_jogo['quest_em_progresso']
-        v.score_atual_quest = dados_jogo['score_atual_quest']
-        v.score_alvo_quest = dados_jogo['score_alvo_quest']
-        v.mob_atual = dados_jogo['mob_atual']
-        v.rainha_aranha_on = dados_jogo['rainha_aranha_on']
-        v.urso_on = dados_jogo['urso_on']
-        v.lobo_on = dados_jogo['lobo_on']
-        v.aranha_on = dados_jogo['aranha_on']
-        v.machadinho = dados_jogo['machadinho']
+        try:
+            dados_jogo = {}
+            with open('savegame.dat', 'rb') as arquivo:
+                dados_jogo = pickle.load(arquivo)
+                
+                ##########DAR UM SINAL DE QUE O LOAD FUNCIONOU
+            v.score = dados_jogo['score']
+            v.score_aranha = dados_jogo['score_aranha']
+            v.score_lobo = dados_jogo['score_lobo']
+            v.score_urso = dados_jogo['score_urso']
+            v.score_rainha_aranha = dados_jogo['score_rainha_aranha']
+            v.exp = dados_jogo['exp']
+            v.level = dados_jogo['level']
+            v.exp_mob = dados_jogo['exp_mob']
+            v.Norte = dados_jogo['Norte']
+            v.Sul = dados_jogo['Sul']
+            v.Leste = dados_jogo['Leste']
+            v.Oeste = dados_jogo['Oeste']
+            char.rect = dados_jogo['personagem']
+            v.fase_atual = dados_jogo['fase_atual']
+            v.gold = dados_jogo['gold']
+            v.troncos = dados_jogo['troncos']
+            v.metais = dados_jogo['metais']
+            v.tecidos = dados_jogo['tecidos']
+            v.couros = dados_jogo['couros']
+            v.quest_num = dados_jogo['quest_num']
+            v.quest_em_progresso = dados_jogo['quest_em_progresso']
+            v.score_atual_quest = dados_jogo['score_atual_quest']
+            v.score_alvo_quest = dados_jogo['score_alvo_quest']
+            v.mob_atual = dados_jogo['mob_atual']
+            v.rainha_aranha_on = dados_jogo['rainha_aranha_on']
+            v.urso_on = dados_jogo['urso_on']
+            v.lobo_on = dados_jogo['lobo_on']
+            v.aranha_on = dados_jogo['aranha_on']
+            v.machadinho = dados_jogo['machadinho']
+        except FileNotFoundError:
+            pass #Mostrar que não há save para carregar
                            
 
             

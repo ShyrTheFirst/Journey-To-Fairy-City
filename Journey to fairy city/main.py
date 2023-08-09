@@ -23,6 +23,7 @@ frames = pygame.time.Clock()
 fundo = pygame.image.load(r'graphics/menu.png')
 iniciar = pygame.image.load(r'graphics/start.png')
 sair = pygame.image.load(r'graphics/quit.png')
+#load = pygame.image.load(r'graphics/load.png')
 tela.blit(fundo,(0,0))
 pygame.display.update()
 
@@ -31,6 +32,12 @@ while v.menu:
     tela.blit(fundo,(0,0))
     tela.blit(iniciar,(150,350))
     tela.blit(sair,(450,350))
+    #try:
+    #   load_game
+    #   if Error
+    #       pass
+    #   else:
+    #       tela.blit(load,(x,y))
     clicou_iniciar = pygame.Rect(150,350,250,50)
     clicou_sair = pygame.Rect(450,350,250,50)
     

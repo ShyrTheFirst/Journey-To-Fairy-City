@@ -89,7 +89,7 @@ while v.run_game:
                 v.run_game = False
                 pygame.quit()
                 sys.exit()
-            #identifica os cliques de teclas, pra ataque ou pra pegar o machado #### futuramente irá identificar interações com NPC, uso da bussola e inventário
+            #identifica os cliques de teclas
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                         menu_jogo = c.Menu()

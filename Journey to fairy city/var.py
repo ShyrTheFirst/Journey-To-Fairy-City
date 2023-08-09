@@ -56,6 +56,13 @@ score_lobo = 0
 score_urso = 0
 score_rainha_aranha = 0
 
+#Quests
+quest_num = 0
+quest_em_progresso = False
+score_atual_quest = 0
+score_alvo_quest = 0
+mob_atual = ''
+
 score = 0
 exp = 0
 level = 1
@@ -93,6 +100,7 @@ casa_grupo = pygame.sprite.Group()
 #fontes pro HUD
 font = pygame.font.SysFont('Arial', 30)
 font_inv = pygame.font.SysFont('Arial', 15)
+font_quest = pygame.font.SysFont('Arial', 24)
 
 def randomgen():
     randomizando = random.randrange(0,10)

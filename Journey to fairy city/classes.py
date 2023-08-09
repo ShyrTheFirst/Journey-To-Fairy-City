@@ -1,6 +1,7 @@
 import pygame, random, sys
 import var as v
 import muros
+import quests
 
 
 #imagem npcs
@@ -83,18 +84,23 @@ class Player(pygame.sprite.Sprite):
                         if sprite.type == 'parede':
                             pass
                         # colisão na direita
-                        if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:                                                       
+                        if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
                             self.rect.right = sprite.rect.left
                             self.pos.x = self.rect.x
+                            if sprite.type == 'monstro':
+                                sprite.rect.x += 7
 
                         # colisão na esquerda
-                        if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:                           
+                        if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
                             self.rect.left = sprite.rect.right
                             self.pos.x = self.rect.x
+                            if sprite.type == 'monstro':
+                                sprite.rect.x -= 7
+                            
 
                 if direction == 'vertical':
                     for sprite in collision_sprites:
-                        if sprite.type == 'monstro':
+                        if sprite.type == 'monstro':                            
                             self.health -= sprite.dano
                         if sprite.type == 'arvore':
                             pass
@@ -106,11 +112,15 @@ class Player(pygame.sprite.Sprite):
                         if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
                             self.rect.bottom = sprite.rect.top
                             self.pos.y = self.rect.y
+                            if sprite.type == 'monstro':
+                                sprite.rect.y += 7
 
                         # colisão em cima
-                        if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:                            
+                        if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
                             self.rect.top = sprite.rect.bottom
                             self.pos.y = self.rect.y
+                            if sprite.type == 'monstro':
+                                sprite.rect.y -= 7
      
 
     
@@ -236,15 +246,16 @@ class Ferreiro(pygame.sprite.Sprite):
             super().__init__()
             self.image = pygame.image.load(r'graphics/ferreiro.png').convert_alpha()
             self.rect = self.image.get_rect()
+            self.pos = pos
             self.rect.x, self.rect.y = pos
             self.direction = pygame.math.Vector2()
             self.old_rect = self.rect.copy()
             self.type = 'parede'
 
-class NPC(pygame.sprite.Sprite): ############################################################ FINALIZAR NPC
+class NPC(pygame.sprite.Sprite): ############################################################
     def __init__(self,pos,image,quest,craft):
             super().__init__()
-            self.image = image #criar imagem do npc#
+            self.image = image
             self.rect = self.image.get_rect()
             self.rect.x, self.rect.y = pos
             self.direction = pygame.math.Vector2()
@@ -259,10 +270,123 @@ class NPC(pygame.sprite.Sprite): ###############################################
         random_som = random.randrange(0,2)
         pygame.mixer.Sound.set_volume(grupo_som[random_som],0.05)
         pygame.mixer.Sound.play(grupo_som[random_som])
-        print("quest on")
-        #criar uma nova .py para realizar o acompanhamento da quest. Ativar um switch quando aceitar uma quest, mostrando no hud o progresso da quest e armazenar numa variavel desse novo .py o progresso.
-    #criar quest aqui
+        quest_on = True
+        mob_quest = quests.gerar_quant_mobs(10,80)
+        mob = quests.escolher_mob()
+        while quest_on:########################################## (250,y) sendo que 250 é dentro do quest.png
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            if v.quest_em_progresso == False: ########################### dif y - entre cada linha é 25
+                if v.quest_num < 6 :
+                    quests.escrever_dialogo(quests.dialogo_quest(), (250,100)) ### MUDAR ISSO AQUI PARA ESCREVER O DIALOGO COM QUEBRA DE LINHA
 
+                    ##################################################MAIN QUEST DEF###########################################################
+                    if v.quest_num == 0:                        
+                        mob = 'spiders'
+                        quests.escrever_dialogo("Please, kill " + str(mob_quest) + " " + str(mob) + " for me", (250,400))
+                        
+                    ##################################################MAIN QUEST DEF###########################################################
+
+
+                ##################################################REPETITIVE QUEST###########################################################        
+                if v.quest_num >= 6:
+                    quests.escrever_dialogo("Please, kill " + str(mob_quest) + " " + str(mob) + " for me", (250,100))
+                ##################################################REPETITIVE QUEST########################################################### 
+                                
+                quest = pygame.image.load(r'graphics/quest_craft.png')
+                quest.set_alpha(50)
+                v.tela.blit(quest, (0,0))
+                quests.escrever_dialogo("Press 'Y' to accept", (250,450))
+                quests.escrever_dialogo("Press 'N' to exit", (250,475))
+                pygame.display.update()
+                
+                
+                if pygame.key.get_pressed()[pygame.K_y] == True:
+                    v.quest_em_progresso = True
+                    if mob == 'spiders':
+                        v.score_atual_quest = v.score_aranha
+                        v.mob_atual = 'spiders'
+                        v.score_alvo_quest = mob_quest
+                    elif mob == 'wolfs':
+                        v.score_atual_quest = v.score_lobo
+                        v.mob_atual = 'wolfs'
+                        v.score_alvo_quest = mob_quest
+                    elif mob == 'bears':
+                        v.score_atual_quest = v.score_urso
+                        v.mob_atual = 'bears'
+                        v.score_alvo_quest = mob_quest
+                    quest_on = False
+                        
+                if pygame.key.get_pressed()[pygame.K_n] == True:
+                    quest_on = False
+
+                        
+            if v.quest_em_progresso == True:
+                quest = pygame.image.load(r'graphics/quest_craft.png')
+                quest.set_alpha(50)
+                v.tela.blit(quest, (0,0))
+                pygame.display.update()
+                
+                
+                if v.mob_atual == 'spiders':
+                    if v.score_aranha - v.score_atual_quest >= v.score_alvo_quest:
+                        quests.escrever_dialogo("Thank you so much!", (250,100))
+                        quests.escrever_dialogo("Here is your reward: ", (250,125))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475)) 
+                        #### BLITAR RECOMPENSA AQUI
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
+                            v.quest_num += 1
+                            v.quest_em_progresso = False
+                    else:
+                        quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
+                                            
+                elif v.mob_atual == 'wolfs':
+                    if v.score_lobo - v.score_atual_quest >= v.score_alvo_quest:
+                        quests.escrever_dialogo("Thank you so much!", (250,100))
+                        quests.escrever_dialogo("Here is your reward: ", (250,125))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))
+                        ###BLITAR AQUI A RECOMPENSA
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
+                            v.quest_num += 1
+                            v.quest_em_progresso = False
+                    else:
+                        quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
+
+                elif v.mob_atual == 'bears':
+                    if v.score_urso - v.score_atual_quest >= v.score_alvo_quest:
+                        quests.escrever_dialogo("Thank you so much!", (250,100))
+                        quests.escrever_dialogo("Here is your reward: ", (250,125))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475)) 
+                        ###BLITAR AQUI A RECOMPENSA
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            pygame.display.update()
+                            quest_on = False
+                            v.quest_num += 1
+                            v.quest_em_progresso = False
+                    else:
+                        quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
+                            
+#####################################################################################################################################################################################################################
+        
     def crafts(self):
         som_hey = pygame.mixer.Sound(r'sounds\saudacao.mp3')
         som_wcidfy = pygame.mixer.Sound(r'sounds\what_can_i_do_for_you.mp3')
@@ -270,7 +394,7 @@ class NPC(pygame.sprite.Sprite): ###############################################
         random_som = random.randrange(0,2)
         pygame.mixer.Sound.set_volume(grupo_som[random_som],0.05)
         pygame.mixer.Sound.play(grupo_som[random_som])
-        print("craft on")
+        
         #copiar do HUD (inventario), dar decisão para o player entre LOJA e CRAFT, cada um com sua função especifica.
     #criar craft aqui
         #Se craftar, alterar o equipamento no gamehud.(nome do equip).
@@ -285,7 +409,7 @@ class NPC(pygame.sprite.Sprite): ###############################################
             self.quests()
             self.crafts()
         if self.craft == False and self.quest == False:
-            print("nada")
+            pass
 
 
 #######################################################################################  CLASSE DOS MONSTROS
@@ -623,12 +747,11 @@ class Attack(pygame.sprite.Sprite):
             
         def update(self,x,y):
             if self.level == 1:
-                self.dano = 10000
+                self.dano = 1
             if self.level == 2:
-                self.dano = 10000
+                self.dano = 1
             elif self.level > 2:
-                self.dano = 10000
-                #self.dano = int(round((self.level*0.5), 1))
+                self.dano = int(round((self.level*0.5), 1))
     # Movimenta o ataque na direção em que o jogador está se movendo
             if self.direction == 'left':
                     self.rect.x -= self.speed
@@ -835,6 +958,32 @@ class HUD:
         quest = pygame.image.load(r'graphics/quest_craft.png')
         quest.set_alpha(50)
         v.tela.blit(quest, (0,0))
+        if v.quest_em_progresso == True:
+            quests.escrever_dialogo("PROGRESS", (325,100))
+            quests.escrever_dialogo("You have to kill: ", (300,150))
+            quests.escrever_dialogo(str(v.score_alvo_quest), (300,175))
+            quests.escrever_dialogo(v.mob_atual, (300,200))
+            quests.escrever_dialogo("You killed: ", (300,225))
+            score_real = 0
+            if v.mob_atual == 'spiders':
+                score_real = v.score_aranha - v.score_atual_quest              
+            if v.mob_atual == 'wolfs':
+                score_real = v.score_lobo - v.score_atual_quest
+            if v.mob_atual == 'bears':
+                score_real = v.score_urso - v.score_atual_quest
+                
+            if score_real >= v.score_alvo_quest :
+                score_real = v.score_alvo_quest
+            quests.escrever_dialogo(str(score_real), (300,250))
+                
+            
+        else:
+            quests.escrever_dialogo("You don't have any quests.", (275,150))
+        
+
+
+
+        
         pygame.display.update()
 
         #####colocar os scores de cada mob morto no total, no topo e embaixo as quests ativas*************** Vou precisar terminar o sistema de quest antes disso

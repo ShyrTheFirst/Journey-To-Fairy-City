@@ -39,13 +39,13 @@ So let's list everything that I know that is not working:
  
 ~~5. The spritecollide don't work all the time with the spiders and sometimes it takes a lot of attacks to kill one... I could say it's a feature, but I don't know how exactly I could fix it... I needed to redo all the sprites, maybe?~~ You even have the spiders health bar above them now!! You don't need to worry anymore!
 
-6. There is no sound. I know it's sad... But I didn't have time to do that :((((
+~~6. There is no sound. I know it's sad... But I didn't have time to do that :((((~~ NOW WE HAVE SOUNDS!!!!
 
-7. There is no other levels. I couldn't make them... But I promise I'll do it after the end of pyweek (at least once a month I'll update the game!)
+~~7. There is no other levels. I couldn't make them... But I promise I'll do it after the end of pyweek (at least once a month I'll update the game!)~~ The world doesn't end anymore!
  
-8. There is no fairy city...yet. If you finish the game, you can only see the beatiful emptyness and think about your life choices. I hope it's not much for you.
+~~8. There is no fairy city...yet. If you finish the game, you can only see the beatiful emptyness and think about your life choices. I hope it's not much for you.~~ We have the first city!! More to come!
 
-9. There is no movements. BUT 99% of this is not an issue. ~~I just need movement for the attacks and repel the spiders so the player don't die so fast...~~ At least some of the movements are done now. But we will get better!
+~~9. There is no movements. BUT 99% of this is not an issue. ~~I just need movement for the attacks and repel the spiders so the player don't die so fast...~~ At least some of the movements are done now. But we will get better!~~ :) animations everywhere
 
 
 Thanks!

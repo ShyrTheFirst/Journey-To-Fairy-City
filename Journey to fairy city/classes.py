@@ -254,7 +254,7 @@ class Ferreiro(pygame.sprite.Sprite):
             self.type = 'parede'
 
 class NPC(pygame.sprite.Sprite): ############################################################
-    def __init__(self,pos,image,quest,craft):
+    def __init__(self,pos,image,quest,craft,loja=False):
             super().__init__()
             self.image = image
             self.rect = self.image.get_rect()
@@ -264,6 +264,7 @@ class NPC(pygame.sprite.Sprite): ###############################################
             self.type = 'npc'
             self.quest = quest
             self.craft = craft
+            self.loja = loja
     def quests(self):
         som_hey = pygame.mixer.Sound(r'sounds\saudacao.mp3')
         som_wcidfy = pygame.mixer.Sound(r'sounds\what_can_i_do_for_you.mp3')
@@ -396,22 +397,59 @@ class NPC(pygame.sprite.Sprite): ###############################################
         random_som = random.randrange(0,2)
         pygame.mixer.Sound.set_volume(grupo_som[random_som],0.05)
         pygame.mixer.Sound.play(grupo_som[random_som])
+        craft_on = True
+
+        while craft_on:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            if pygame.key.get_pressed()[pygame.K_ESCAPE] == True:
+                craft_on = False
+
+            #criar janela do craft
+            #criar botões (criar, encantar, desencantar, rebaixar)
+            #criar "animação" do botão ao passar o mouse
+            #ao lado dos botões deve aparecer o tipo de recursos e a quantidade que precisa para realizar a ação
+                #verifica se há a quantidade de recursos disponíveis no inventario, caso negativo, aparecer em vermelho os recursos que não são suficientes.
+            #fazer verificação dos níveis dos equipamentos antes de poder tomar qualquer ação aqui
+            #Criar uma janela similar ao inventario, com icones que lembrem os equipamentos para que ao selecionar o equipamento, apareçam as 4 opções de botões?
+                #ou cada botão irá aparecer no equipamento na tela e abaixo aparecerá os recursos para fazer cada ação ?
+                #testar as duas formas 
+
+            #criar aqui o sistema de craft
         
         #copiar do HUD (inventario), dar decisão para o player entre LOJA e CRAFT, cada um com sua função especifica.
     #criar craft aqui
         #Se craftar, alterar o equipamento no gamehud.(nome do equip).
         #Alterar Dano e HP do personagem quando alterar equips para mais fortes
+
+    def loja(self):################################################################################################################################################################
+        pass
         
     def update(self):
-        if self.quest == True and self.craft == False:
+        if self.quest == True and self.craft == False and self.loja == False:
             self.quests()
-        if self.craft == True and self.quest == False:
+        if self.craft == True and self.quest == False and self.loja == False:
             self.crafts()
-        if self.craft == True and self.quest == True: ######### Criar janela de pergunta antes de continuar
-            self.quests()
-            self.crafts()
-        if self.craft == False and self.quest == False:
+        if self.craft == False and self.quest == False and self.loja == True:
+            self.loja()
+        if self.craft == False and self.quest == False and self.loja == False:
             pass
+        ######CRIAR PERGUNTA ANTES DE CONTINUAR
+        if self.craft == True and self.quest == True and self.loja == False:
+            self.quests()
+            self.crafts()
+        if self.craft == True and self.quest == False and self.loja == True:
+            self.loja()
+            self.craft()
+        if self.craft == False and self.quest == True and self.loja == True:
+            self.loja()
+            self.quest()
+        if self.craft == True and self.quest == True and self.loja == True:
+            self.loja()
+            self.craft()
+            self.quest()
 
 
 #######################################################################################  CLASSE DOS MONSTROS
@@ -1063,34 +1101,34 @@ class Menu:
     def savegame(self):
         ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
         dados_jogo = {
-            'score' : v.score
-            'score_aranha' : v.score_aranha
-            'score_lobo' : v.score_lobo
-            'score_urso' : v.score_urso
-            'score_rainha_aranha' : v.score_rainha_aranha
-            'exp' : v.exp
-            'level' : v.level
-            'exp_mob' : v.exp_mob
-            'Norte' : v.Norte
-            'Sul' : v.Sul
-            'Leste' : v.Leste
-            'Oeste' : v.Oeste
-            'personagem' : char.rect
-            'fase_atual' : v.fase_atual
-            'gold' : v.gold
-            'troncos' : v.troncos
-            'metais' : v.metais
-            'tecidos' : v.tecidos
-            'couros' : v.couros
-            'quest_num' : v.quest_num
-            'quest_em_progresso' : v.quest_em_progresso
-            'score_atual_quest' : v.score_atual_quest
-            'score_alvo_quest' : v.score_alvo_quest
-            'mob_atual' : v.mob_atual
-            'rainha_aranha_on' : v.rainha_aranha_on
-            'urso_on' : v.urso_on
-            'lobo_on' : v.lobo_on
-            'aranha_on' : v.aranha_on
+            'score' : v.score,
+            'score_aranha' : v.score_aranha,
+            'score_lobo' : v.score_lobo,
+            'score_urso' : v.score_urso,
+            'score_rainha_aranha' : v.score_rainha_aranha,
+            'exp' : v.exp,
+            'level' : v.level,
+            'exp_mob' : v.exp_mob,
+            'Norte' : v.Norte,
+            'Sul' : v.Sul,
+            'Leste' : v.Leste,
+            'Oeste' : v.Oeste,
+            'personagem' : char.rect,
+            'fase_atual' : v.fase_atual,
+            'gold' : v.gold,
+            'troncos' : v.troncos,
+            'metais' : v.metais,
+            'tecidos' : v.tecidos,
+            'couros' : v.couros,
+            'quest_num' : v.quest_num,
+            'quest_em_progresso' : v.quest_em_progresso,
+            'score_atual_quest' : v.score_atual_quest,
+            'score_alvo_quest' : v.score_alvo_quest,
+            'mob_atual' : v.mob_atual,
+            'rainha_aranha_on' : v.rainha_aranha_on,
+            'urso_on' : v.urso_on,
+            'lobo_on' : v.lobo_on,
+            'aranha_on' : v.aranha_on,
             'machadinho' : v.machadinho            
             }
         with open('savegame.dat', 'wb') as arquivo:

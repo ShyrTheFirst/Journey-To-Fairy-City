@@ -1,0 +1,20 @@
+gamehud.(x) = ptgame.image.load(r'graphics/(y).png)
+
+x = [capacete
+        busto
+        bracelete
+        bracelete2
+        pernas
+        pernas2
+        arma
+        arma_secundaria]
+
+y = item_nv
+
+
+
+modificar informações em:
+quest (verificar se estou usando ou não isso, não lembro!)
+cutscene (verificar se estou usando ou não isso, não lembro!)
+classes (aqui ir em NPC e alterar as informações na area de craft e verificar se há uma area de
+compra e venda, se nao, criar nos NPCs para poder gerar dinheiro pro personagem)

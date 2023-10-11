@@ -398,12 +398,25 @@ class NPC(pygame.sprite.Sprite): ###############################################
         pygame.mixer.Sound.set_volume(grupo_som[random_som],0.05)
         pygame.mixer.Sound.play(grupo_som[random_som])
         craft_on = True
+        craft = pygame.image.load(r'graphics/quest_craft.png')
+        craft.set_alpha(50)
+        cor_botao = (0,0,0) ########### DEFINIR COR DO BOTAO
+        cor_botao_cima = (100,0,0)
+        cor_botao_clique = (0,100,0)
 
         while craft_on:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
+            #criar as infos aqui
+            v.tela.blit(craft, (0,0))
+            quests.escrever_dialogo("Press 'ESC' to exit", (250,450))
+            botao_1 = pygame.Rect(250,100,50,50) ##### DEFINIR MELHOR POSICAO (posx,posy) E TAMANHO (altura,largura)
+            pygame.draw.rect(v.tela,cor_botao,botao_1)
+            #####TESTAR COLISAO COM MOUSE PRA ALTERAR FUNCOES DO BOTAO
+            pygame.display.update()
             if pygame.key.get_pressed()[pygame.K_ESCAPE] == True:
                 craft_on = False
 

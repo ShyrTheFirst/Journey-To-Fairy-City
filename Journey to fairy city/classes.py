@@ -416,15 +416,15 @@ class NPC(pygame.sprite.Sprite): ###############################################
             v.tela.blit(craft, (0,0))
             quests.escrever_dialogo("Press 'ESC' to exit", (250,450))
             botao_1 = pygame.Rect(250,100,50,50) ##### DEFINIR MELHOR POSICAO (posx,posy) E TAMANHO (altura,largura)
-            if v.tronco == 1: #verificar requisitos conforme o nivel e tudo mais. Estabelecer através de variaveis que vão verificar o mesmo que vai ser blitado na tela
-                cor_botao = cor_base
+            if v.troncos >= 1: #verificar requisitos conforme o nivel e tudo mais. Estabelecer através de variaveis que vão verificar o mesmo que vai ser blitado na tela
+                cor_botao = cor_botao_base
             else:
                 cor_botao = cor_bloqueado
             
             #####TESTAR COLISAO COM MOUSE PRA ALTERAR FUNCOES DO BOTAO
             
             mousepos = pygame.mouse.get_pos()
-            if botao_1.collidepoint(mousepos) == True or if pygame.key.get_pressed()[pygame.K_u] == True:
+            if botao_1.collidepoint(mousepos) == True or pygame.key.get_pressed()[pygame.K_u] == True and v.troncos <= 1:
                 cor_botao = cor_botao_cima
                 pass #verifica requisito de evolucao de equipamento e realiza a evolução se estiver OK.
                 

@@ -400,9 +400,11 @@ class NPC(pygame.sprite.Sprite): ###############################################
         craft_on = True
         craft = pygame.image.load(r'graphics/quest_craft.png')
         craft.set_alpha(50)
-        cor_botao = (0,0,0) ########### DEFINIR COR DO BOTAO
+        cor_botao = (0,0,0)
+        cor_botao_base = (0,0,0) ########### DEFINIR COR DO BOTAO
         cor_botao_cima = (100,0,0)
         cor_botao_clique = (0,100,0)
+        cor_bloqueado = (150,0,0)
 
         while craft_on:
             for event in pygame.event.get():
@@ -414,8 +416,19 @@ class NPC(pygame.sprite.Sprite): ###############################################
             v.tela.blit(craft, (0,0))
             quests.escrever_dialogo("Press 'ESC' to exit", (250,450))
             botao_1 = pygame.Rect(250,100,50,50) ##### DEFINIR MELHOR POSICAO (posx,posy) E TAMANHO (altura,largura)
-            pygame.draw.rect(v.tela,cor_botao,botao_1)
+            if v.tronco == 1: #verificar requisitos conforme o nivel e tudo mais. Estabelecer através de variaveis que vão verificar o mesmo que vai ser blitado na tela
+                cor_botao = cor_base
+            else:
+                cor_botao = cor_bloqueado
+            
             #####TESTAR COLISAO COM MOUSE PRA ALTERAR FUNCOES DO BOTAO
+            
+            mousepos = pygame.mouse.get_pos()
+            if botao_1.collidepoint(mousepos) == True or if pygame.key.get_pressed()[pygame.K_u] == True:
+                cor_botao = cor_botao_cima
+                pass #verifica requisito de evolucao de equipamento e realiza a evolução se estiver OK.
+                
+            pygame.draw.rect(v.tela,cor_botao,botao_1)
             pygame.display.update()
             if pygame.key.get_pressed()[pygame.K_ESCAPE] == True:
                 craft_on = False

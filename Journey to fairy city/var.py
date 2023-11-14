@@ -1,8 +1,11 @@
 import pygame, random, sys
 
+
+#Inicia o pygame e as fonts
 pygame.init()
 pygame.font.init()
 
+#Definições da tela
 screen_width = 800 #largura
 screen_height = 600 #altura
 tela = pygame.display.set_mode((screen_width,screen_height))
@@ -15,7 +18,15 @@ red = (255, 0, 0)
 blue = (0, 0, 255)
 yellow = (255, 255, 0)
 
+#Variaveis para verificar utilidade*
+CUSTOM = pygame.USEREVENT +1
+custom_event1 = pygame.event.Event(CUSTOM)
+damage_rect_x = 0
+damage_rect_y = 0
+damage_sprite = 0
+
 #variaveis do jogo
+delta_time = 0
 
 top = False
 bottom = False
@@ -42,7 +53,6 @@ run_game = False
 posinitix = screen_width / 2
 posinitiy = screen_height / 2
 
-tecla_acao = False
 
 ####Switch dos mob
 aranha_on = True
@@ -98,10 +108,13 @@ npc_grupo = pygame.sprite.Group()
 casa_grupo = pygame.sprite.Group()
 
 #fontes pro HUD
-font = pygame.font.SysFont('Arial', 30)
-font_inv = pygame.font.SysFont('Arial', 15)
-font_quest = pygame.font.SysFont('Arial', 24)
+font = pygame.font.Font(r'fonts/teutonic.ttf',30)
+font_inv = pygame.font.Font(r'fonts/teutonic.ttf',15)
+font_quest = pygame.font.Font(r'fonts/teutonic.ttf',22)
+fonte_augusta = pygame.font.Font(r'fonts/augusta.ttf',26)
 
+
+#Geradores randomicos
 def randomgen():
     randomizando = random.randrange(0,10)
     if randomizando <= 4:

@@ -1,6 +1,8 @@
 import pygame
 import var as v
 
+####################################NÃO IMPLEMENTADO
+
 pygame.init()
 pygame.font.init()
 

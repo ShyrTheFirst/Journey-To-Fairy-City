@@ -5,8 +5,8 @@ import classes as c
 
 
 
-def Criar_npc(pos,image,quest,craft):
-    npc = c.NPC(pos,image,quest,craft)
+def Criar_npc(pos,image,quest,craft,loja):
+    npc = c.NPC(pos,image,quest,craft,loja)
     v.npc_grupo.add(npc)
     v.colisao_grupo.add(npc)
 

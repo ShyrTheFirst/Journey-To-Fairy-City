@@ -5,8 +5,8 @@ import npc
 
 
 
-def npc_cidade(pos,image,quest,craft):
-    npc.Criar_npc(pos,image,quest,craft)
+def npc_cidade(pos,image,quest,craft,loja):
+    npc.Criar_npc(pos,image,quest,craft,loja)
 
 def casa(pos):
     npc.Criar_casa(pos)

@@ -46,6 +46,9 @@ while v.menu:
             try:
                 with open('savegame.dat', 'rb') as arquivo:
                     dados_jogo = pickle.load(arquivo)
+                import classes as c
+                char = c.Player()
+                FN = c.Mapa_FN()
                 v.score = dados_jogo['score']
                 v.score_aranha = dados_jogo['score_aranha']
                 v.score_lobo = dados_jogo['score_lobo']
@@ -75,6 +78,18 @@ while v.menu:
                 v.lobo_on = dados_jogo['lobo_on']
                 v.aranha_on = dados_jogo['aranha_on']
                 v.machadinho = dados_jogo['machadinho']
+
+                teste_dados = dados_jogo['mapa_atual']
+                if teste_dados == 0:
+                    FN.mapa_atual = pygame.image.load(r'graphics/first_map.png')
+                if teste_dados == 1:
+                    FN.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')
+                if teste_dados == 2:
+                    FN.mapa_atual = pygame.image.load(r'graphics/N1O2.png')
+                if teste_dados == 3:
+                    FN.mapa_atual = pygame.image.load(r'graphics/mapa_cidade1.png')
+                
+                
                 pygame.mixer.Sound.stop(menumusic)
                 import game
             except FileNotFoundError:

@@ -42,6 +42,8 @@ v.borda_grupo.add(borda_topo)
 v.borda_grupo.add(borda_baixo)
 v.borda_grupo.add(borda_esquerda)
 v.borda_grupo.add(borda_direita)
+CUSTOM = v.CUSTOM
+custom_event1 = v.custom_event1
 
 #mais facil que mudar todos os char por ai KKK
 char = c.char
@@ -65,6 +67,7 @@ v.run_game = True
 
 while v.run_game:
         frames.tick(60)
+        v.delta_time = frames.tick(60)/1000
 
         #define o mapa do jogo
         if v.fase_atual == 'FN':
@@ -89,6 +92,11 @@ while v.run_game:
                 v.run_game = False
                 pygame.quit()
                 sys.exit()
+            if event.type == CUSTOM:
+                    c.damage_show.infos(v.damage_rect_x, v.damage_rect_y, v.damage_sprite,v.red)
+                    c.damage_show.create_text()
+                    c.damage_show.draw(v.delta_time)
+                    
             #identifica os cliques de teclas
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -337,16 +345,10 @@ while v.run_game:
                         v.Leste = 0
                         v.Oeste = 0
 
-                        #volta o mapa pra fase 0, ou pra onde precisar voltar dependendo do save game... o que significa que as vars ali em cima vão mudar e é por isso que o endgame precisa ser um arquivo separado.
+                        #volta o mapa pra fase 0.
                         if v.fase_atual == 'FN':
-                            mudar = c.FN.mudar_mapa() ######CARREGAR ULTIMO JOGO SALVO - QUANDO IMPLEMENTADO
+                            mudar = c.FN.mudar_mapa()
                             fundo = c.FN.mapa_atual
-                        elif v.fase_atual == 'FA':
-                            mudar = c.FA.mudar_mapa() ######CARREGAR ULTIMO JOGO SALVO - QUANDO IMPLEMENTADO
-                            fundo = c.FA.mapa_atual
-                        elif v.fase_atual == 'FE':
-                            mudar = c.FE.mudar_mapa() ######CARREGAR ULTIMO JOGO SALVO - QUANDO IMPLEMENTADO
-                            fundo = c.FE.mapa_atual
 
                         #reseta a vida do char... mesma questão dos vars acima
                         char.max_health = 100

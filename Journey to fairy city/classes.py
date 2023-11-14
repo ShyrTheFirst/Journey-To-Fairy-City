@@ -1,4 +1,4 @@
-import pygame, random, sys
+import pygame, random, sys, math
 import var as v
 import muros
 import quests
@@ -14,11 +14,47 @@ guarda1  = pygame.image.load(r'graphics/guarda1.png').convert_alpha()
 #Musicas e sons
 pygame.mixer.init()
 
+
+#Classe de texto
+class Damage_Show:    
+    def infos(self,x,y,damage,color):
+        self.float_text = []
+        self.x = x
+        self.y = y
+        self.damage = damage
+        self.color = color
+        self.timer = 0.0
+        self.alphinha = 255
+
+    def create_text(self):
+        text = v.font_inv.render(str(self.damage),True,self.color)
+        text_rect = text.get_rect()
+        text_rect.center = (self.x,self.y)
+
+        self.float_text.append((text,text_rect))
+
+    def draw(self, delta_time):
+        self.timer += delta_time
+        for i, (text,rect) in enumerate(self.float_text):
+            data = (text,rect)
+            if self.timer <= 1.0:                
+                    text.set_alpha(self.alphinha)
+                    v.tela.blit(text,rect)
+                    rect.y -= 1
+                    self.alphinha -= 10
+                    self.float_text[i] = (text, rect)
+                    self.timer = 0.0
+            else:                
+                self.float_text.remove(data)
+
+damage_show = Damage_Show()
+                
 # Classe do jogador
 class Player(pygame.sprite.Sprite):
     def __init__(self):
             super().__init__()
             self.image = pygame.image.load(r'graphics/char.png').convert_alpha()
+            #self.armor = pygame.image.load(r'graphics/roupa_basica.png').convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.x = v.posinitix
             self.rect.y = v.posinitiy
@@ -27,11 +63,15 @@ class Player(pygame.sprite.Sprite):
             self.health = 100
             self.direction = 'right'
             self.dir = pygame.math.Vector2()
-            self.speed = 2
+            self.speed = 3
             self.obstaculo = v.colisao_grupo
             self.pos = pygame.math.Vector2(self.rect.topleft)
             self.exp = v.exp
             self.level = 1
+            self.animation_timer = 0.0
+            self.animation_index = 0
+            self.delta_time_char = v.delta_time
+
 
     def levelup(self):
         calc_lvlup = self.level * 100
@@ -44,18 +84,18 @@ class Player(pygame.sprite.Sprite):
             lvlup1 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
             lvlup2 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
             lvlup3 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
-            lvlup_group = [lvlup1,lvlup2,lvlup3]
-            tamanho = (len(lvlup_group)) -1
+            lvlup4 = pygame.image.load(r'graphics/efeito_LVLUP1.png').convert_alpha()
+            lvlup_group = [lvlup1,lvlup2,lvlup3, lvlup4]
 
-            ultima_att = pygame.time.get_ticks()
-            animacao_cd = 50
-            frame = 0
-            while frame <= tamanho:
-                v.tela.blit(lvlup_group[frame],(self.rect.x,self.rect.y))
-                pygame.display.flip()
-                tempo_atual = pygame.time.get_ticks()
-                if tempo_atual - ultima_att >= animacao_cd:
-                    frame += 1
+            self.animation_timer += v.delta_time
+            animation_count = 0
+            while animation_count < 5:
+                if self.animation_timer <= 10.0:                                  
+                    v.tela.blit(lvlup_group[self.animation_index],(self.rect.x,self.rect.y))
+                    self.image_index = (self.animation_index + 1) % len(lvlup_group)
+                    pygame.display.flip()
+                    self.animation_timer = 0.0
+                    animation_count += 1
                     
             self.level += 1
             v.level = self.level
@@ -78,6 +118,9 @@ class Player(pygame.sprite.Sprite):
                     for sprite in collision_sprites:
                         if sprite.type == 'monstro':
                             self.health -= sprite.dano
+                            v.damage_rect_x, v.damage_rect_y, v.damage_sprite = self.rect.x, self.rect.y , sprite.dano
+                            pygame.event.post(v.custom_event1)                            
+                            ###################################################################################################################################################################################mostrar dano na tela
                         if sprite.type == 'arvore':
                             pass
                         if sprite.type == 'npc':
@@ -103,6 +146,9 @@ class Player(pygame.sprite.Sprite):
                     for sprite in collision_sprites:
                         if sprite.type == 'monstro':                            
                             self.health -= sprite.dano
+                            v.damage_rect_x, v.damage_rect_y, v.damage_sprite = self.rect.x, self.rect.y , sprite.dano
+                            pygame.event.post(v.custom_event1)
+                            ###################################################################################################################################################################################mostrar dano na tela
                         if sprite.type == 'arvore':
                             pass
                         if sprite.type == 'npc':
@@ -134,6 +180,7 @@ class Player(pygame.sprite.Sprite):
                 if v.equipamento == True:
                     self.image = pygame.image.load(r'graphics/charequipadocima.png').convert_alpha()
                 else:
+                    ############################ ############################ ############################ ############################ ############################ ############################
                     self.image = pygame.image.load(r'graphics/charcima.png').convert_alpha()
             elif keys[pygame.K_DOWN]:
                 self.dir.y = 1
@@ -163,6 +210,7 @@ class Player(pygame.sprite.Sprite):
                 self.dir.x = 0
 
     def update(self):
+            #v.tela.blit(self.armor,(self.rect.x,self.rect.y))########CRIANDO UMA IMAGEM COM A ARMADURA, POSSO PASSAR ELA PRA SER BLITADA JUNTO DA IMAGEM DO PERSONAGEM E ASSIM MUDO A IMAGEM DA ARMADURA MAIS FÁCILMENTE
             self.exp = v.exp
             self.levelup()
             self.old_rect = self.rect.copy()
@@ -254,7 +302,7 @@ class Ferreiro(pygame.sprite.Sprite):
             self.type = 'parede'
 
 class NPC(pygame.sprite.Sprite): ############################################################
-    def __init__(self,pos,image,quest,craft,loja=False):
+    def __init__(self,pos,image,quest,craft,loja):
             super().__init__()
             self.image = image
             self.rect = self.image.get_rect()
@@ -400,11 +448,15 @@ class NPC(pygame.sprite.Sprite): ###############################################
         craft_on = True
         craft = pygame.image.load(r'graphics/quest_craft.png')
         craft.set_alpha(50)
-        cor_botao = (0,0,0)
-        cor_botao_base = (0,0,0) ########### DEFINIR COR DO BOTAO
-        cor_botao_cima = (100,0,0)
-        cor_botao_clique = (0,100,0)
-        cor_bloqueado = (150,0,0)
+
+        #definição dos niveis de equipamentos
+        #exemplo para o axe:
+        #if nv1 = 1 troncos e 1 metais
+        #if nv2 = 5 troncos e 10 metais
+        #if nv3 = 15 troncos e 20 metais
+        
+        
+        
 
         while craft_on:
             for event in pygame.event.get():
@@ -413,22 +465,85 @@ class NPC(pygame.sprite.Sprite): ###############################################
                     sys.exit()
 
             #criar as infos aqui
+            #cores dos botões
+            cor_botao_head = (0,0,0)
+            cor_botao_armor = (0,0,0)
+            cor_botao_axe = (0,0,0)
+            cor_botao_base = (150,0,0) ########### DEFINIR COR DO BOTAO
+            cor_botao_cima = (100,0,0)
+            cor_botao_clique = (0,100,0)
+            cor_bloqueado = (0,0,0)
+            
             v.tela.blit(craft, (0,0))
+            
+            botao_head_img = pygame.image.load(r'graphics/helmet_button.png')
+            botao_armor_img = pygame.image.load(r'graphics/armor_button.png')
+            botao_axe_img = pygame.image.load(r'graphics/axe_button.png')
+            
             quests.escrever_dialogo("Press 'ESC' to exit", (250,450))
-            botao_1 = pygame.Rect(250,100,50,50) ##### DEFINIR MELHOR POSICAO (posx,posy) E TAMANHO (altura,largura)
+            
+            botao_head = pygame.Rect(250,120,50,50) ##### DEFINIR MELHOR POSICAO (posx,posy) E TAMANHO (altura,largura)
+            botao_armor = pygame.Rect(350,120,50,50)
+            botao_axe = pygame.Rect(450,120,50,50)
+            
+            
             if v.troncos >= 1: #verificar requisitos conforme o nivel e tudo mais. Estabelecer através de variaveis que vão verificar o mesmo que vai ser blitado na tela
-                cor_botao = cor_botao_base
+                cor_botao_head = cor_botao_base
             else:
-                cor_botao = cor_bloqueado
-            
-            #####TESTAR COLISAO COM MOUSE PRA ALTERAR FUNCOES DO BOTAO
-            
-            mousepos = pygame.mouse.get_pos()
-            if botao_1.collidepoint(mousepos) == True or pygame.key.get_pressed()[pygame.K_u] == True and v.troncos <= 1:
-                cor_botao = cor_botao_cima
-                pass #verifica requisito de evolucao de equipamento e realiza a evolução se estiver OK.
+                cor_botao_head = cor_bloqueado
                 
-            pygame.draw.rect(v.tela,cor_botao,botao_1)
+            if v.tecidos >= 1:
+                cor_botao_armor = cor_botao_base
+            else:
+                cor_botao_armor = cor_bloqueado
+                
+            if v.metais >= 1:
+                cor_botao_axe = cor_botao_base
+            else:
+                cor_botao_axe = cor_bloqueado
+
+            #troncos, tecidos, metais, couros
+            
+            #####TESTAR COLISAO COM MOUSE PRA ALTERAR FUNCOES DO BOTAO            
+            mousepos = pygame.mouse.get_pos()
+            if pygame.key.get_pressed()[pygame.K_h] == True:
+                    if v.troncos >= 1:
+                        cor_botao_head = cor_botao_clique
+            if botao_head.collidepoint(mousepos) == True:
+                cor_botao_head = cor_botao_cima
+                if pygame.mouse.get_pressed() == (1,0,0):
+                    if v.troncos >= 1:
+                        cor_botao_head = cor_botao_clique
+                        pass #verifica requisito de evolucao de equipamento e realiza a evolução se estiver OK.
+
+            if pygame.key.get_pressed()[pygame.K_a] == True:
+                    if v.troncos >= 1:
+                        cor_botao_armor = cor_botao_clique                        
+            if botao_armor.collidepoint(mousepos) == True:
+                cor_botao_armor = cor_botao_cima
+                if pygame.mouse.get_pressed() == (1,0,0):
+                    if v.troncos >= 1:
+                        cor_botao_armor = cor_botao_clique                        
+                        pass #verifica requisito de evolucao de equipamento e realiza a evolução se estiver OK.
+
+            if pygame.key.get_pressed()[pygame.K_w] == True:
+                    if v.troncos >= 1:
+                        cor_botao_axe = cor_botao_clique
+            if botao_axe.collidepoint(mousepos) == True:
+                cor_botao_axe = cor_botao_cima
+                if pygame.mouse.get_pressed() == (1,0,0):
+                    if v.troncos >= 1:
+                        cor_botao_axe = cor_botao_clique
+                        pass #verifica requisito de evolucao de equipamento e realiza a evolução se estiver OK.
+                
+            pygame.draw.rect(v.tela,cor_botao_head,botao_head)
+            pygame.draw.rect(v.tela,cor_botao_armor,botao_armor)
+            pygame.draw.rect(v.tela,cor_botao_axe,botao_axe)
+            
+            v.tela.blit(botao_head_img,(250,120))
+            v.tela.blit(botao_armor_img,(350,120))
+            v.tela.blit(botao_axe_img,(450,120))
+            
             pygame.display.update()
             if pygame.key.get_pressed()[pygame.K_ESCAPE] == True:
                 craft_on = False
@@ -475,7 +590,7 @@ class NPC(pygame.sprite.Sprite): ###############################################
         if self.craft == True and self.quest == True and self.loja == True:
             self.loja()
             self.craft()
-            self.quest()
+            self.quest() 
 
 
 #######################################################################################  CLASSE DOS MONSTROS
@@ -483,7 +598,16 @@ class NPC(pygame.sprite.Sprite): ###############################################
 class Aranha(pygame.sprite.Sprite):
     def __init__(self, posx,posy):
             super().__init__()
-            self.image = pygame.image.load(r'graphics/aranha.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/aranha_parada.png').convert_alpha()
+            self.parada = pygame.image.load(r'graphics/aranha_parada.png').convert_alpha()
+            self.esquerda = pygame.image.load(r'graphics/aranha_esquerda.png').convert_alpha()
+            self.direita = pygame.image.load(r'graphics/aranha_direita.png').convert_alpha()
+            self.cima = pygame.image.load(r'graphics/aranha_cima.png').convert_alpha()
+            self.baixo = pygame.image.load(r'graphics/aranha_baixo.png').convert_alpha()
+            self.esquerdabaixo = pygame.image.load(r'graphics/aranha_esquerdabaixo.png').convert_alpha()
+            self.esquerdacima = pygame.image.load(r'graphics/aranha_esquerdacima.png').convert_alpha()
+            self.direitabaixo = pygame.image.load(r'graphics/aranha_direitabaixo.png').convert_alpha()
+            self.direitacima = pygame.image.load(r'graphics/aranha_direitacima.png').convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.x = posx
             self.rect.y = posy
@@ -525,19 +649,64 @@ class Aranha(pygame.sprite.Sprite):
                 
         ##############################################mudança aranha
         if self.level < 10:
-            self.image = pygame.image.load(r'graphics/aranha.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/aranha_parada.png').convert_alpha()
+            self.parada = pygame.image.load(r'graphics/aranha_parada.png').convert_alpha()
+            self.esquerda = pygame.image.load(r'graphics/aranha_esquerda.png').convert_alpha()
+            self.direita = pygame.image.load(r'graphics/aranha_direita.png').convert_alpha()
+            self.cima = pygame.image.load(r'graphics/aranha_cima.png').convert_alpha()
+            self.baixo = pygame.image.load(r'graphics/aranha_baixo.png').convert_alpha()
+            self.esquerdabaixo = pygame.image.load(r'graphics/aranha_esquerdabaixo.png').convert_alpha()
+            self.esquerdacima = pygame.image.load(r'graphics/aranha_esquerdacima.png').convert_alpha()
+            self.direitabaixo = pygame.image.load(r'graphics/aranha_direitabaixo.png').convert_alpha()
+            self.direitacima = pygame.image.load(r'graphics/aranha_direitacima.png').convert_alpha()
                 
         if self.level >= 10 and self.level <= 19.5:
-            self.image = pygame.image.load(r'graphics/aranha2.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/aranha2_parada.png').convert_alpha()
+            self.parada = pygame.image.load(r'graphics/aranha2_parada.png').convert_alpha()
+            self.esquerda = pygame.image.load(r'graphics/aranha2_esquerda.png').convert_alpha()
+            self.direita = pygame.image.load(r'graphics/aranha2_direita.png').convert_alpha()
+            self.cima = pygame.image.load(r'graphics/aranha2_cima.png').convert_alpha()
+            self.baixo = pygame.image.load(r'graphics/aranha2_baixo.png').convert_alpha()
+            self.esquerdabaixo = pygame.image.load(r'graphics/aranha2_esquerdabaixo.png').convert_alpha()
+            self.esquerdacima = pygame.image.load(r'graphics/aranha2_esquerdacima.png').convert_alpha()
+            self.direitabaixo = pygame.image.load(r'graphics/aranha2_direitabaixo.png').convert_alpha()
+            self.direitacima = pygame.image.load(r'graphics/aranha2_direitacima.png').convert_alpha()
                 
         if self.level >= 20 and self.level <= 29.5:
-            self.image = pygame.image.load(r'graphics/aranha3.png').convert_alpha()            
+            self.image = pygame.image.load(r'graphics/aranha3_parada.png').convert_alpha()
+            self.parada = pygame.image.load(r'graphics/aranha3_parada.png').convert_alpha()
+            self.esquerda = pygame.image.load(r'graphics/aranha3_esquerda.png').convert_alpha()
+            self.direita = pygame.image.load(r'graphics/aranha3_direita.png').convert_alpha()
+            self.cima = pygame.image.load(r'graphics/aranha3_cima.png').convert_alpha()
+            self.baixo = pygame.image.load(r'graphics/aranha3_baixo.png').convert_alpha()
+            self.esquerdabaixo = pygame.image.load(r'graphics/aranha3_esquerdabaixo.png').convert_alpha()
+            self.esquerdacima = pygame.image.load(r'graphics/aranha3_esquerdacima.png').convert_alpha()
+            self.direitabaixo = pygame.image.load(r'graphics/aranha3_direitabaixo.png').convert_alpha()
+            self.direitacima = pygame.image.load(r'graphics/aranha3_direitacima.png').convert_alpha()
                 
         if self.level >= 30 and self.level <= 49.5:
-            self.image = pygame.image.load(r'graphics/aranha4.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/aranha4_parada.png').convert_alpha()
+            self.parada = pygame.image.load(r'graphics/aranha4_parada.png').convert_alpha()
+            self.esquerda = pygame.image.load(r'graphics/aranha4_esquerda.png').convert_alpha()
+            self.direita = pygame.image.load(r'graphics/aranha4_direita.png').convert_alpha()
+            self.cima = pygame.image.load(r'graphics/aranha4_cima.png').convert_alpha()
+            self.baixo = pygame.image.load(r'graphics/aranha4_baixo.png').convert_alpha()
+            self.esquerdabaixo = pygame.image.load(r'graphics/aranha4_esquerdabaixo.png').convert_alpha()
+            self.esquerdacima = pygame.image.load(r'graphics/aranha4_esquerdacima.png').convert_alpha()
+            self.direitabaixo = pygame.image.load(r'graphics/aranha4_direitabaixo.png').convert_alpha()
+            self.direitacima = pygame.image.load(r'graphics/aranha4_direitacima.png').convert_alpha()
                 
         if self.level >= 50:
-            self.image = pygame.image.load(r'graphics/aranha5.png').convert_alpha()
+            self.image = pygame.image.load(r'graphics/aranha5_parada.png').convert_alpha()
+            self.parada = pygame.image.load(r'graphics/aranha5_parada.png').convert_alpha()
+            self.esquerda = pygame.image.load(r'graphics/aranha5_esquerda.png').convert_alpha()
+            self.direita = pygame.image.load(r'graphics/aranha5_direita.png').convert_alpha()
+            self.cima = pygame.image.load(r'graphics/aranha5_cima.png').convert_alpha()
+            self.baixo = pygame.image.load(r'graphics/aranha5_baixo.png').convert_alpha()
+            self.esquerdabaixo = pygame.image.load(r'graphics/aranha5_esquerdabaixo.png').convert_alpha()
+            self.esquerdacima = pygame.image.load(r'graphics/aranha5_esquerdacima.png').convert_alpha()
+            self.direitabaixo = pygame.image.load(r'graphics/aranha5_direitabaixo.png').convert_alpha()
+            self.direitacima = pygame.image.load(r'graphics/aranha5_direitacima.png').convert_alpha()
             
     
          
@@ -556,12 +725,45 @@ class Aranha(pygame.sprite.Sprite):
             player_pos = char.rect.center
             enemy_pos = self.rect.center
             dx, dy = player_pos[0] - enemy_pos[0], player_pos[1] - enemy_pos[1]
-            dist = (dx ** 2 + dy ** 2) ** 0.5
+            dist = math.sqrt(dx ** 2 + dy ** 2)
             if dist != 0:
                     dx, dy = dx / dist, dy / dist
             self.dx, self.dy = dx * self.speed, dy * self.speed
             self.rect.x += self.dx
             self.rect.y += self.dy
+
+
+            if round(self.dx,0) == 0 and round(self.dy,0) == 0:
+                self.image = self.parada
+
+            if round(self.dx,0) < 0 and round(self.dy,0) == 0:
+                #indo pra esquerda
+                self.image = self.esquerda
+            if round(self.dx,0) > 0 and round(self.dy,0) == 0:
+                #indo pra direita
+                self.image = self.direita
+                
+            if round(self.dy,0) < 0 and round(self.dx,0) == 0:
+                #indo pra cima
+                self.image = self.cima
+            if round(self.dy,0) > 0 and round(self.dx,0) == 0:
+                #indo pra baixo
+                self.image = self.baixo
+                
+
+            if round(self.dy,0) < 0 and round(self.dx,0) < 0:
+                #esquerda e cima
+                self.image = self.esquerdacima
+            if round(self.dy,0) > 0 and round(self.dx,0) > 0:
+                #direita e baixo
+                self.image = self.direitabaixo
+
+            if round(self.dy,0) < 0 and round(self.dx,0) > 0:
+                #direita e cima
+                self.image = self.direitacima
+            if round(self.dy,0) > 0 and round(self.dx,0) < 0:
+                #esquerda e baixo
+                self.image = self.esquerdabaixo
 
 
 #######################################################################################  FIM CLASSE ARANHA
@@ -648,7 +850,7 @@ class Lobo(pygame.sprite.Sprite):
             player_pos = char.rect.center
             enemy_pos = self.rect.center
             dx, dy = player_pos[0] - enemy_pos[0], player_pos[1] - enemy_pos[1]
-            dist = (dx ** 2 + dy ** 2) ** 0.5
+            dist = math.sqrt(dx ** 2 + dy ** 2)
             if dist != 0:
                     dx, dy = dx / dist, dy / dist
             self.dx, self.dy = dx * self.speed, dy * self.speed
@@ -738,7 +940,7 @@ class Urso(pygame.sprite.Sprite):
             player_pos = char.rect.center
             enemy_pos = self.rect.center
             dx, dy = player_pos[0] - enemy_pos[0], player_pos[1] - enemy_pos[1]
-            dist = (dx ** 2 + dy ** 2) ** 0.5
+            dist = math.sqrt(dx ** 2 + dy ** 2)
             if dist != 0:
                     dx, dy = dx / dist, dy / dist
             self.dx, self.dy = dx * self.speed, dy * self.speed
@@ -782,7 +984,7 @@ class Rainha_Aranha(pygame.sprite.Sprite):
             player_pos = char.rect.center
             enemy_pos = self.rect.center
             dx, dy = player_pos[0] - enemy_pos[0], player_pos[1] - enemy_pos[1]
-            dist = (dx ** 2 + dy ** 2) ** 0.5
+            dist = math.sqrt(dx ** 2 + dy ** 2)
             if dist != 0:
                     dx, dy = dx / dist, dy / dist
             self.dx, self.dy = dx * self.speed, dy * self.speed
@@ -848,12 +1050,16 @@ class Attack(pygame.sprite.Sprite):
                             
                             v.criar_monstro = True
                     elif v.randomgen() == 'troncos':
+                        ####################################GERAR AQUI UMA ANIMAÇÃO DE ITEM
                         v.troncos += random.randrange(0,4)
 
     # Verifica colisão com os inimigos
             hit_enemies = pygame.sprite.spritecollide(self, v.monstro_grupo, False)
             for enemy in hit_enemies:
-                enemy.health -= self.dano
+                enemy.health -= self.dano        
+                v.damage_rect_x, v.damage_rect_y, v.damage_sprite = enemy.rect.x, enemy.rect.y , self.dano
+                pygame.event.post(v.custom_event1)
+                ################################################################################################################111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
                 if self.direction == 'right':
                     enemy.rect.x += 2
                 if self.direction == 'left':
@@ -927,16 +1133,17 @@ class HUD:
         
     def draw(self):
 # Desenha as informações na v.tela
-            health_text = v.font.render('Health: ', True, v.red)
             #transformando a vida em % para não criar uma vida super gigante
             hp = char.health
             max_hp = char.max_health
-            frac_hp = int((100*hp)/max_hp)
+            frac_hp = int((20*hp)/max_hp)
             #desenhando o restante
-            pygame.draw.rect(v.tela, v.red, (10, 50, frac_hp*5, 5))
+            pygame.draw.rect(v.tela, v.red, (10, 50, frac_hp*5, 15))
+            #draw health hud here#
+            hud_back = pygame.image.load(r'graphics/hudback.png')
+            v.tela.blit(hud_back,(10,30))
             score_text = v.font.render('Score: ' + str(v.score), True, v.white)
-            level_text = v.font.render('Level: ' + str(char.level), True, v.blue)
-            v.tela.blit(health_text, (10, 10))
+            level_text = v.font.render('Level: ' + str(char.level), True, v.white)
             v.tela.blit(score_text, (v.screen_width - score_text.get_width() - 10, 10))
             v.tela.blit(level_text, (v.screen_width - level_text.get_width() - 10, 50))
             for i, enemy in enumerate(v.monstro_grupo.sprites()):
@@ -945,7 +1152,7 @@ class HUD:
     def inventario(self):
         caixa_inv = pygame.image.load(r'graphics/fundo_inv.png')
         caixa_inv.set_alpha(10)
-        v.tela.blit(caixa_inv,(50,50))
+        v.tela.blit(caixa_inv,(0,0))
         pygame.display.update()
 
         #definindo os recursos do inventario
@@ -991,14 +1198,12 @@ class HUD:
         v.tela.blit(arma_secundaria,(440,290))
 
         #definindo os textos do inventario
-        score_inv = v.font.render(str(v.score), True, v.white)
-        level_inv = v.font.render(str(v.level), True, v.blue)
         gold_inv = v.font.render(str(v.gold), True, v.yellow)
+        gold_icon = pygame.image.load(r'graphics/gold.png')
 
         #blitando os textos do inventario
-        v.tela.blit(score_inv, (150,50))
-        v.tela.blit(level_inv, (150,110))
-        v.tela.blit(gold_inv, (560,50))
+        v.tela.blit(gold_inv, (560,200))
+        v.tela.blit(gold_icon, (510,200))
 
     def bussola(self):
         bussola = pygame.image.load(r'graphics/bussola.png')
@@ -1118,6 +1323,18 @@ class Menu:
             v.lobo_on = dados_jogo['lobo_on']
             v.aranha_on = dados_jogo['aranha_on']
             v.machadinho = dados_jogo['machadinho']
+            teste_dados = dados_jogo['mapa_atual']
+            if teste_dados == 0:
+                FN.mapa_atual = self.mapa_atual = pygame.image.load(r'graphics/first_map.png')
+            if teste_dados == 1:
+                FN.mapa_atual = self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')
+            if teste_dados == 2:
+                FN.mapa_atual = self.mapa_atual = pygame.image.load(r'graphics/N1O2.png')
+            if teste_dados == 3:
+                FN.mapa_atual = self.mapa_atual = pygame.image.load(r'graphics/mapa_cidade1.png')
+
+            FN.mudar_mapa()
+
         except FileNotFoundError:
             pass #Mostrar que não há save para carregar
                            
@@ -1126,6 +1343,14 @@ class Menu:
         
     def savegame(self):
         ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
+        if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
+            dados_mapa = 0
+        if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
+            dados_mapa = 1
+        if v.Norte == 1 and v.Oeste == 2:
+            dados_mapa = 2
+        if v.Norte == 1 and v.Oeste == 3:
+            dados_mapa = 3
         dados_jogo = {
             'score' : v.score,
             'score_aranha' : v.score_aranha,
@@ -1155,7 +1380,8 @@ class Menu:
             'urso_on' : v.urso_on,
             'lobo_on' : v.lobo_on,
             'aranha_on' : v.aranha_on,
-            'machadinho' : v.machadinho            
+            'machadinho' : v.machadinho,
+            'mapa_atual' : dados_mapa
             }
         with open('savegame.dat', 'wb') as arquivo:
             pickle.dump(dados_jogo, arquivo)
@@ -1370,22 +1596,23 @@ class Mapa_FN:
             sprite.kill()
         if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
             self.mapa_atual = pygame.image.load(r'graphics/first_map.png')
+            muros.npc_cidade((50,50),npc1,False,True,False)
         if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
             self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')
         if v.Norte == 1 and v.Oeste == 2:
-            muros.npc_cidade((70,150),guarda1,False,False)#Guarda1
-            muros.npc_cidade((70,300),guarda1,False,False)#Guarda2
+            muros.npc_cidade((70,150),guarda1,False,False,False)#Guarda1
+            muros.npc_cidade((70,300),guarda1,False,False,False)#Guarda2
             muros.muro_N1O2()
             self.mapa_atual = pygame.image.load(r'graphics/N1O2.png')
         elif v.Norte == 1 and v.Oeste == 3:
                 muros.muro_cidade()
                 #####################################################CRIAR 2 guardas no N1O2 e no N1O4
                 #npc_cidade(pos,image,quest,craft)
-                muros.npc_cidade((100,120),npc1,True,False)#quest npc
-                muros.npc_cidade((290,470),npc2,False,True)#ferreiro
-                muros.npc_cidade((200,120),npc3,True,False)#quest npc
-                muros.npc_cidade((730,150),guarda1,False,False)#Guarda1
-                muros.npc_cidade((730,300),guarda1,False,False)#Guarda2
+                muros.npc_cidade((100,120),npc1,True,False,False)#quest npc
+                muros.npc_cidade((290,470),npc2,False,True,False)#ferreiro
+                muros.npc_cidade((200,120),npc3,True,False,False)#quest npc
+                muros.npc_cidade((730,150),guarda1,False,False,False)#Guarda1
+                muros.npc_cidade((730,300),guarda1,False,False,False)#Guarda2
                 muros.casa((50,30))
                 muros.casa((200,30))
                 muros.casa((350,30))
@@ -1396,39 +1623,14 @@ class Mapa_FN:
         elif v.Norte == 0 and v.Oeste == 3:
             muros.muro_N0O3()
         elif v.Norte == 1 and v.Oeste == 4:
-            muros.npc_cidade((670,150),guarda1,False,False)#Guarda1
-            muros.npc_cidade((670,300),guarda1,False,False)#Guarda2
+            muros.npc_cidade((670,150),guarda1,False,False,False)#Guarda1
+            muros.npc_cidade((670,300),guarda1,False,False,False)#Guarda2
             muros.muro_N1O4()
             
         else:
             for sprite in v.muro_grupo:
                 sprite.kill()
             
-            
-            
-
-class Mapa_FA:
-    def __init__(self):
-        self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png') #colocar primeiro mapa da Floresta Alta - Cidade 1
-
-    def mudar_mapa(self):
-        if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
-            self.mapa_atual = pygame.image.load(r'graphics/first_map.png') # ALTERAR PARA A CIDADE 1 DA FLORESTA ALTA
-        if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
-            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png') # ALTERAR PARA FLORESTA ALTA
-        if v.Oeste == 5 and v.Norte == 0 and v.Sul == 0 :
-            self.mapa_atual = pygame.image.load(r'graphics/first_map.png') #ALTERAR PARA ENTRADA DA CIDADE 2
-        ####Criar entrada da cidade portuaria (3) e as outras entradas da cidade 2#####
-
-class Mapa_FE:
-    def __init__(self):
-        self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png') #colocar primeiro mapa da Floresta Encantada - CIDADE
-
-    def mudar_mapa(self):
-        if v.Norte == 0 and v.Sul == 0 and v.Leste == 0 and v.Oeste == 0:
-            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')#ALTERAR PARA CIDADE DAS FADAS       
-        if v.Norte != 0 or v.Sul != 0 or v.Leste != 0 or v.Oeste != 0:
-            self.mapa_atual = pygame.image.load(r'graphics/floresta_negra.png')#ALTERAR PARA FLORESTA ENCANTADO
         
 
 def gerar_arvore():
@@ -1450,8 +1652,6 @@ Borda_direita = Borda_direita()
 Borda_esquerda = Borda_esquerda()
 
 FN = Mapa_FN()
-FA = Mapa_FA()
-FE = Mapa_FE()
 
 char = Player()
 gamehud = HUD()

@@ -38,14 +38,28 @@ class Player(pygame.sprite.Sprite):
                 self.animation_timer = 0.0 #timer de animação
                 self.animation_index = 0 #index da animação atual
                 self.direction = 'stand' #direção do personagem
+                self.nivel = 1 #nivel do personagem
 
-        def equipamento_atual(self,axe_baixo,axe_cima,axe_esquerda,axe_direita):
+        def equipamento_atual(self,axe_baixo,axe_cima,axe_esquerda,axe_direita,helmet_baixo,helmet_cima,helmet_esquerda,helmet_direita,armor_baixo,armor_cima,armor_esquerda,armor_direita):
                 #Definição dos equipamentos que estão sendo usados
+                #adicionar machado
                 self.axe_imagebaixo = axe_baixo
                 self.axe_imagecima = axe_cima
                 self.axe_imageesquerda = axe_esquerda
                 self.axe_imagedireita = axe_direita                
                 self.axe_image = self.axe_imagebaixo[0]
+                #adicionar capacete
+                self.helmet_imagebaixo = helmet_baixo
+                self.helmet_imagecima = helmet_cima
+                self.helmet_imageesquerda = helmet_esquerda
+                self.helmet_imagedireita = helmet_direita
+                self.helmet_image = self.helmet_imagebaixo[0]
+                #adicionar peitoral
+                self.armor_imagebaixo = armor_baixo
+                self.armor_imagecima = armor_cima
+                self.armor_imageesquerda = armor_esquerda
+                self.armor_imagedireita = armor_direita
+                self.armor_image = self.armor_imagebaixo[0]
                 
 
         def equipado(self):
@@ -53,25 +67,35 @@ class Player(pygame.sprite.Sprite):
                         #definir imagem do axe com a direção pra cima
                         if self.direction == 'up':
                                 self.axe_image = self.axe_imagecima[self.animation_index]
+                                self.helmet_image = self.helmet_imagecima[self.animation_index]
+                                self.armor_image = self.armor_imagecima[self.animation_index]
                                 
                         #definir imagem do axe com a direção pra baixo        
                         if self.direction == 'down':                                
                                 self.axe_image = self.axe_imagebaixo[self.animation_index]
+                                self.helmet_image = self.helmet_imagebaixo[self.animation_index]
+                                self.armor_image = self.armor_imagebaixo[self.animation_index]
                                 
                         #definir imagem do axe com a direção pra esquerda        
                         if self.direction == 'left':
                                 self.axe_image = self.axe_imageesquerda[self.animation_index]
+                                self.helmet_image = self.helmet_imageesquerda[self.animation_index]
+                                self.armor_image = self.armor_imageesquerda[self.animation_index]
                                 
                         #definir imagem do axe com a direção pra direita        
                         if self.direction == 'right':
                                 self.axe_image = self.axe_imagedireita[self.animation_index]
+                                self.helmet_image = self.helmet_imagedireita[self.animation_index]
+                                self.armor_image = self.armor_imagedireita[self.animation_index]
                                 
                         #definir imagem do axe com a direção parada       
                         if self.direction == 'stand':
                                 pass
                         
                         #blitar a imagem do axe atual
-                        tela.blit(self.axe_image,(self.rect.x,self.rect.y))                                       
+                        tela.blit(self.axe_image,(self.rect.x,self.rect.y))
+                        tela.blit(self.helmet_image,(self.rect.x,self.rect.y))
+                        tela.blit(self.armor_image,(self.rect.x,self.rect.y))
                                 
                 else:
                         #não fazer nada se não estiver com o axe equipado
@@ -159,37 +183,81 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x += self.dir.x * self.speed * delta_time 
                 self.rect.y += self.dir.y * self.speed * delta_time
 
+                
+                
+
 class Equipamentos():
         def __init__(self):
+                self.axe_nv = 0
+                self.helmet_nv = 0
+                self.armor_nv = 0
                 #Define os valores iniciais para a imagem do machado do personagem
                 self.axe_imagebaixo = [pygame.image.load(r'Graphics\Character\Equips\Axe\axe_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_baixo3.png')]
                 self.axe_imagecima = [pygame.image.load(r'Graphics\Character\Equips\Axe\axe_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_cima3.png')]
                 self.axe_imageesquerda = [pygame.image.load(r'Graphics\Character\Equips\Axe\axe_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_left1.png')]
                 self.axe_imagedireita = [pygame.image.load(r'Graphics\Character\Equips\Axe\axe_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\axe_right1.png')]
 
-                '''#Define os valores iniciais para a imagem do elmo do personagem
-                ##### em construção
+                #Define os valores iniciais para a imagem do elmo do personagem
                 self.helmet_imagebaixo = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_baixo3.png')]
                 self.helmet_imagecima = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_cima3.png')]
                 self.helmet_imageesquerda = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_left1.png')]
                 self.helmet_imagedireita = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_right1.png')]
-                ##### em construção'''
 
-                '''#Define os valores iniciais para a imagem do peito do personagem
-                ##### em construção
+                #Define os valores iniciais para a imagem do peito do personagem
                 self.armor_imagebaixo = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_baixo3.png')]
                 self.armor_imagecima = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_cima3.png')]
                 self.armor_imageesquerda = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_left1.png')]
                 self.armor_imagedireita = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_right1.png')]
-                ##### em construção'''
 
-        def mudar_axe(self,axe_baixo,axe_cima,axe_esquerda,axe_direita): #Talvez colocar aqui o nível do equipamento, com um if definir o equipamento que vai ser utilizado conforme esse nivel?
+        def definir_nivel(self):
+                #Definir equipamentos de nv1
+                if self.helmet_nv == 1:
+                        self.helmet_imagebaixo = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_baixo1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_baixo2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_baixo3nv1.png')]
+                        self.helmet_imagecima = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_cima1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_cima2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_cima3nv1.png')]
+                        self.helmet_imageesquerda = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_left1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_left2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_left1nv1.png')]
+                        self.helmet_imagedireita = [pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_right1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_right2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\helmet_right1nv1.png')]
+
+     
+                if self.armor_nv == 1:
+                        self.armor_imagebaixo = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_baixo1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_baixo2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_baixo3nv1.png')]
+                        self.armor_imagecima = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_cima1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_cima2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_cima3nv1.png')]
+                        self.armor_imageesquerda = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_left1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_left2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_left1nv1.png')]
+                        self.armor_imagedireita = [pygame.image.load(r'Graphics\Character\Equips\Armor\armor_right1nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_right2nv1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\armor_right1nv1.png')]
+
+                
+                #Definir equipamentos de nv5
+                if self.axe_nv == 5:
+                        pass
+                '''
+                        self.axe_imagebaixo =
+                        self.axe_imagecima =
+                        self.axe_imageesquerda =
+                        self.axe_imagedireita =
+                '''
+                if self.helmet_nv == 5:
+                        pass
+                '''
+                        self.helmet_imagebaixo =
+                        self.helmet_imagecima =
+                        self.helmet_imageesquerda =
+                        self.helmet_imagedireita =
+                        '''
+                if self.armor_nv == 5:
+                        pass
+                '''
+                        self.armor_imagebaixo =
+                        self.armor_imagecima =
+                        self.armor_imageesquerda =
+                        self.armor_imagedireita =
+                        '''
+                        
+        def mudar_axe(self,axe_baixo,axe_cima,axe_esquerda,axe_direita):
                 self.axe_imagebaixo = axe_baixo
                 self.axe_imagecima = axe_cima
                 self.axe_imageesquerda = axe_esquerda
                 self.axe_imagedireita = axe_direita
 
-        '''def mudar_helmet(self,helmet_baixo,helmet_cima,helmet_esquerda,helmet_direita):
+        def mudar_helmet(self,helmet_baixo,helmet_cima,helmet_esquerda,helmet_direita):
                 self.helmet_imagebaixo = helmet_baixo
                 self.helmet_imagecima = helmet_cima
                 self.helmet_imageesquerda = helmet_esquerda
@@ -199,10 +267,10 @@ class Equipamentos():
                 self.armor_imagebaixo = armor_baixo
                 self.armor_imagecima = armor_cima
                 self.armor_imageesquerda = armor_esquerda
-                self.armor_imagedireita = armor_direita'''
+                self.armor_imagedireita = armor_direita
 
-        def definir_arma(self,character):####Quando definido o helmet e o armor, mudar o nome dessa def e colocar tudo por aqui!
-                character.equipamento_atual(self.axe_imagebaixo,self.axe_imagecima,self.axe_imageesquerda,self.axe_imagedireita)
+        def definir_equipamentos(self,character):
+                character.equipamento_atual(self.axe_imagebaixo,self.axe_imagecima,self.axe_imageesquerda,self.axe_imagedireita,self.helmet_imagebaixo,self.helmet_imagecima,self.helmet_imageesquerda,self.helmet_imagedireita,self.armor_imagebaixo,self.armor_imagecima,self.armor_imageesquerda,self.armor_imagedireita)
                 
 
                 
@@ -211,14 +279,24 @@ class Equipamentos():
 #inicia o jogo de fato
 run_game = True
 
-#Inicializar a class player
+#Grupos de sprites
 player_grupo = pygame.sprite.Group()
+todos_sprites = pygame.sprite.Group()
+
+#Inicializar a class player
 player1 = Player(10,10)
 player_grupo.add(player1)
+todos_sprites.add(player1)
 
 #Inicializar a class Equipamentos
 equip = Equipamentos()
-equip.definir_arma(player1)
+
+#Definir equipamento inicial (usar isso no craft para mudar os equipamentos)
+equip.definir_nivel()
+equip.definir_equipamentos(player1)
+
+#Inicializar a class NPC
+#Em andamento - receber class 'player1' e 'equip'
 
 while run_game:
         tela.fill((255,255,255)) #provisório para cor da tela
@@ -233,10 +311,10 @@ while run_game:
                 sys.exit()
                 
         #desenhar sprites
-        player_grupo.draw(tela)
+        todos_sprites.draw(tela)
         
         #atualizar classes de sprites
-        player_grupo.update(delta_time)
+        todos_sprites.update(delta_time)
 
         #Atualiza tela
         pygame.display.update()

@@ -1,5 +1,7 @@
-import pygame, sys, math
+import pygame, sys, math, random
 import var as v
+
+########################################################################################################################################################################################################################################
 
 class Damage_Show:    
     def infos(self,x,y,damage,color):
@@ -32,7 +34,8 @@ class Damage_Show:
             else:                
                 self.float_text.remove(data)
 
-
+########################################################################################################################################################################################################################################
+                
 class Player(pygame.sprite.Sprite):
         def __init__(self,x,y,tela):
                 super().__init__()
@@ -68,6 +71,13 @@ class Player(pygame.sprite.Sprite):
                 self.nivel = 1 #nivel do personagem
                 self.health = 50 #define a vida do personagem
                 self.max_health = 50 #define o limite de vida do personagem
+
+                #definições iniciais do inventário
+                self.troncos = 0
+                self.metais = 0
+                self.tecidos = 0
+                self.couros = 0
+                self.gold = 0
                 
                 #definição da tela
                 self.tela = tela
@@ -76,9 +86,10 @@ class Player(pygame.sprite.Sprite):
                 pass
 
         def mostrar_vida(self, tela):
-                
+            char_health_img = pygame.image.load(r'Graphics\HUD\char_health.png')                
             frac_hp = int((50*self.health)/self.max_health)
-            pygame.draw.rect(tela, (255,0,0), (10, 50, frac_hp*5, 15)) #ALTERAR ISSO CONFORME A IMAGEM DO HUD
+            pygame.draw.rect(tela, (255,0,0), (7, 17, frac_hp*1.95, 13))
+            tela.blit(char_health_img,(5,0))
 
         def colisao(self,obstaculo,damage_show,font,delta_time,tela):
             
@@ -149,7 +160,7 @@ class Player(pygame.sprite.Sprite):
                                 self.helmet_image = self.helmet_images[self.direction][self.animation_index]
                                 self.armor_image = self.armor_images[self.direction][self.animation_index]                               
                         
-                        #blitar a imagem do axe atual
+                        #blitar a imagem do axe, armor e helmet atual
                         self.tela.blit(self.helmet_image,(self.rect.x,self.rect.y))
                         self.tela.blit(self.armor_image,(self.rect.x,self.rect.y))
                         self.tela.blit(self.axe_image,(self.rect.x,self.rect.y))
@@ -266,7 +277,9 @@ class Player(pygame.sprite.Sprite):
                 #aplicar a direção multiplicada pela velocidade e delta_time
                 self.rect.x += self.dir.x * self.speed * delta_time 
                 self.rect.y += self.dir.y * self.speed * delta_time
-           
+
+########################################################################################################################################################################################################################################
+                
 class Equipamentos():
         def __init__(self):
                 self.axe_nv = 0
@@ -352,6 +365,8 @@ class Equipamentos():
 
         def definir_equipamentos(self,character):
                 character.equipamento_atual(self.axe_images,self.helmet_images,self.armor_images)
+
+########################################################################################################################################################################################################################################
 
 class Inimigos(pygame.sprite.Sprite):
         def __init__(self,x,y,race='aranha'):
@@ -624,7 +639,7 @@ class Attack(pygame.sprite.Sprite):
         #Se equipamento lvl 10 --> dano = x
         #Se equipamento lvl 50 --> dano = 1000
             
-        def update(self,player,npc,inimigo,arvore,damage_show,delta_time,tela,font):
+        def update(self, grupo_sprites, player, npc, inimigo, arvore, damage_show, delta_time, tela, font):
             if self.level == 1:
                 self.dano = 1
                 
@@ -672,24 +687,30 @@ class Attack(pygame.sprite.Sprite):
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\leftup.png')
 
 ########################################################################################################################################################################################################################################
-            #npc_hit = pygame.sprite.spritecollide(self,npc_grupo,False)
-            #for npc in npc_hit:
+            npc_hit = pygame.sprite.spritecollide(self,npc,False)
+            for npc in npc_hit:
+                pass
                 #npc.acao() #pra abrir a janela de conversa com o NPC quando eu criar eles kk
+
+########################################################################################################################################################################################################################################
                 
             #verifica se o ataque corta a arvore - Que eu ainda preciso por
-            #if v.axe_equip:
-                #spriteszinhos = pygame.sprite.spritecollide(self, arvore, True)
-                #if spriteszinhos:
-                   # if v.randomgen() == 'monstro':
-                        
-                        #for sprites in spriteszinhos:
-                           # v.monstrinhox = sprites.old_rect.x
-                            #v.monstrinhoy = sprites.old_rect.y
-                            
-                            #v.criar_monstro = True
-                    #elif v.randomgen() == 'troncos':
-                        ####################################GERAR AQUI UMA ANIMAÇÃO DE ITEM
-                       #v.troncos += random.randrange(0,4)
+            corte_arvore = pygame.sprite.spritecollide(self, arvore, True)
+            if corte_arvore:
+                ####################################GERAR AQUI UMA ANIMAÇÃO DE ITEM
+                player.troncos += random.randrange(0,2)
+                randomizando = random.randrange(0,10)
+                if randomizando <= 4:
+                    randomgen = 'monstro'
+                    if randomgen == 'monstro':
+                        for sprites in corte_arvore:
+                            inimigox = sprites.old_rect.x
+                            inimigoy = sprites.old_rect.y
+                            gerar_inimigo = Inimigos(inimigox,inimigoy)
+                            gerar_inimigo.tipo() #define o sprite quando o inimigo é criado, portanto usar junto com o init da class
+                            grupo_sprites.add(gerar_inimigo)
+                            inimigo.add(gerar_inimigo)        
+                       
 ########################################################################################################################################################################################################################################
 
             # Verifica colisão com os inimigos
@@ -741,4 +762,292 @@ class Attack(pygame.sprite.Sprite):
 
 #############################################################################################################################################################################################################################################################################################################################################################################################################################################    
 
+class HUD:    
+
+    def inventario(self,tela,personagem,fonte):
+        #definindo o fundo do inventario
+        fundo_inventario = pygame.image.load(r'Graphics\HUD\fundo.png')
+        fundo_inventario.set_alpha(10)
+        tela.blit(fundo_inventario,(0,0))
+
+        #definindo os recursos do inventario
+        tronco = pygame.image.load(r'Graphics\HUD\Inventario\tronco.png')
+        metal = pygame.image.load(r'Graphics\HUD\Inventario\metal.png')
+        tecido = pygame.image.load(r'Graphics\HUD\Inventario\tecido.png')
+        couro = pygame.image.load(r'Graphics\HUD\Inventario\couro.png')
+        
+        #definindo os equipamentos do inventario
+        axe = pygame.image.load(r'Graphics\HUD\Craft\axe_button.png') #########PROVISÓRIO
+        armor = pygame.image.load(r'Graphics\HUD\Craft\armor_button.png') #########PROVISÓRIO
+        helmet = pygame.image.load(r'Graphics\HUD\Craft\helmet_button.png') #########PROVISÓRIO
+
+        #definindo os textos dos recursos
+        quant_tronco =fonte.render(str(personagem.troncos),True, (255,255,255))
+        quant_metal = fonte.render(str(personagem.metais),True, (255,255,255))
+        quant_tecido = fonte.render(str(personagem.tecidos),True, (255,255,255))
+        quant_couro = fonte.render(str(personagem.couros),True, (255,255,255))
+
+        #blitando os recursos
+        tela.blit(tronco,(70,200)) #MEXER NAS POSIÇÕES!
+        tela.blit(quant_tronco,(80,185)) #MEXER NAS POSIÇÕES!
+        tela.blit(metal,(70,240)) #MEXER NAS POSIÇÕES!
+        tela.blit(quant_metal,(80,225)) #MEXER NAS POSIÇÕES!
+        tela.blit(tecido,(70,280)) #MEXER NAS POSIÇÕES!
+        tela.blit(quant_tecido,(80,265)) #MEXER NAS POSIÇÕES!
+        tela.blit(couro,(70,320)) #MEXER NAS POSIÇÕES!
+        tela.blit(quant_couro,(80,305)) #MEXER NAS POSIÇÕES!
+
+        #blitando os itens
+        tela.blit(helmet,(370,230)) #MEXER NAS POSIÇÕES!
+        tela.blit(armor,(350,280)) #MEXER NAS POSIÇÕES!
+        tela.blit(axe,(300,290)) #MEXER NAS POSIÇÕES!
+
+        #definindo os textos do inventario
+        gold = fonte.render('Gold: ' + str(personagem.gold), True, (255,255,0)) 
+        #gold_icon = pygame.image.load(r'graphics/gold.png')
+
+        #blitando os textos do inventario
+        tela.blit(gold, (560,200)) #MEXER NAS POSIÇÕES!
+        #tela.blit(gold_icon, (510,200))
+
+    def bussola(self,tela,fonte):
+        bussola = pygame.image.load(r'Graphics\HUD\bussola.png')
+        bussola.set_alpha(50)
+        tela.blit(bussola, (0,0))
+
+        #definindo a pos do personagem para a bussola
+        #Norte
+        norte_texto = fonte.render(str(v.Norte), True, (255,255,255))
+        tela.blit(norte_texto, (400, 15))
+        #Sul
+        sul_texto = fonte.render(str(v.Sul), True, (255,255,255))
+        tela.blit(sul_texto, (400, 560))
+        #Leste
+        leste_texto = fonte.render(str(v.Leste), True, (255,255,255))
+        tela.blit(leste_texto, (660, 300))
+        #Oeste
+        oeste_texto = fonte.render(str(v.Oeste), True, (255,255,255))
+        tela.blit(oeste_texto, (130, 320))
+
+    def quest(self,tela):
+        quest = pygame.image.load(r'Graphics\HUD\fundo.png')
+        quest.set_alpha(50)
+        tela.blit(quest, (0,0))
+
+        #####colocar os scores de cada mob morto no total, no topo e embaixo as quests ativas*************** Vou precisar terminar o sistema de quest antes disso
+
+########################################################################################################################################################################################################################################
+
+class Arvore(pygame.sprite.Sprite):
+    def __init__(self, pos):
+            super().__init__()
+            self.image = pygame.image.load(r'Graphics\Mapa\arvore.png')
+            self.rect = self.image.get_rect()
+            self.rect.x, self.rect.y = pos
+            self.old_rect = self.rect.copy()
+            self.type = 'arvore'  
+            
+########################################################################################################################################################################################################################################
+
+class Mapa_jogo():
+    def __init__(self):
+        self.mapa_atual = pygame.image.load(r'Graphics\Mapa\floresta_negra.png') ######
+        
+    def mudar_mapa(self, npc_grupo, inimigo_grupo, arvore_grupo):
+        for npc in npc_grupo:
+            npc.kill()
+            
+        for inimigo in inimigo_grupo:
+            inimigo.kill()
+            
+        for arvore in arvore_grupo:
+            arvore.kill()
+
+        ##### DEFINIR AQUI ONDE ESTÁ O PERSONAGEM, CHECAR COORDS PARA CONFIGURAR A VARIAVEL in_city  ENTRE OUTRAS FUNÇÕES
+
+########################################################################################################################################################################################################################################
+
+def gerar_arvore(arvore_grupo):
+    num_arvores = random.randrange(15,70)
+    while num_arvores > 0:
+        coordx = random.randint(0,800)
+        coordy = random.randint(0,600)
+        colliderect = pygame.Rect(800//2,600//2,100,100) ####################### PRECISO DEFINIR A AREA DA LAREIRA E A AREA SUPERIOR DO HUD COMO PONTOS PRA NÃO CRIAR ARVORES
+        colliderect2 = pygame.Rect(0,0,100,0)
+        if not colliderect.collidepoint(coordx,coordy) and not colliderect2.collidepoint(coordx,coordy): 
+            arvore1 = Arvore((coordx,coordy))
+            arvore_grupo.add(arvore1)
+            num_arvores -= 1
+    v.gerando_arvores = False
+
+########################################################################################################################################################################################################################################
+
+class Borda_topo(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load(r'Graphics\Mapa\bordas_horizontais.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 50
+
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+        hit = pygame.sprite.spritecollide(self, player_grupo, False)
+        for hits in hit:
+            v.Norte += 1
+            v.Sul -= 1
+            player.rect.y = 540            
+            for arvore in arvore_grupo:
+                arvore.kill()
+            for inimigo in inimigo_grupo:
+                inimigo.kill()
+            v.gerando_arvores = True
+            self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
+
+    def passar_mapa(self, mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo):
+        som_passar_mapa = pygame.mixer.Sound(r'sounds\passar_mapa.mp3')
+        som_cidade = pygame.mixer.Sound(r'sounds\som_cidade.mp3')
+        pygame.mixer.Sound.set_volume(som_passar_mapa,0.05) #provisório
+        pygame.mixer.Sound.play(som_passar_mapa)#provisório
+        '''
+            if v.Norte == 1 and v.Oeste == 3:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            if v.Norte == 1 and v.Oeste == 4:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            else:
+                pygame.mixer.Sound.set_volume(som_passar_mapa,0.05)
+                pygame.mixer.Sound.play(som_passar_mapa)
+        '''
+        mapa_jogo.mudar_mapa(npc_grupo, inimigo_grupo, arvore_grupo)
+################################################## BORDA TOPO ######################################################
+
+################################################## BORDA BAIXO #####################################################
+class Borda_baixo(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load(r'Graphics\Mapa\bordas_horizontais.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 590
+
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+        hit = pygame.sprite.spritecollide(self, player_grupo, False)
+        for hits in hit:
+            v.Sul += 1
+            v.Norte -= 1
+            player.rect.y = 60            
+            for arvore in arvore_grupo:
+                arvore.kill()
+            for inimigo in inimigo_grupo:
+                inimigo.kill()
+            v.gerando_arvores = True
+            self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
+
+    def passar_mapa(self, mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo):
+        som_passar_mapa = pygame.mixer.Sound(r'sounds\passar_mapa.mp3')
+        som_cidade = pygame.mixer.Sound(r'sounds\som_cidade.mp3')
+        pygame.mixer.Sound.set_volume(som_passar_mapa,0.05) #provisório
+        pygame.mixer.Sound.play(som_passar_mapa)#provisório
+        '''
+            if v.Norte == 1 and v.Oeste == 3:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            if v.Norte == 1 and v.Oeste == 4:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            else:
+                pygame.mixer.Sound.set_volume(som_passar_mapa,0.05)
+                pygame.mixer.Sound.play(som_passar_mapa)
+        '''
+        mapa_jogo.mudar_mapa(npc_grupo, inimigo_grupo, arvore_grupo)
+################################################## BORDA BAIXO #####################################################
+
+################################################## BORDA ESQUERDA ##################################################
+class Borda_esquerda(pygame.sprite.Sprite):                
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load(r'Graphics\Mapa\bordas_verticais.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+        hit = pygame.sprite.spritecollide(self, player_grupo, False)
+        for hits in hit:
+            v.Oeste += 1
+            v.Leste -= 1
+            player.rect.x = 740            
+            for arvore in arvore_grupo:
+                arvore.kill()
+            for inimigo in inimigo_grupo:
+                inimigo.kill()
+            v.gerando_arvores = True
+            self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
+
+    def passar_mapa(self, mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo):
+        som_passar_mapa = pygame.mixer.Sound(r'sounds\passar_mapa.mp3')
+        som_cidade = pygame.mixer.Sound(r'sounds\som_cidade.mp3')
+        pygame.mixer.Sound.set_volume(som_passar_mapa,0.05) #provisório
+        pygame.mixer.Sound.play(som_passar_mapa)#provisório
+        '''
+            if v.Norte == 1 and v.Oeste == 3:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            if v.Norte == 1 and v.Oeste == 4:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            else:
+                pygame.mixer.Sound.set_volume(som_passar_mapa,0.05)
+                pygame.mixer.Sound.play(som_passar_mapa)
+        '''
+        mapa_jogo.mudar_mapa(npc_grupo, inimigo_grupo, arvore_grupo)
+                
+################################################## BORDA ESQUERDA ##################################################
+
+################################################## BORDA DIREITA ###################################################
+class Borda_direita(pygame.sprite.Sprite):            
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load(r'Graphics\Mapa\bordas_verticais.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 790
+        self.rect.y = 0
+
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+        hit = pygame.sprite.spritecollide(self, player_grupo, False)
+        for hits in hit:
+            v.Leste += 1
+            v.Oeste -= 1
+            player.rect.x = 10            
+            for arvore in arvore_grupo:
+                arvore.kill()
+            for inimigo in inimigo_grupo:
+                inimigo.kill()
+            v.gerando_arvores = True
+            self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
+
+    def passar_mapa(self, mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo):
+        som_passar_mapa = pygame.mixer.Sound(r'sounds\passar_mapa.mp3')
+        som_cidade = pygame.mixer.Sound(r'sounds\som_cidade.mp3')
+        pygame.mixer.Sound.set_volume(som_passar_mapa,0.05) #provisório
+        pygame.mixer.Sound.play(som_passar_mapa)#provisório
+        '''
+            if v.Norte == 1 and v.Oeste == 3:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            if v.Norte == 1 and v.Oeste == 4:
+                pygame.mixer.Sound.set_volume(som_cidade,0.05)
+                pygame.mixer.Sound.play(som_cidade)
+            else:
+                pygame.mixer.Sound.set_volume(som_passar_mapa,0.05)
+                pygame.mixer.Sound.play(som_passar_mapa)
+        '''
+        mapa_jogo.mudar_mapa(npc_grupo, inimigo_grupo, arvore_grupo)
+            
+################################################## BORDA DIREITA ###################################################
+
+########################################################################################################################################################################################################################################
+
 #
+

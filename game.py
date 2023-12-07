@@ -90,7 +90,7 @@ equip.definir_equipamentos(player1)
 c.gerar_arvore(arvores)
 
 while run_game:
-        tela.fill((255,255,255)) #provisório para cor da tela
+        tela.blit(mapa_jogo.mapa_atual,(0,0))
         frames.tick(60)#Define frame rate
         delta_time = frames.tick(60)/1000 #Define o delta_time com base no frame rate
         

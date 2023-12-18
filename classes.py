@@ -38,15 +38,15 @@ class Damage_Show:
                 
 class Player(pygame.sprite.Sprite):
         def __init__(self,x,y,tela):
-                super().__init__()
+                super().__init__() 
                 
                 #movimentação do personagem
                 self.images = {
-                'down':[pygame.image.load(r'Graphics\Character\charbaixo1.png'),pygame.image.load(r'Graphics\Character\charbaixo2.png'),pygame.image.load(r'Graphics\Character\charbaixo3.png')],                            
-                'up':[pygame.image.load(r'Graphics\Character\charcima1.png'),pygame.image.load(r'Graphics\Character\charcima2.png'),pygame.image.load(r'Graphics\Character\charcima3.png')],
-                'left':[pygame.image.load(r'Graphics\Character\charleft1.png'),pygame.image.load(r'Graphics\Character\charleft2.png'),pygame.image.load(r'Graphics\Character\charleft1.png')],
-                'right':[pygame.image.load(r'Graphics\Character\charright1.png'),pygame.image.load(r'Graphics\Character\charright2.png'),pygame.image.load(r'Graphics\Character\charright1.png')],
-                'ataque':{'down':pygame.image.load(r'Graphics\Character\charbaixo_ataque.png'),'up':pygame.image.load(r'Graphics\Character\charcima_ataque.png'),'left':pygame.image.load(r'Graphics\Character\charleft_ataque.png'),'right':pygame.image.load(r'Graphics\Character\charright_ataque.png')}
+                'down':[pygame.image.load(r'Graphics\Character\charbaixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charbaixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charbaixo3.png').convert_alpha()],                            
+                'up':[pygame.image.load(r'Graphics\Character\charcima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charcima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charcima3.png').convert_alpha()],
+                'left':[pygame.image.load(r'Graphics\Character\charleft1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charleft2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charleft1.png').convert_alpha()],
+                'right':[pygame.image.load(r'Graphics\Character\charright1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charright2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\charright1.png').convert_alpha()],
+                'ataque':{'down':pygame.image.load(r'Graphics\Character\charbaixo_ataque.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\charcima_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\charleft_ataque.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\charright_ataque.png').convert_alpha()}
                 }
                 self.image = self.images['down'][0]
                 
@@ -57,6 +57,14 @@ class Player(pygame.sprite.Sprite):
                 self.old_rect = self.rect.copy()
                 self.dir = pygame.math.Vector2() #vetor de direção
                 self.speed = 100 #velocidade
+                self.mask = pygame.mask.from_surface(self.image)#Cria a mask pra detectar colisão
+                self.mask_rect = self.mask.get_rect()
+
+                #variaveis de colisao
+                self.colisao_direita = False
+                self.colisao_esquerda = False
+                self.colisao_baixo = False
+                self.colisao_cima = False
                 
                 #definições das animações e movimentos
                 self.animation_timer = 0.0 #timer de animação
@@ -92,45 +100,76 @@ class Player(pygame.sprite.Sprite):
             tela.blit(char_health_img,(5,0))
 
         def colisao(self,obstaculo,damage_show,font,delta_time,tela):
-            
-                colisao_sprites = pygame.sprite.spritecollide(self,obstaculo,False)
-                if colisao_sprites:
+                    colisao_detectada = pygame.sprite.spritecollide(self,obstaculo,False) #detecta a colisao das rect
+                    if colisao_detectada:
+                        for sprite in colisao_detectada:
+                            ### Detecta de que lado a colisao ocorreu e cria variaveis para corretamente colocar o jogador na pos certa
+                            
+                            if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
+                                self.colisao_direita = True 
+                                self.colisao_esquerda = False
+                                self.colisao_cima = False
+                                self.colisao_baixo = False
+                                
+                            if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
+                                self.colisao_esquerda = True
+                                self.colisao_direita = False
+                                self.colisao_cima = False
+                                self.colisao_baixo = False
+
+                            if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
+                                self.colisao_baixo = True
+                                self.colisao_cima = False
+                                self.colisao_esquerda = False
+                                self.colisao_direita = False
+                                
+                            if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
+                                self.colisao_cima = True
+                                self.colisao_baixo = False
+                                self.colisao_esquerda = False
+                                self.colisao_direita = False
+                                
+                    colisao_sprites = pygame.sprite.spritecollide(self,obstaculo,False, pygame.sprite.collide_mask) #detecta a colisao das masks
+                    if colisao_sprites:
                         for sprite in colisao_sprites:
                                 if sprite.type == 'monstro':
-                                        self.health -= sprite.dano #gerar dano no personagem conforme o dano do inimigo
-                                        
+                                        self.health -= sprite.dano #gerar dano no personagem conforme o dano do inimigo                                        
                                         #criar animação do dano
                                         damage_show.infos(self.rect.x+40, self.rect.y, sprite.dano,(255,0,0))
                                         damage_show.create_text(font)
-                                        damage_show.draw(delta_time, tela)                                        
-                                        
-                                # colisão na direita
-                                if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
-                                        self.rect.right = sprite.rect.left
-                                        self.dir.x = self.rect.x
-                                        if sprite.type == 'monstro':
-                                                sprite.rect.x += 7
-                                                
-                                # colisão na esquerda
-                                if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
-                                        self.rect.left = sprite.rect.right
-                                        self.dir.x = self.rect.x
-                                        if sprite.type == 'monstro':
-                                                sprite.rect.x -= 7
+                                        damage_show.draw(delta_time, tela)
 
-                                # colisão em baixo
-                                if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
-                                        self.rect.bottom = sprite.rect.top
-                                        self.dir.y = self.rect.y
-                                        if sprite.type == 'monstro':
-                                                sprite.rect.y += 7
-                                                
-                                # colisão em cima
-                                if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
-                                        self.rect.top = sprite.rect.bottom
-                                        self.dir.y = self.rect.y
-                                        if sprite.type == 'monstro':
-                                                sprite.rect.y -= 7
+                                                                       
+                                
+                                #colisão na direita
+                                if self.rect.right >= sprite.rect.left and self.colisao_direita:
+                                                dx = self.old_rect.x - sprite.rect.x
+                                                self.rect.right = sprite.rect.left - dx - 10
+                                                self.dir.x = 0
+                                                if sprite.type == 'monstro':
+                                                        sprite.rect.x += 7
+                                                        
+                                #colisão na esquerda
+                                if self.rect.left <= sprite.rect.right and self.colisao_esquerda:
+                                                dx = self.old_rect.x - sprite.rect.x
+                                                self.rect.left = sprite.rect.right - dx - 1
+                                                self.dir.x = 0
+                                                if sprite.type == 'monstro':
+                                                        sprite.rect.x -= 7
+                                #colisão em baixo
+                                if self.rect.bottom >= sprite.rect.top and self.colisao_baixo:
+                                                self.rect.bottom = sprite.rect.top + 10
+                                                self.dir.y = 0
+                                                if sprite.type == 'monstro':
+                                                        sprite.rect.y += 7
+                                                        
+                                #colisão em cima
+                                if self.rect.top <= sprite.rect.bottom and self.colisao_cima:
+                                                self.rect.top = sprite.rect.bottom - 5
+                                                self.dir.y = 0
+                                                if sprite.type == 'monstro':
+                                                        sprite.rect.y -= 7
+                                            
 
         def equipamento_atual(self,axe_images,helmet_images,armor_images):
                 #Definição dos equipamentos que estão sendo usados
@@ -170,12 +209,13 @@ class Player(pygame.sprite.Sprite):
                         pass
                   
         def update(self,delta_time, tela):
-                
+                      
                 self.equipado()#'equipa' os itens
 
                 self.mostrar_vida(tela)
 
                 self.old_rect = self.rect.copy() #mantém a cópia da rect anterior atualizada - para caso de colisão
+                self.mask = pygame.mask.from_surface(self.image) #Atualiza a mask   
                 
                 keys = pygame.key.get_pressed()#verificar as teclas apertadas
                 #Movimentar para CIMA
@@ -275,7 +315,7 @@ class Player(pygame.sprite.Sprite):
                                         #criar interação ao invés de ataque
 
                 #aplicar a direção multiplicada pela velocidade e delta_time
-                self.rect.x += self.dir.x * self.speed * delta_time 
+                self.rect.x += self.dir.x * self.speed * delta_time
                 self.rect.y += self.dir.y * self.speed * delta_time
 
 ########################################################################################################################################################################################################################################
@@ -288,47 +328,47 @@ class Equipamentos():
                 
                 #Define os valores iniciais para a imagem do machado do personagem
                 self.axe_images={
-                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_baixo3.png')],
-                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_cima3.png')],
-                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_left1.png')],
-                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_right1.png')],
-                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_down.png'),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_up.png'),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_left.png'),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_right.png')}
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv0\ataque_axe_right.png').convert_alpha()}
                         }
                 
                 #Define os valores iniciais para a imagem do elmo do personagem
                 self.helmet_images={
-                'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_baixo3.png')],
-                'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_cima3.png')],
-                'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_left1.png')],
-                'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_right1.png')]
+                'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_baixo3.png').convert_alpha()],
+                'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_cima3.png').convert_alpha()],
+                'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_left1.png').convert_alpha()],
+                'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv0\helmet_right1.png').convert_alpha()]
                 }
 
                 #Define os valores iniciais para a imagem do peito do personagem
                 self.armor_images={
-                'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_baixo3.png')],
-                'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_cima3.png')],
-                'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left1.png')],
-                'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right1.png')],
-                'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right_ataque.png'),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left_ataque.png')}
+                'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_baixo3.png').convert_alpha()],
+                'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_cima3.png').convert_alpha()],
+                'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left1.png').convert_alpha()],
+                'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right1.png').convert_alpha()],
+                'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv0\armor_left_ataque.png').convert_alpha()}
                 }
 
         def definir_nivel(self):
                 #Definir equipamentos de nv1
                 if self.helmet_nv >= 1 and self.helmet_nv < 5:
                         self.helmet_images={
-                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo3.png')],
-                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_cima3.png')],
-                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_left1.png')],
-                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_right1.png')]
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_right1.png').convert_alpha()]
                         }
 
                 if self.armor_nv >= 1 and self.armor_nv < 5 :
                         self.armor_images={
-                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_baixo1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_baixo2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_baixo3.png')],
-                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_cima1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_cima2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_cima3.png')],
-                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left1.png')],
-                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right1.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right2.png'),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right1.png')],
-                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right_ataque.png'),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left_ataque.png')}
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left_ataque.png').convert_alpha()}
                         }
 
                 #Definir equipamentos de nv5
@@ -372,15 +412,15 @@ class Inimigos(pygame.sprite.Sprite):
         def __init__(self,x,y,race='aranha'):
                 super().__init__()
                 #Imagens inicial, pra dar o init sem problema
-                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_parada.png'),
-                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerda.png'),
-                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direita.png'),
-                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_cima.png'),
-                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_baixo.png'),
-                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdabaixo.png'),
-                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdacima.png'),
-                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitabaixo.png'),
-                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitacima.png')
+                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitacima.png').convert_alpha()
                                        }
                 self.image = self.images['parada'] #imagem inicial
                 
@@ -390,6 +430,7 @@ class Inimigos(pygame.sprite.Sprite):
                 self.rect.y = y
                 self.pos = pygame.math.Vector2(self.rect.topleft) #Vetor de posição
                 self.old_rect = self.rect.copy() #para detectar colisao e saber onde estava
+                self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
                 
                 #movimentação do inimigo
                 self.dx = 0 
@@ -412,69 +453,69 @@ class Inimigos(pygame.sprite.Sprite):
         def tipo(self):
                 if self.race == 'aranha':
                         if self.level < 10:
-                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_parada.png'),
-                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerda.png'),
-                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direita.png'),
-                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_cima.png'),
-                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_baixo.png'),
-                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdabaixo.png'),
-                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdacima.png'),
-                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitabaixo.png'),
-                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitacima.png')
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv0/aranha_direitacima.png').convert_alpha()
                                                }
                                 
                         if self.level >= 10 and self.level < 20:
-                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_parada.png'),
-                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_esquerda.png'),
-                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_direita.png'),
-                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_cima.png'),
-                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_baixo.png'),
-                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_esquerdabaixo.png'),
-                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_esquerdacima.png'),
-                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_direitabaixo.png'),
-                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_direitacima.png')
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv10/aranha_direitacima.png').convert_alpha()
                                                }
                                 self.maxhealth = 100
                                 self.health = self.maxhealth
                                 
                         if self.level >= 20 and self.level < 30:
-                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_parada.png'),
-                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_esquerda.png'),
-                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_direita.png'),
-                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_cima.png'),
-                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_baixo.png'),
-                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_esquerdabaixo.png'),
-                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_esquerdacima.png'),
-                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_direitabaixo.png'),
-                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_direitacima.png')
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv20/aranha_direitacima.png').convert_alpha()
                                                }
                                 self.maxhealth = 150
                                 self.health = self.maxhealth
                                 
                         if self.level >= 30 and self.level < 50:
-                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_parada.png'),
-                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_esquerda.png'),
-                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_direita.png'),
-                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_cima.png'),
-                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_baixo.png'),
-                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_esquerdabaixo.png'),
-                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_esquerdacima.png'),
-                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_direitabaixo.png'),
-                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_direitacima.png')
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv30/aranha_direitacima.png').convert_alpha()
                                                }
                                 self.maxhealth = 300
                                 self.health = self.maxhealth
                                 
                         if self.level >= 50:
-                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_parada.png'),
-                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_esquerda.png'),
-                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_direita.png'),
-                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_cima.png'),
-                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_baixo.png'),
-                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_esquerdabaixo.png'),
-                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_esquerdacima.png'),
-                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_direitabaixo.png'),
-                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_direitacima.png')
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha/nv50/aranha_direitacima.png').convert_alpha()
                                                }
                                 self.maxhealth = 500
                                 self.health = self.maxhealth                              
@@ -484,6 +525,7 @@ class Inimigos(pygame.sprite.Sprite):
         def update(self,tela,player):
                 
                 self.old_rect = self.rect.copy() #copia da rect pra colisao
+                self.mask = pygame.mask.from_surface(self.image) #Atualiza a mask   
                 
                 # Movimenta o inimigo em direção ao jogador
                 player_pos = player.rect.center
@@ -621,6 +663,7 @@ class Attack(pygame.sprite.Sprite):
             super().__init__()
             self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
             self.rect = self.image.get_rect()
+            self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
             
         def criar(self, x, y, direction,level):
             #Definição de posição do ataque
@@ -639,7 +682,10 @@ class Attack(pygame.sprite.Sprite):
         #Se equipamento lvl 10 --> dano = x
         #Se equipamento lvl 50 --> dano = 1000
             
-        def update(self, grupo_sprites, player, npc, inimigo, arvore, damage_show, delta_time, tela, font):
+        def update(self, grupo_sprites, player, npc, inimigo, arvore, damage_show, delta_time, tela, font, grupo_obstaculos):
+            
+            self.mask = pygame.mask.from_surface(self.image) #Atualiza a mask
+            
             if self.level == 1:
                 self.dano = 1
                 
@@ -687,69 +733,73 @@ class Attack(pygame.sprite.Sprite):
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\leftup.png')
 
 ########################################################################################################################################################################################################################################
-            npc_hit = pygame.sprite.spritecollide(self,npc,False)
-            for npc in npc_hit:
-                pass
-                #npc.acao() #pra abrir a janela de conversa com o NPC quando eu criar eles kk
+            if pygame.sprite.spritecollide(self,npc,False):
+                npc_hit = pygame.sprite.spritecollide(self,npc,False, pygame.sprite.collide_mask)
+                for npc in npc_hit:
+                    pass
+                    #npc.acao() #pra abrir a janela de conversa com o NPC quando eu criar eles kk
 
 ########################################################################################################################################################################################################################################
                 
-            #verifica se o ataque corta a arvore - Que eu ainda preciso por
-            corte_arvore = pygame.sprite.spritecollide(self, arvore, True)
-            if corte_arvore:
-                ####################################GERAR AQUI UMA ANIMAÇÃO DE ITEM
-                player.troncos += random.randrange(0,2)
-                randomizando = random.randrange(0,10)
-                if randomizando <= 4:
-                    randomgen = 'monstro'
-                    if randomgen == 'monstro':
-                        for sprites in corte_arvore:
-                            inimigox = sprites.old_rect.x
-                            inimigoy = sprites.old_rect.y
-                            gerar_inimigo = Inimigos(inimigox,inimigoy)
-                            gerar_inimigo.tipo() #define o sprite quando o inimigo é criado, portanto usar junto com o init da class
-                            grupo_sprites.add(gerar_inimigo)
-                            inimigo.add(gerar_inimigo)        
+            #verifica se o ataque corta a arvore
+            if pygame.sprite.spritecollide(self, arvore, False):
+                corte_arvore = pygame.sprite.spritecollide(self, arvore, True, pygame.sprite.collide_mask)
+                if corte_arvore:
+                    ####################################GERAR AQUI UMA ANIMAÇÃO DE ITEM
+                    player.troncos += random.randrange(0,2)
+                    randomizando = random.randrange(0,10)
+                    if randomizando <= 4:
+                        randomgen = 'monstro'
+                        if randomgen == 'monstro':
+                            for sprites in corte_arvore:
+                                inimigox = sprites.old_rect.x
+                                inimigoy = sprites.old_rect.y
+                                gerar_inimigo = Inimigos(inimigox,inimigoy)
+                                gerar_inimigo.tipo() #define o sprite quando o inimigo é criado, portanto usar junto com o init da class
+                                grupo_sprites.add(gerar_inimigo)
+                                grupo_obstaculos.add(gerar_inimigo)
+                                inimigo.add(gerar_inimigo)        
                        
 ########################################################################################################################################################################################################################################
 
             # Verifica colisão com os inimigos
-            hit_enemies = pygame.sprite.spritecollide(self, inimigo, False)
-            for enemy in hit_enemies:
-                enemy.health -= self.dano        
-                #criar animação do dano
-                damage_show.infos(enemy.rect.x, enemy.rect.y, self.dano,(255,0,0))
-                damage_show.create_text(font)
-                damage_show.draw(delta_time, tela)
-                
-                if self.direction == 'right':
-                    enemy.rect.x += 4
+            if pygame.sprite.spritecollide(self, inimigo, False, pygame.sprite.collide_mask):
+                hit_enemies = pygame.sprite.spritecollide(self, inimigo, False, pygame.sprite.collide_mask)
+                for enemy in hit_enemies:
+                    enemy.health -= self.dano        
+                    #criar animação do dano
+                    damage_show.infos(enemy.rect.x, enemy.rect.y, self.dano,(255,0,0))
+                    damage_show.create_text(font)
+                    damage_show.draw(delta_time, tela)
                     
-                if self.direction == 'left':
-                    enemy.rect.x -= 4
-                    
-                if self.direction == 'up':
-                    enemy.rect.y -= 4
-                    
-                if self.direction == 'down':
-                    enemy.rect.y += 4
+                    if self.direction == 'right':
+                        enemy.rect.x += 4
+                        
+                    if self.direction == 'left':
+                        enemy.rect.x -= 4
+                        
+                    if self.direction == 'up':
+                        enemy.rect.y -= 4
+                        
+                    if self.direction == 'down':
+                        enemy.rect.y += 4
 
-                #Vou precisar por todas as 4 direcoes :( 
-                    
-                if enemy.health <= 0:
-                    enemy.kill()
-                    '''
-                    if v.aranha_on == True:
-                        v.score_aranha += 1
-                    if v.urso_on == True:
-                        v.score_urso += 1
-                    if v.lobo_on == True:
-                        v.score_lobo += 1
-                    if v.rainha_aranha_on == True:
-                        v.score_rainha_aranha += 1
-                    v.score = v.score_aranha + v.score_urso + v.score_lobo + v.score_rainha_aranha
-                    v.exp += v.exp_mob
-                    ''' #Ajeitar questão do score
+                    #Vou precisar por todas as 8 direcoes :( 
+                        
+                    if enemy.health <= 0:
+                        enemy.kill()
+                        '''
+                        if v.aranha_on == True:
+                            v.score_aranha += 1
+                        if v.urso_on == True:
+                            v.score_urso += 1
+                        if v.lobo_on == True:
+                            v.score_lobo += 1
+                        if v.rainha_aranha_on == True:
+                            v.score_rainha_aranha += 1
+                        v.score = v.score_aranha + v.score_urso + v.score_lobo + v.score_rainha_aranha
+                        v.exp += v.exp_mob
+                        ''' #Ajeitar questão do score
 
             # Remove o ataque da v.tela quando atinge o limite da distância                          
             player_pos = player.rect.center
@@ -839,13 +889,14 @@ class HUD:
 ########################################################################################################################################################################################################################################
 
 class Arvore(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, tela):
             super().__init__()
-            self.image = pygame.image.load(r'Graphics\Mapa\arvore.png')
+            self.image = pygame.image.load(r'Graphics\Mapa\arvore.png').convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.x, self.rect.y = pos
             self.old_rect = self.rect.copy()
-            self.type = 'arvore'  
+            self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
+            self.type = 'arvore'
             
 ########################################################################################################################################################################################################################################
 
@@ -867,16 +918,16 @@ class Mapa_jogo():
 
 ########################################################################################################################################################################################################################################
 
-def gerar_arvore(arvore_grupo):
+def gerar_arvore(arvore_grupo, grupo_obstaculo, tela):
     num_arvores = random.randrange(15,70)
     while num_arvores > 0:
         coordx = random.randint(0,800)
         coordy = random.randint(0,600)
-        colliderect = pygame.Rect(800//2,600//2,100,100) ####################### PRECISO DEFINIR A AREA DA LAREIRA E A AREA SUPERIOR DO HUD COMO PONTOS PRA NÃO CRIAR ARVORES
-        colliderect2 = pygame.Rect(0,0,100,0)
-        if not colliderect.collidepoint(coordx,coordy) and not colliderect2.collidepoint(coordx,coordy): 
-            arvore1 = Arvore((coordx,coordy))
+        colliderect = pygame.Rect(800//2,600//2,200,200) ####################### PRECISO DEFINIR A AREA DA LAREIRA E A AREA SUPERIOR DO HUD COMO PONTOS PRA NÃO CRIAR ARVORES
+        if not colliderect.collidepoint(coordx,coordy): 
+            arvore1 = Arvore((coordx,coordy), tela)
             arvore_grupo.add(arvore1)
+            grupo_obstaculo.add(arvore1)
             num_arvores -= 1
     v.gerando_arvores = False
 
@@ -889,6 +940,7 @@ class Borda_topo(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 50
+        self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
 
     def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
@@ -930,6 +982,7 @@ class Borda_baixo(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 590
+        self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
 
     def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
@@ -971,6 +1024,7 @@ class Borda_esquerda(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
+        self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
 
     def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
@@ -1013,6 +1067,7 @@ class Borda_direita(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 790
         self.rect.y = 0
+        self.mask = pygame.mask.from_surface(self.image) #Cria a mask pra detectar colisão
 
     def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)

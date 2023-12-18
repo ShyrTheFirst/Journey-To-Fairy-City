@@ -7,6 +7,9 @@ import classes as c
 pygame.init()
 pygame.mixer.init()
 
+#esconder o mouse dentro do jogo
+pygame.mouse.set_visible(False)
+
 #definindo os sons
 pygame.mixer.music.load(r'sounds\musica_fundo.mp3')
 pygame.mixer.music.set_volume(0.01)
@@ -48,6 +51,8 @@ arvores = pygame.sprite.Group() #Grupo das arvores
 NPCs = pygame.sprite.Group() #Grupo dos NPCs
 bordas = pygame.sprite.Group() #Grupo das bordas do mapa
 
+obstaculos = pygame.sprite.Group() #Grupo para verificar colisões
+
 #Inicializar a class player
 player1 = c.Player(10,60,tela)
 pg.add(player1)
@@ -78,19 +83,15 @@ equip = c.Equipamentos()
 equip.definir_nivel()
 equip.definir_equipamentos(player1)
 
-#Inicializar a class Inimigos PARA TESTE
-#inimigos1 = c.Inimigos(200,200)
-#inimigos1.tipo() #define o sprite quando o inimigo é criado, portanto usar junto com o init da class
-#todos_sprites.add(inimigos1)
-#ig.add(inimigos1)
-
 #Inicializar a class NPC
 #Em andamento - receber class 'player1' e 'equip'
 
-c.gerar_arvore(arvores)
+#Criar as arvores do primeiro mapa
+c.gerar_arvore(arvores, obstaculos, tela)
 
 while run_game:
-        tela.blit(mapa_jogo.mapa_atual,(0,0))
+        tela.blit(mapa_jogo.mapa_atual,(0,0)) #blita a imagem de fundo do jogo
+        
         frames.tick(60)#Define frame rate
         delta_time = frames.tick(60)/1000 #Define o delta_time com base no frame rate
         
@@ -106,7 +107,7 @@ while run_game:
                         v.axe_equip = True
 
         if v.gerando_arvores == True:
-                c.gerar_arvore(arvores)
+                c.gerar_arvore(arvores, obstaculos, tela) #Gera as arvores toda vez que muda de mapa
                          
         for event in pygame.event.get():
                 #Função do botão de sair do jogo
@@ -114,6 +115,7 @@ while run_game:
                         run_game = False
                         pygame.quit()
                         sys.exit()
+                        
                 #Detecta se os botões são clicados
                 elif event.type == pygame.KEYDOWN:
                                 if event.key == pygame.K_e: #Caso o botão clicado seja 'e', realiza ação
@@ -127,6 +129,7 @@ while run_game:
                                         v.abrir_menu = True
                                         while v.abrir_menu:
                                                 menu.abrir(tela)
+                                                ########################################### CRIAR AQUI SETINHA DIRECIONAL PRA ESCOLHER AS OPÇÕES SEM O USO DO MOUSE
                                                 for event in pygame.event.get():
                                                         if event.type == pygame.QUIT:
                                                                 pygame.quit()
@@ -201,14 +204,14 @@ while run_game:
         arvores.draw(tela)
         bordas.draw(tela)
         
-        #atualizar classes de sprites        
+        #atualizar classes de sprites
         pg.update(delta_time, tela)
         ig.update(tela, player1)
-        ag.update(todos_sprites, player1, NPCs, ig, arvores, damage_show, delta_time, tela, font_damage)
+        ag.update(todos_sprites, player1, NPCs, ig, arvores, damage_show, delta_time, tela, font_damage, obstaculos)
         bordas.update(pg, player1, arvores, ig, mapa_jogo, NPCs)
 
         #detectar as colisões
-        player1.colisao(ig, damage_show, font_damage, delta_time, tela)
+        player1.colisao(obstaculos, damage_show, font_damage, delta_time, tela)
 
         if player1.health <= 0:
                 pygame.mixer.Sound.set_volume(fim_do_jogo,0.1)

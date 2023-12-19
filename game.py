@@ -54,7 +54,7 @@ bordas = pygame.sprite.Group() #Grupo das bordas do mapa
 obstaculos = pygame.sprite.Group() #Grupo para verificar colisões
 
 #Inicializar a class player
-player1 = c.Player(10,60,tela)
+player1 = c.Player(360,350,tela)
 pg.add(player1)
 todos_sprites.add(player1)
 
@@ -97,7 +97,7 @@ while run_game:
         
         #Gerar machado no chão ao iniciar, para o personagem pegar
         if v.axe_equip == False:
-                machadinho_no_chao = pygame.image.load(r'Graphics\Mapa\machado.png') #sprite do machado 
+                machadinho_no_chao = pygame.image.load(r'Graphics\Mapa\machado.png') ######################### PRECISO REDESENHAR ESSE SPRITE
                 machado_rect = machadinho_no_chao.get_rect(topleft=(350,300)) #rect pra fins de colisão
                 tela.blit(machadinho_no_chao,(350,300))
                 
@@ -108,7 +108,7 @@ while run_game:
 
         if v.gerando_arvores == True:
                 c.gerar_arvore(arvores, obstaculos, tela) #Gera as arvores toda vez que muda de mapa
-                         
+        
         for event in pygame.event.get():
                 #Função do botão de sair do jogo
                 if event.type == pygame.QUIT: 

@@ -100,36 +100,7 @@ class Player(pygame.sprite.Sprite):
             tela.blit(char_health_img,(5,0))
 
         def colisao(self,obstaculo,damage_show,font,delta_time,tela):
-                    colisao_detectada = pygame.sprite.spritecollide(self,obstaculo,False) #detecta a colisao das rect
-                    if colisao_detectada:
-                        for sprite in colisao_detectada:
-                            ### Detecta de que lado a colisao ocorreu e cria variaveis para corretamente colocar o jogador na pos certa
-                            
-                            if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
-                                self.colisao_direita = True 
-                                self.colisao_esquerda = False
-                                self.colisao_cima = False
-                                self.colisao_baixo = False
-                                
-                            if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
-                                self.colisao_esquerda = True
-                                self.colisao_direita = False
-                                self.colisao_cima = False
-                                self.colisao_baixo = False
-
-                            if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
-                                self.colisao_baixo = True
-                                self.colisao_cima = False
-                                self.colisao_esquerda = False
-                                self.colisao_direita = False
-                                
-                            if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
-                                self.colisao_cima = True
-                                self.colisao_baixo = False
-                                self.colisao_esquerda = False
-                                self.colisao_direita = False
-                                
-                    colisao_sprites = pygame.sprite.spritecollide(self,obstaculo,False, pygame.sprite.collide_mask) #detecta a colisao das masks
+                    colisao_sprites = pygame.sprite.spritecollide(self,obstaculo,False)
                     if colisao_sprites:
                         for sprite in colisao_sprites:
                                 if sprite.type == 'monstro':
@@ -138,34 +109,30 @@ class Player(pygame.sprite.Sprite):
                                         damage_show.infos(self.rect.x+40, self.rect.y, sprite.dano,(255,0,0))
                                         damage_show.create_text(font)
                                         damage_show.draw(delta_time, tela)
-
-                                                                       
                                 
                                 #colisão na direita
-                                if self.rect.right >= sprite.rect.left and self.colisao_direita:
-                                                dx = self.old_rect.x - sprite.rect.x
-                                                self.rect.right = sprite.rect.left - dx - 10
+                                if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
+                                                self.rect.right = sprite.rect.left
                                                 self.dir.x = 0
                                                 if sprite.type == 'monstro':
                                                         sprite.rect.x += 7
                                                         
                                 #colisão na esquerda
-                                if self.rect.left <= sprite.rect.right and self.colisao_esquerda:
-                                                dx = self.old_rect.x - sprite.rect.x
-                                                self.rect.left = sprite.rect.right - dx - 1
+                                if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
+                                                self.rect.left = sprite.rect.right
                                                 self.dir.x = 0
                                                 if sprite.type == 'monstro':
                                                         sprite.rect.x -= 7
                                 #colisão em baixo
-                                if self.rect.bottom >= sprite.rect.top and self.colisao_baixo:
-                                                self.rect.bottom = sprite.rect.top + 10
+                                if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
+                                                self.rect.bottom = sprite.rect.top
                                                 self.dir.y = 0
                                                 if sprite.type == 'monstro':
                                                         sprite.rect.y += 7
                                                         
                                 #colisão em cima
-                                if self.rect.top <= sprite.rect.bottom and self.colisao_cima:
-                                                self.rect.top = sprite.rect.bottom - 5
+                                if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
+                                                self.rect.top = sprite.rect.bottom
                                                 self.dir.y = 0
                                                 if sprite.type == 'monstro':
                                                         sprite.rect.y -= 7
@@ -199,10 +166,62 @@ class Player(pygame.sprite.Sprite):
                                 self.helmet_image = self.helmet_images[self.direction][self.animation_index]
                                 self.armor_image = self.armor_images[self.direction][self.animation_index]                               
                         
-                        #blitar a imagem do axe, armor e helmet atual
-                        self.tela.blit(self.helmet_image,(self.rect.x,self.rect.y))
-                        self.tela.blit(self.armor_image,(self.rect.x,self.rect.y))
-                        self.tela.blit(self.axe_image,(self.rect.x,self.rect.y))
+                        #blitar a imagem do axe, armor e helmet atual, conforme a direction para blitar no local correto
+                        if not self.direction == 'stand':
+                            ################################################################################################################################################ PRECISO VERIFICAR ARMOR E HELMET
+                            if self.direction == 'right':
+                                self.tela.blit(self.helmet_image,self.rect.topleft)
+                                self.tela.blit(self.armor_image,self.rect.topleft)
+                                self.tela.blit(self.axe_image,self.rect.topleft)
+                                
+                            if self.direction == 'left':
+                                leftx = self.rect.x - 6
+                                lefty = self.rect.y - 2
+                                self.tela.blit(self.helmet_image,(leftx,lefty))
+                                self.tela.blit(self.armor_image,(leftx,lefty))
+                                self.tela.blit(self.axe_image,(leftx,lefty))
+
+                            if self.direction == 'up':
+                                upx = self.rect.x - 10
+                                upy = self.rect.y - 2
+                                self.tela.blit(self.helmet_image,(upx,upy))
+                                self.tela.blit(self.armor_image,(upx,upy))
+                                self.tela.blit(self.axe_image,(upx,upy))
+
+                            if self.direction == 'down':
+                                downx = self.rect.x - 10
+                                downy = self.rect.y - 2
+                                self.tela.blit(self.helmet_image,(downx,downy))
+                                self.tela.blit(self.armor_image,(downx,downy))
+                                self.tela.blit(self.axe_image,(downx,downy))
+                                
+                        elif self.direction == 'stand':
+                            
+                            if self.last_direction == 'right':
+                                self.tela.blit(self.helmet_image,self.rect.topleft)
+                                self.tela.blit(self.armor_image,self.rect.topleft)
+                                self.tela.blit(self.axe_image,self.rect.topleft)
+                                
+                            if self.last_direction == 'left':
+                                leftx = self.rect.x - 6
+                                lefty = self.rect.y - 2
+                                self.tela.blit(self.helmet_image,(leftx,lefty))
+                                self.tela.blit(self.armor_image,(leftx,lefty))
+                                self.tela.blit(self.axe_image,(leftx,lefty))
+
+                            if self.last_direction == 'up':
+                                upx = self.rect.x - 10
+                                upy = self.rect.y - 2
+                                self.tela.blit(self.helmet_image,(upx,upy))
+                                self.tela.blit(self.armor_image,(upx,upy))
+                                self.tela.blit(self.axe_image,(upx,upy))
+
+                            if self.last_direction == 'down':
+                                downx = self.rect.x - 10
+                                downy = self.rect.y - 2
+                                self.tela.blit(self.helmet_image,(downx,downy))
+                                self.tela.blit(self.armor_image,(downx,downy))
+                                self.tela.blit(self.axe_image,(downx,downy))
                                 
                 else:
                         #não fazer nada se não estiver com o axe equipado
@@ -212,12 +231,17 @@ class Player(pygame.sprite.Sprite):
                       
                 self.equipado()#'equipa' os itens
 
+                #Atualização da rect para a colisão coincidir com o sprite
+                atualizar_rect = self.image.get_rect()
+                self.rect.width = atualizar_rect[2]
+                self.rect.height = atualizar_rect[3]
+
                 self.mostrar_vida(tela)
 
                 self.old_rect = self.rect.copy() #mantém a cópia da rect anterior atualizada - para caso de colisão
-                self.mask = pygame.mask.from_surface(self.image) #Atualiza a mask   
                 
                 keys = pygame.key.get_pressed()#verificar as teclas apertadas
+                
                 #Movimentar para CIMA
                 if keys[pygame.K_UP]:
                         self.direction = 'up'
@@ -277,10 +301,6 @@ class Player(pygame.sprite.Sprite):
                         self.direction = 'stand'      
 
                 #Realizar animações conforme a direção
-                #PARADO
-                if self.direction == 'stand':
-                        pass
-                
                 if not self.direction == 'stand': #caso direction seja stand, dará erro, portanto verifica que a direction não ocassione erro
                         
                         self.animation_timer += delta_time #Definir timer da animação, conforme delta_time
@@ -706,10 +726,12 @@ class Attack(pygame.sprite.Sprite):
                     
             elif self.direction == 'up':
                     self.rect.y -= self.speed
+                    self.rect.x = player.rect.x - 10
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\up.png')
                     
             elif self.direction == 'down':
                     self.rect.y += self.speed
+                    self.rect.x = player.rect.x - 10
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\down.png')
 
             elif self.direction == 'rightdown':
@@ -803,10 +825,10 @@ class Attack(pygame.sprite.Sprite):
 
             # Remove o ataque da v.tela quando atinge o limite da distância                          
             player_pos = player.rect.center
-            player_posxd = player_pos[0] +3 #direita
-            player_posyb = player_pos[1] +3 #baixo
-            player_posxe = player_pos[0] - 43 #esquerda
-            player_posyc = player_pos[1] - 43 #cima
+            player_posxd = player_pos[0] + 7 #direita
+            player_posyb = player_pos[1] + 7 #baixo
+            player_posxe = player_pos[0] - 50 #esquerda
+            player_posyc = player_pos[1] - 50 #cima
             if self.rect.x > player_posxd or self.rect.y > player_posyb or self.rect.x < player_posxe or self.rect.y < player_posyc:
                 self.kill()
 
@@ -923,7 +945,7 @@ def gerar_arvore(arvore_grupo, grupo_obstaculo, tela):
     while num_arvores > 0:
         coordx = random.randint(0,800)
         coordy = random.randint(0,600)
-        colliderect = pygame.Rect(800//2,600//2,200,200) ####################### PRECISO DEFINIR A AREA DA LAREIRA E A AREA SUPERIOR DO HUD COMO PONTOS PRA NÃO CRIAR ARVORES
+        colliderect = pygame.Rect(300,200,200,200) ####################### PRECISO DEFINIR A AREA DA LAREIRA E A AREA SUPERIOR DO HUD COMO PONTOS PRA NÃO CRIAR ARVORES
         if not colliderect.collidepoint(coordx,coordy): 
             arvore1 = Arvore((coordx,coordy), tela)
             arvore_grupo.add(arvore1)

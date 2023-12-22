@@ -34,13 +34,11 @@ frames = pygame.time.Clock()
 
 #Definições das fontes
 pygame.font.init()
-font_grande = pygame.font.Font(r'fonts/teutonic.ttf',30)
-font_damage = pygame.font.Font(r'fonts/augusta.ttf',15)
-font_quest = pygame.font.Font(r'fonts/augusta.ttf',22)
-
-#loop do jogo
-run_game = True
-
+font_menu = pygame.font.Font(r'fonts\3270.ttf',10)
+font_grande1 = pygame.font.Font(r'fonts\BigBlue.ttf',30)
+font_grande2 = pygame.font.Font(r'fonts\3270.ttf',30)
+font_damage = pygame.font.Font(r'fonts\BigBlue.ttf',12)
+font_quest = pygame.font.Font(r'fonts\3270.ttf',22)
 
 #Grupos de sprites
 pg = pygame.sprite.Group() #Grupo do jogador
@@ -61,7 +59,7 @@ todos_sprites.add(player1)
 #Inicializar outras classes importantes
 damage_show = c.Damage_Show() #Class para mostrar dano causado na tela
 menu = c.Menu() #Class do menu do jogo
-HUD = c.HUD()
+HUD = c.HUD(tela)
 mapa_jogo = c.Mapa_jogo()
 
 #Criando as bordas do mapa
@@ -87,10 +85,50 @@ equip.definir_equipamentos(player1)
 #Em andamento - receber class 'player1' e 'equip'
 
 #Criar as arvores do primeiro mapa
-c.gerar_arvore(arvores, obstaculos, tela)
+c.gerar_arvore(player1.rect, arvores, obstaculos, tela)
 
-while run_game:
+#definindo imagens necessárias do jogo
+hudtop = pygame.image.load(r'Graphics\HUD\hudtop.png')
+mouse_button = pygame.image.load(r'Graphics\HUD\mouse_button.png')
+mouse_rect = mouse_button.get_rect()
+
+while v.run_game:
+        if v.loadgame_from_menu == True:
+                v.score = v.dados_jogo['score']
+                v.score_aranha = v.dados_jogo['score_aranha']
+                v.score_lobo = v.dados_jogo['score_lobo']
+                v.score_urso = v.dados_jogo['score_urso']
+                v.score_rainha_aranha = v.dados_jogo['score_rainha_aranha']
+                v.quest_em_progresso = v.dados_jogo['quest_em_progresso']
+                v.quest_num = v.dados_jogo['quest_num']
+                v.mob_atual = v.dados_jogo['mob_atual']
+                v.score_atual_quest = v.dados_jogo['score_atual_quest']
+                v.score_alvo_quest = v.dados_jogo['score_alvo_quest']
+                v.mob_aranha_exp = v.dados_jogo['mob_aranha_exp']
+                v.mob_aranha_level = v.dados_jogo['mob_aranha_level']
+                v.mob_lobo_exp = v.dados_jogo['mob_lobo_exp']
+                v.mob_lobo_level = v.dados_jogo['mob_lobo_level']
+                v.mob_urso_exp = v.dados_jogo['mob_urso_exp']
+                v.mob_urso_level = v.dados_jogo['mob_urso_level']
+                v.mob_aranha_rainha_exp = v.dados_jogo['mob_aranha_rainha_exp']
+                v.mob_aranha_rainha_level = v.dados_jogo['mob_aranha_rainha_level']
+                v.axe_equip = v.dados_jogo['axe_equip']
+                v.Norte = v.dados_jogo['Norte']
+                v.Sul = v.dados_jogo['Sul']
+                v.Leste =  v.dados_jogo['Leste']
+                v.Oeste = v.dados_jogo['Oeste']
+                player1.rect.x = v.dados_jogo['rect.x']
+                player1.rect.y = v.dados_jogo['rect.y']
+                player1.nivel = v.dados_jogo['nivel']
+                player1.exp = v.dados_jogo['exp']
+                player1.prox_exp = v.dados_jogo['prox_exp']
+                player1.health = v.dados_jogo['health']
+                player1.max_health = v.dados_jogo['max_health']
+                player1.inventario = v.dados_jogo['inventario']     
+                v.loadgame_from_menu = False
+                
         tela.blit(mapa_jogo.mapa_atual,(0,0)) #blita a imagem de fundo do jogo
+        tela.blit(hudtop,(0,0)) #blita a imagem do topo do hud
         
         frames.tick(60)#Define frame rate
         delta_time = frames.tick(60)/1000 #Define o delta_time com base no frame rate
@@ -104,15 +142,12 @@ while run_game:
                 if player1.rect.colliderect(machado_rect): #detectar a colisão com o machado e pegar automaticamente
                         pygame.mixer.Sound.set_volume(som_pegar_machado,0.05)
                         pygame.mixer.Sound.play(som_pegar_machado)
-                        v.axe_equip = True
-
-        if v.gerando_arvores == True:
-                c.gerar_arvore(arvores, obstaculos, tela) #Gera as arvores toda vez que muda de mapa
-        
+                        v.axe_equip = True        
+                
         for event in pygame.event.get():
                 #Função do botão de sair do jogo
                 if event.type == pygame.QUIT: 
-                        run_game = False
+                        v.run_game = False
                         pygame.quit()
                         sys.exit()
                         
@@ -128,8 +163,7 @@ while run_game:
                                 elif event.key == pygame.K_ESCAPE:
                                         v.abrir_menu = True
                                         while v.abrir_menu:
-                                                menu.abrir(tela)
-                                                ########################################### CRIAR AQUI SETINHA DIRECIONAL PRA ESCOLHER AS OPÇÕES SEM O USO DO MOUSE
+                                                menu.abrir(tela, mouse_rect,mouse_button, font_menu, player1)                                                
                                                 for event in pygame.event.get():
                                                         if event.type == pygame.QUIT:
                                                                 pygame.quit()
@@ -151,7 +185,7 @@ while run_game:
                                                                 if event.key == pygame.K_i:
                                                                         pygame.mixer.Sound.stop(abrir_inventario)
                                                                         open_inventario = False
-                                                HUD.inventario(tela,player1,font_quest)
+                                                HUD.inventario(tela,player1,font_quest)                                                
                                                 pygame.display.update()
                                                 
                                 elif event.key == pygame.K_m: #mapa
@@ -166,7 +200,7 @@ while run_game:
                                                         if event.type == pygame.KEYDOWN:
                                                                 if event.key == pygame.K_m:
                                                                         open_mapa = False
-                                                HUD.bussola(tela,font_grande)
+                                                HUD.bussola(tela,font_grande1)                                                
                                                 pygame.display.update()
                                                 
                                 elif event.key == pygame.K_q: #quests
@@ -181,8 +215,10 @@ while run_game:
                                                         if event.type == pygame.KEYDOWN:
                                                                 if event.key == pygame.K_q:
                                                                         open_quests = False
-                                                HUD.quest(tela)
+                                                                        
+                                                HUD.quest(tela, font_quest, player1)                                
                                                 pygame.display.update()
+                                                        
                                        
                 elif event.type == pygame.KEYUP:
                         if event.key == pygame.K_e: #Caso o botão solto seja 'e', realiza ação
@@ -194,10 +230,9 @@ while run_game:
                                         pygame.mixer.Sound.set_volume(som_ataque,0.05)
                                         pygame.mixer.Sound.play(som_ataque)
 
-        #testando conceitos
-        #render_text = font_grande.render(str(player1.momentum),1,(0,0,0))
-        #tela.blit(render_text, (300,300))           
-                
+        for npc in NPCs:
+                todos_sprites.add(npc)
+                obstaculos.add(npc)
         #desenhar sprites
         todos_sprites.draw(tela)
         ag.draw(tela)
@@ -207,8 +242,13 @@ while run_game:
         #atualizar classes de sprites
         pg.update(delta_time, tela)
         ig.update(tela, player1)
-        ag.update(todos_sprites, player1, NPCs, ig, arvores, damage_show, delta_time, tela, font_damage, obstaculos)
+        ag.update(todos_sprites, player1, NPCs, ig, arvores, damage_show, delta_time, tela, font_damage, obstaculos, equip)
+        arvores.update(delta_time)
         bordas.update(pg, player1, arvores, ig, mapa_jogo, NPCs)
+
+        #Gera as arvores toda vez que muda de mapa
+        if v.gerando_arvores == True:
+                c.gerar_arvore(player1.rect, arvores, obstaculos, tela)
 
         #detectar as colisões
         player1.colisao(obstaculos, damage_show, font_damage, delta_time, tela)
@@ -218,6 +258,10 @@ while run_game:
                 pygame.mixer.Sound.play(fim_do_jogo)
                 #definir endgame
 
+        #Definir mouse do jogo
+        mouse_rect.center = pygame.mouse.get_pos()
+        tela.blit(mouse_button, mouse_rect)
+        
         #Atualiza tela
         pygame.display.update()
 

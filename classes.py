@@ -38,7 +38,9 @@ class Damage_Show:
                 
 class Player(pygame.sprite.Sprite):
         def __init__(self,x,y,tela):
-                super().__init__() 
+                super().__init__()
+
+                self.type = 'player'
                 
                 #movimentação do personagem
                 self.images = {
@@ -1452,25 +1454,25 @@ class Menu:
                 #SELECIONAR OPÇÃO DO SAVEGAME
                 if save1_rect.collidepoint(mouseposition) and self.savegame_menu == True:
                     save_time = datetime.datetime.now()
-                    self.savegame(tela, mouse_rect, mouse_button, number=1, savetime=save_time, player=jogador)
+                    self.savegame(tela, mouse_rect, mouse_button, number=1, savetime=save_time, player=jogador, equipamentos=equipamentos)
 
                 if save2_rect.collidepoint(mouseposition) and self.savegame_menu == True:
                     save_time = datetime.datetime.now()
-                    self.savegame(tela, mouse_rect, mouse_button, number=2, savetime=save_time, player=jogador)
+                    self.savegame(tela, mouse_rect, mouse_button, number=2, savetime=save_time, player=jogador, equipamentos=equipamentos)
 
                 #SELECIONAR OPÇÃO DO LOADGAME
                 if load1_rect.collidepoint(mouseposition) and self.loadgame_menu == True:
-                    self.loadgame(tela, mouse_rect, mouse_button, number= 1, player=jogador)
+                    self.loadgame(tela, mouse_rect, mouse_button, number= 1, player=jogador, equipamentos=equipamentos)
 
                 if load2_rect.collidepoint(mouseposition) and self.loadgame_menu == True:
-                    self.loadgame(tela, mouse_rect, mouse_button, number= 2, player=jogador)
+                    self.loadgame(tela, mouse_rect, mouse_button, number= 2, player=jogador, equipamentos=equipamentos)
 
         #Definir mouse do jogo
         mouse_rect.center = pygame.mouse.get_pos()
         tela.blit(mouse_button, mouse_rect)
         pygame.display.update()
 
-    def loadgame(self, tela, mouse_rect, mouse_button, number, player):
+    def loadgame(self, tela, mouse_rect, mouse_button, number, player, equipamentos):
         ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
         try:
             dados_jogo = {}
@@ -1517,7 +1519,7 @@ class Menu:
         except FileNotFoundError:
             pass          
         
-    def savegame(self, tela, mouse_rect, mouse_button, number, savetime, player):
+    def savegame(self, tela, mouse_rect, mouse_button, number, savetime, player, equipamentos):
         dados_jogo = { 'score': v.score,
                        'score_aranha': v.score_aranha,
                        'score_lobo': v.score_lobo,

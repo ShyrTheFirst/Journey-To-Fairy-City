@@ -12,10 +12,10 @@ menu = True
 run_game = False
 
 #variaveis de posição do mapa
-Norte = 3
+Norte = 0
 Sul = 0
 Leste = 0
-Oeste = 2
+Oeste = 0
 
 #Variaveis do mapa
 gerando_arvores = False

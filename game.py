@@ -48,6 +48,7 @@ ag = pygame.sprite.Group() #Grupo de ataques
 arvores = pygame.sprite.Group() #Grupo das arvores
 NPCs = pygame.sprite.Group() #Grupo dos NPCs
 bordas = pygame.sprite.Group() #Grupo das bordas do mapa
+grupo_itens = pygame.sprite.Group() #Grupo dos itens dropados
 
 obstaculos = pygame.sprite.Group() #Grupo para verificar colisões
 
@@ -124,7 +125,10 @@ while v.run_game:
                 player1.prox_exp = v.dados_jogo['prox_exp']
                 player1.health = v.dados_jogo['health']
                 player1.max_health = v.dados_jogo['max_health']
-                player1.inventario = v.dados_jogo['inventario']     
+                player1.inventario = v.dados_jogo['inventario']
+                equip.axe_nv = v.dados_jogo['axe_nv']
+                equip.helmet_nv = v.dados_jogo['helmet_nv']
+                equip.armor_nv =v.dados_jogo['armor_nv']
                 v.loadgame_from_menu = False
                 
         tela.blit(mapa_jogo.mapa_atual,(0,0)) #blita a imagem de fundo do jogo
@@ -163,7 +167,7 @@ while v.run_game:
                                 elif event.key == pygame.K_ESCAPE:
                                         v.abrir_menu = True
                                         while v.abrir_menu:
-                                                menu.abrir(tela, mouse_rect,mouse_button, font_menu, player1)                                                
+                                                menu.abrir(tela, mouse_rect,mouse_button, font_menu, player1, equip)                                                
                                                 for event in pygame.event.get():
                                                         if event.type == pygame.QUIT:
                                                                 pygame.quit()
@@ -185,7 +189,7 @@ while v.run_game:
                                                                 if event.key == pygame.K_i:
                                                                         pygame.mixer.Sound.stop(abrir_inventario)
                                                                         open_inventario = False
-                                                HUD.inventario(tela,player1,font_quest)                                                
+                                                HUD.inventario(player1, font_quest)                                                
                                                 pygame.display.update()
                                                 
                                 elif event.key == pygame.K_m: #mapa
@@ -200,7 +204,7 @@ while v.run_game:
                                                         if event.type == pygame.KEYDOWN:
                                                                 if event.key == pygame.K_m:
                                                                         open_mapa = False
-                                                HUD.bussola(tela,font_grande1)                                                
+                                                HUD.bussola(font_grande1)                                                
                                                 pygame.display.update()
                                                 
                                 elif event.key == pygame.K_q: #quests
@@ -216,35 +220,40 @@ while v.run_game:
                                                                 if event.key == pygame.K_q:
                                                                         open_quests = False
                                                                         
-                                                HUD.quest(tela, font_quest, player1)                                
+                                                HUD.quest(font_quest, player1)                                
                                                 pygame.display.update()
                                                         
                                        
                 elif event.type == pygame.KEYUP:
                         if event.key == pygame.K_e: #Caso o botão solto seja 'e', realiza ação
                                 player1.key_down = False #para o ataque
-                                if v.axe_equip == True and v.in_city == False:
+                                if v.axe_equip == True:
                                         ataque = c.Attack() #Class de ataque do personagem
+                                        todos_sprites.add(ataque)
                                         ag.add(ataque)
                                         ataque.criar(player1.rect.x, player1.rect.y, player1.ataque_dir, player1.nivel)
-                                        pygame.mixer.Sound.set_volume(som_ataque,0.05)
-                                        pygame.mixer.Sound.play(som_ataque)
+                                        if not v.in_city:
+                                                pygame.mixer.Sound.set_volume(som_ataque,0.05)
+                                                pygame.mixer.Sound.play(som_ataque)
+                                        else:
+                                                pygame.mixer.Sound.stop(som_ataque)
+                                                pygame.mixer.Sound.set_volume(som_acao,0.05)
+                                                pygame.mixer.Sound.play(som_acao)
 
         for npc in NPCs:
                 todos_sprites.add(npc)
                 obstaculos.add(npc)
         #desenhar sprites
         todos_sprites.draw(tela)
-        ag.draw(tela)
         arvores.draw(tela)
         bordas.draw(tela)
         
         #atualizar classes de sprites
         pg.update(delta_time, tela)
         ig.update(tela, player1)
-        ag.update(todos_sprites, player1, NPCs, ig, arvores, damage_show, delta_time, tela, font_damage, obstaculos, equip)
+        ag.update(todos_sprites, player1, NPCs, ig, arvores, damage_show, delta_time, tela, font_damage, obstaculos, equip, grupo_itens)
         arvores.update(delta_time)
-        bordas.update(pg, player1, arvores, ig, mapa_jogo, NPCs)
+        bordas.update(pg, player1, arvores, ig, mapa_jogo, NPCs, grupo_itens)
 
         #Gera as arvores toda vez que muda de mapa
         if v.gerando_arvores == True:

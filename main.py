@@ -39,21 +39,32 @@ loadgame_menu = False
 
 while v.menu:
     tela.blit(fundo,(0,0))
-    tela.blit(iniciar,(200,200))
-    tela.blit(load,(200,300))
-    tela.blit(sair,(450,500))
+    tela.blit(iniciar,(100,200))
+    tela.blit(load,(100,300))
+    tela.blit(sair,(500,500))
     
-    clicou_iniciar = pygame.Rect(245,205,320,50)
-    pygame.draw.rect(tela,(255,255,255),clicou_iniciar,1) #Test da rect
-    
-    clicou_loadgame = pygame.Rect(245,305,320,50)
-    pygame.draw.rect(tela,(255,255,255),clicou_loadgame,1)#Test da rect
-
-    clicou_sair = pygame.Rect(522,500,260,45)
-    pygame.draw.rect(tela,(255,255,255),clicou_sair,1)#Test da rect
+    clicou_iniciar = pygame.Rect(100,200,200,45)    
+    clicou_loadgame = pygame.Rect(100,300,200,45)
+    clicou_sair = pygame.Rect(500,500,200,45)
 
     clicou_load1 = pygame.Rect(600,225,120,100)
     clicou_load2 = pygame.Rect(600,325,120,100)
+
+    mousepos = pygame.mouse.get_pos()
+    if clicou_iniciar.collidepoint(mousepos):
+        iniciar = pygame.image.load(r'Graphics\Menu\start_click.png')
+    else:
+        iniciar = pygame.image.load(r'Graphics\Menu\start.png')
+        
+    if clicou_loadgame.collidepoint(mousepos):
+        load = pygame.image.load(r'Graphics\Menu\loadgame_click.png')
+    else:
+        load = pygame.image.load(r'Graphics\Menu\loadgame.png')
+
+    if clicou_sair.collidepoint(mousepos):
+        sair = pygame.image.load(r'Graphics\Menu\quitgame_click.png')
+    else:
+        sair = pygame.image.load(r'Graphics\Menu\quitgame.png')
 
     if loadgame_menu == True:       
         
@@ -94,6 +105,7 @@ while v.menu:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouseposition = pygame.mouse.get_pos()
             if clicou_loadgame.collidepoint(mouseposition):
+                load = pygame.image.load(r'Graphics\Menu\loadgame_clicked.png')
                 if not loadgame_menu:
                     loadgame_menu = True
                 else:
@@ -128,6 +140,7 @@ while v.menu:
             
         
         if clicou_iniciar.collidepoint(mouseposition):
+            iniciar = pygame.image.load(r'Graphics\Menu\start_clicked.png')
             v.menu = False
             v.run_game = True
             pygame.mixer.Sound.stop(menumusic)

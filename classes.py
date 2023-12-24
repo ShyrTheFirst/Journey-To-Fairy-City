@@ -82,6 +82,9 @@ class Player(pygame.sprite.Sprite):
                 self.char_exp_img = pygame.image.load(r'Graphics\HUD\char_exp.png')
                 self.char_exp_gain_img = pygame.image.load(r'Graphics\HUD\char_exp_gain.png')
                 self.blit_exp = self.char_exp_img
+                self.axe_nv = 0
+                self.helmet_nv = 0
+                self.armor_nv = 0
                 
                 #Definições de atributos
                 self.nivel = 1 #nivel do personagem
@@ -176,33 +179,37 @@ class Player(pygame.sprite.Sprite):
                                         damage_show.infos(self.rect.x+40, self.rect.y, sprite.dano,(255,0,0))
                                         damage_show.create_text(font)
                                         damage_show.draw(delta_time, tela)
+
+                                if sprite.type == 'objeto':
+                                        sprite.adicionar()
+                                        sprite.kill()
                                 
                                 #colisão na direita
-                                if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
-                                                self.rect.right = sprite.rect.left
-                                                self.dir.x = 0
-                                                if sprite.type == 'monstro':
-                                                        sprite.rect.x += 7
+                                if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left and not sprite.type == 'objeto':
+                                        self.rect.right = sprite.rect.left
+                                        self.dir.x = 0
+                                        if sprite.type == 'monstro':
+                                            sprite.rect.x += 7
                                                         
                                 #colisão na esquerda
-                                if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
-                                                self.rect.left = sprite.rect.right
-                                                self.dir.x = 0
-                                                if sprite.type == 'monstro':
-                                                        sprite.rect.x -= 7
+                                if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right and not sprite.type == 'objeto':
+                                        self.rect.left = sprite.rect.right
+                                        self.dir.x = 0
+                                        if sprite.type == 'monstro':
+                                            sprite.rect.x -= 7
                                 #colisão em baixo
-                                if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
-                                                self.rect.bottom = sprite.rect.top
-                                                self.dir.y = 0
-                                                if sprite.type == 'monstro':
-                                                        sprite.rect.y += 7
+                                if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top and not sprite.type == 'objeto':
+                                        self.rect.bottom = sprite.rect.top
+                                        self.dir.y = 0
+                                        if sprite.type == 'monstro':
+                                                sprite.rect.y += 7
                                                         
                                 #colisão em cima
-                                if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
-                                                self.rect.top = sprite.rect.bottom
-                                                self.dir.y = 0
-                                                if sprite.type == 'monstro':
-                                                        sprite.rect.y -= 7
+                                if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom and not sprite.type == 'objeto':
+                                        self.rect.top = sprite.rect.bottom
+                                        self.dir.y = 0
+                                        if sprite.type == 'monstro':
+                                                sprite.rect.y -= 7
                     else:
                         self.blit_health = self.char_health_img
                         
@@ -449,7 +456,7 @@ class Equipamentos():
                 }
 
         def definir_nivel(self):
-                #Definir equipamentos de nv1
+                #Definir equipamentos de nv1#########################################################################################
                 if self.helmet_nv >= 1 and self.helmet_nv < 5:
                         self.helmet_images={
                         'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv1\helmet_baixo3.png').convert_alpha()],
@@ -467,40 +474,363 @@ class Equipamentos():
                         'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv1\armor_left_ataque.png').convert_alpha()}
                         }
 
-                #Definir equipamentos de nv5
+                #Definir equipamentos de nv5#########################################################################################
                 if self.axe_nv >= 5 and self.axe_nv < 10:
-                        pass
-                '''
                         self.axe_images={
-                        'down':[],
-                        'up':[],
-                        'left':[],
-                        'right':[]
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv5\ataque_axe_right.png').convert_alpha()}
                         }
-                '''
                 if self.helmet_nv >= 5 and self.helmet_nv < 10:
-                        pass
-                '''
                         self.helmet_images={
-                        'down':[],
-                        'up':[],
-                        'left':[],
-                        'right':[]
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv5\helmet_right1.png').convert_alpha()]
                         }
-                '''
                 if self.armor_nv >= 5 and self.armor_nv < 10 :
-                        pass
-                '''
                         self.armor_images={
-                        'down':[],
-                        'up':[],
-                        'left':[],
-                        'right':[]
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv5\armor_left_ataque.png').convert_alpha()}
                         }
-                '''
 
-        def definir_equipamentos(self,character):
-                character.equipamento_atual(self.axe_images,self.helmet_images,self.armor_images)
+                #Definir equipamentos de nv10#########################################################################################
+                if self.axe_nv >= 10 and self.axe_nv < 19:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv10\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 10 and self.helmet_nv < 20:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv10\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 10 and self.armor_nv < 20 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv10\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv20#########################################################################################
+                if self.axe_nv >= 20 and self.axe_nv < 30:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv20\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 20 and self.helmet_nv < 30:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv20\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 20 and self.armor_nv < 30 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv20\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv30#########################################################################################
+                if self.axe_nv >= 30 and self.axe_nv < 40:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv30\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 30 and self.helmet_nv < 40:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv30\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 30 and self.armor_nv < 40 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv30\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #definir equipamentos de nv40#########################################################################################
+                if self.axe_nv >= 40 and self.axe_nv < 50:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv40\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 40 and self.helmet_nv < 50:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv40\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 40 and self.armor_nv < 50 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv40\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv50#########################################################################################
+                if self.axe_nv >= 50 and self.axe_nv < 60:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv50\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 50 and self.helmet_nv < 60:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv50\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 50 and self.armor_nv < 60 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv50\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv60#########################################################################################
+                if self.axe_nv >= 60 and self.axe_nv < 70:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv60\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 60 and self.helmet_nv < 70:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv60\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 60 and self.armor_nv < 70 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv60\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv70#########################################################################################
+                if self.axe_nv >= 70 and self.axe_nv < 80:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv70\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 70 and self.helmet_nv < 80:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv70\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 70 and self.armor_nv < 80 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv70\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv80#########################################################################################
+                if self.axe_nv >= 80 and self.axe_nv < 90:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv80\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 80 and self.helmet_nv < 90:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv80\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 80 and self.armor_nv < 90 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv80\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv90#########################################################################################
+                if self.axe_nv >= 90 and self.axe_nv < 100:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv90\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 90 and self.helmet_nv < 100:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv90\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 90 and self.armor_nv < 100 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv90\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos de nv100#########################################################################################
+                if self.axe_nv >= 100 and self.axe_nv < 150:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\nv100\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 100 and self.helmet_nv < 150:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\nv100\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 100 and self.armor_nv < 150 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\nv100\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos Lendários#########################################################################################
+                if self.axe_nv >= 150 and self.axe_nv < 500:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\Lendarios\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 150 and self.helmet_nv < 500:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Lendarios\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 150 and self.armor_nv < 500 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\Lendarios\armor_left_ataque.png').convert_alpha()}
+                        }
+                        
+                #Definir equipamentos Místicos#########################################################################################
+                if self.axe_nv >= 500 and self.axe_nv < 999:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\Misticos\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 500 and self.helmet_nv < 999:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Misticos\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 500 and self.armor_nv < 999 :
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\Misticos\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                #Definir equipamentos Divinos#########################################################################################
+                if self.axe_nv >= 999:
+                        self.axe_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\axe_right1.png').convert_alpha()],
+                        'ataque':{'down':pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\ataque_axe_down.png').convert_alpha(),'up':pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\ataque_axe_up.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\ataque_axe_left.png').convert_alpha(),'right':pygame.image.load(r'Graphics\Character\Equips\Axe\Divinos\ataque_axe_right.png').convert_alpha()}
+                        }
+                if self.helmet_nv >= 999:
+                        self.helmet_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Helmet\Divinos\helmet_right1.png').convert_alpha()]
+                        }
+                if self.armor_nv >= 999:
+                        self.armor_images={
+                        'down':[pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_baixo1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_baixo2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_baixo3.png').convert_alpha()],
+                        'up':[pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_cima1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_cima2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_cima3.png').convert_alpha()],
+                        'left':[pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_left1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_left2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_left1.png').convert_alpha()],
+                        'right':[pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_right1.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_right2.png').convert_alpha(),pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_right1.png').convert_alpha()],
+                        'ataque':{'right':pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_right_ataque.png').convert_alpha(),'left':pygame.image.load(r'Graphics\Character\Equips\Armor\Divinos\armor_left_ataque.png').convert_alpha()}
+                        }
+                
+                
+
+        def definir_equipamentos(self,player):
+                player.equipamento_atual(self.axe_images,self.helmet_images,self.armor_images)
+                player.axe_nv = self.axe_nv
+                player.helmet_nv = self.helmet_nv
+                player.armor_nv = self.armor_nv
 
 ########################################################################################################################################################################################################################################
 
@@ -652,8 +982,255 @@ class Inimigos(pygame.sprite.Sprite):
                                 self.maxhealth = 500
                                 self.health = self.maxhealth
                                 self.valor_exp = 200
-      
-                ####Aqui colocar todas as sprites, definir o inimigo através do tipo dele e não ter uma class pra cada tipo
+
+                if self.race == 'lobo':
+                        self.level = v.mob_lobo_level
+                        self.exp = v.mob_lobo_exp
+                        self.dano += self.level
+                        if not self.level == 0:
+                            self.lvlup_cond = self.exp / (self.level*150)
+                        else:
+                            self.lvlup_cond = self.exp / 150
+                        if self.level < 10:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv0/lobo_direitacima.png').convert_alpha()
+                                               }
+                                self.max_health = 200
+                                self.health = self.maxhealth
+                                self.valor_exp = 50
+                                
+                        if self.level >= 10 and self.level < 20:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv10/lobo_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 400
+                                self.health = self.maxhealth
+                                self.valor_exp = 100
+                                
+                        if self.level >= 20 and self.level < 30:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv20/lobo_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 600
+                                self.health = self.maxhealth
+                                self.valor_exp = 150
+                                
+                        if self.level >= 30 and self.level < 50:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv30/lobo_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 800
+                                self.health = self.maxhealth
+                                self.valor_exp = 200
+                                
+                        if self.level >= 50:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Lobo/nv50/lobo_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 1000
+                                self.health = self.maxhealth
+                                self.valor_exp = 400
+
+                if self.race == 'urso':
+                        self.level = v.mob_urso_level
+                        self.exp = v.mob_urso_exp
+                        self.dano += self.level
+                        if not self.level == 0:
+                            self.lvlup_cond = self.exp / (self.level*150)
+                        else:
+                            self.lvlup_cond = self.exp / 150
+                        if self.level < 10:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Urso/nv0/urso_direitacima.png').convert_alpha()
+                                               }
+                                self.max_health = 400
+                                self.health = self.maxhealth
+                                self.valor_exp = 200
+                                
+                        if self.level >= 10 and self.level < 20:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Urso/nv10/urso_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 800
+                                self.health = self.maxhealth
+                                self.valor_exp = 300
+                                
+                        if self.level >= 20 and self.level < 30:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Urso/nv20/urso_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 1200
+                                self.health = self.maxhealth
+                                self.valor_exp = 400
+                                
+                        if self.level >= 30 and self.level < 50:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Urso/nv30/urso_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 1600
+                                self.health = self.maxhealth
+                                self.valor_exp = 300
+                                
+                        if self.level >= 50:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Urso/nv50/urso_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 2000
+                                self.health = self.maxhealth
+                                self.valor_exp = 500
+
+                if self.race == 'aranha_rainha':
+                        self.level = v.mob_aranha_rainha_level
+                        self.exp = v.mob_aranha_rainha_exp
+                        self.dano += self.level
+                        if not self.level == 0:
+                            self.lvlup_cond = self.exp / (self.level*20)
+                        else:
+                            self.lvlup_cond = self.exp / 20
+                        if self.level < 10:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv0/aranha_rainha_direitacima.png').convert_alpha()
+                                               }
+                                self.max_health = 1000
+                                self.health = self.maxhealth
+                                self.valor_exp = 500
+                                
+                        if self.level >= 10 and self.level < 20:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv10/aranha_rainha_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 2000
+                                self.health = self.maxhealth
+                                self.valor_exp = 800
+                                
+                        if self.level >= 20 and self.level < 30:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv20/aranha_rainha_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 3000
+                                self.health = self.maxhealth
+                                self.valor_exp = 1100
+                                
+                        if self.level >= 30 and self.level < 50:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv30/aranha_rainha_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 4000
+                                self.health = self.maxhealth
+                                self.valor_exp = 1400
+                                
+                        if self.level >= 50:
+                                self.images = {'parada' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_parada.png').convert_alpha(),
+                'esquerda' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_esquerda.png').convert_alpha(),
+                'direita' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_direita.png').convert_alpha(),
+                'cima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_cima.png').convert_alpha(),
+                'baixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_baixo.png').convert_alpha(),
+                'esquerdabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_esquerdabaixo.png').convert_alpha(),
+                'esquerdacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_esquerdacima.png').convert_alpha(),
+                'direitabaixo' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_direitabaixo.png').convert_alpha(),
+                'direitacima' : pygame.image.load(r'Graphics/Mob/Aranha_Rainha/nv50/aranha_rainha_direitacima.png').convert_alpha()
+                                               }
+                                self.maxhealth = 10000
+                                self.health = self.maxhealth
+                                self.valor_exp = 5000
 
         def update(self,tela,player):
                 
@@ -746,25 +1323,22 @@ class Inimigos(pygame.sprite.Sprite):
   
 class Menu:
     def __init__(self):
-        self.load = pygame.transform.scale(pygame.image.load(r'graphics/Menu/loadgame.png'),(200,50))
-        self.save = pygame.transform.scale(pygame.image.load(r'graphics/Menu/savegame.png'),(200,50))
-        self.quit = pygame.transform.scale(pygame.image.load(r'graphics/Menu/quitgame.png'),(200,50))
+        self.load = pygame.image.load(r'graphics/Menu/loadgame.png')
+        self.save = pygame.image.load(r'graphics/Menu/savegame.png')
+        self.quit = pygame.image.load(r'graphics/Menu/quitgame.png')
         self.menu = pygame.image.load(r'graphics/Menu/menu_jogo.png')
         self.loadgame_menu = False
         self.savegame_menu = False
+        self.loadsave_color = (255,255,255)
         
-    def abrir(self, tela, mouse_rect,mouse_button, fonte, jogador):        
-        tela.blit(self.menu, (0,0))#
-        tela.blit(self.load,(40,150))#
-        tela.blit(self.save,(540,150))#
-        tela.blit(self.quit,(280,450))#
-        clicou_load = pygame.Rect(85,155,120,30) # +45 da pos x, +5 da pos y, -80 w, - 20 h para a rect ficar certa na imagem
-        clicou_save = pygame.Rect(585,155,120,30)
-        clicou_quit = pygame.Rect(325,455,120,30)
-        
-        pygame.draw.rect(tela,(255,255,255),clicou_quit,1)#Test da rect
-        pygame.draw.rect(tela,(255,255,255),clicou_save,1)#Test da rect
-        pygame.draw.rect(tela,(255,255,255),clicou_load,1)#Test da rect
+    def abrir(self, tela, mouse_rect,mouse_button, fonte, jogador, equipamentos):        
+        tela.blit(self.menu, (0,0))
+        tela.blit(self.load,(37,150))
+        tela.blit(self.save,(562,150))#
+        tela.blit(self.quit,(280,450))
+        clicou_load = pygame.Rect(37,150,200,45)
+        clicou_save = pygame.Rect(562,150,200,45)
+        clicou_quit = pygame.Rect(280,450,200,45)
 
         #RECT dos savegames 
         save1_rect = pygame.Rect(585,205,120,100)
@@ -778,24 +1352,24 @@ class Menu:
 
         #Detectar colisao nos botões
         if clicou_load.collidepoint(mouseposition):
-            self.load = pygame.transform.scale(pygame.image.load(r'graphics/Menu/loadgame_click.png'),(200,50))
+            self.load = pygame.image.load(r'graphics/Menu/loadgame_click.png')
 
         elif clicou_save.collidepoint(mouseposition):
-            self.save = pygame.transform.scale(pygame.image.load(r'graphics/Menu/savegame_click.png'),(200,50))
+            self.save = pygame.image.load(r'graphics/Menu/savegame_click.png')
 
         elif clicou_quit.collidepoint(mouseposition):
-            self.quit = pygame.transform.scale(pygame.image.load(r'graphics/Menu/quitgame_click.png'),(200,50))
+            self.quit = pygame.image.load(r'graphics/Menu/quitgame_click.png')
 
         else:
-            self.load = pygame.transform.scale(pygame.image.load(r'graphics/Menu/loadgame.png'),(200,50))
-            self.save = pygame.transform.scale(pygame.image.load(r'graphics/Menu/savegame.png'),(200,50))
-            self.quit = pygame.transform.scale(pygame.image.load(r'graphics/Menu/quitgame.png'),(200,50))
+            self.load = pygame.image.load(r'graphics/Menu/loadgame.png')
+            self.save = pygame.image.load(r'graphics/Menu/savegame.png')
+            self.quit = pygame.image.load(r'graphics/Menu/quitgame.png')
         
         if self.loadgame_menu == True:
-            self.load = pygame.transform.scale(pygame.image.load(r'graphics/Menu/loadgame_clicked.png'),(200,50))
+            self.load = pygame.image.load(r'graphics/Menu/loadgame_clicked.png')
             #rect do loadgame
-            pygame.draw.rect(tela,(255,255,255),load1_rect)
-            pygame.draw.rect(tela,(255,255,255),load2_rect)
+            pygame.draw.rect(tela,self.loadsave_color,load1_rect)
+            pygame.draw.rect(tela,self.loadsave_color,load2_rect)
             #delimitador das rects
             pygame.draw.rect(tela,(0,0,0),pygame.Rect(85,205,120,100),1)
             pygame.draw.rect(tela,(0,0,0),pygame.Rect(85,305,120,100),1)
@@ -818,7 +1392,7 @@ class Menu:
                 pass
 
         if self.savegame_menu == True:
-            self.save = pygame.transform.scale(pygame.image.load(r'graphics/Menu/savegame_clicked.png'),(200,50))
+            self.save = pygame.image.load(r'graphics/Menu/savegame_clicked.png')
             #rect do savegame
             pygame.draw.rect(tela,(255,255,255),save1_rect)
             pygame.draw.rect(tela,(255,255,255),save2_rect)            
@@ -872,8 +1446,8 @@ class Menu:
                     self.quitgame()
 
                 else:
-                    self.load = pygame.transform.scale(pygame.image.load(r'graphics/Menu/loadgame.png'),(200,50))
-                    self.save = pygame.transform.scale(pygame.image.load(r'graphics/Menu/savegame.png'),(200,50))
+                    self.load = pygame.image.load(r'graphics/Menu/loadgame.png')
+                    self.save = pygame.image.load(r'graphics/Menu/savegame.png')
                     
                 #SELECIONAR OPÇÃO DO SAVEGAME
                 if save1_rect.collidepoint(mouseposition) and self.savegame_menu == True:
@@ -932,17 +1506,18 @@ class Menu:
                 player.prox_exp = dados_jogo['prox_exp']
                 player.health = dados_jogo['health']
                 player.max_health = dados_jogo['max_health']
-                player.inventario = dados_jogo['inventario']                
+                player.inventario = dados_jogo['inventario']
+                equipamentos.axe_nv = dados_jogo['axe_nv']
+                equipamentos.helmet_nv = dados_jogo['helmet_nv']
+                equipamentos.armor_nv = dados_jogo['armor_nv']
+                
+
+            v.abrir_menu = False
 
         except FileNotFoundError:
-            pass #Mostrar que não há save para carregar
-        #imagem cinza do load e som de erro?
-                           
-
-            
+            pass          
         
     def savegame(self, tela, mouse_rect, mouse_button, number, savetime, player):
-        ##########DAR UM SINAL DE QUE O CLIQUE FUNCIONOU
         dados_jogo = { 'score': v.score,
                        'score_aranha': v.score_aranha,
                        'score_lobo': v.score_lobo,
@@ -974,14 +1549,15 @@ class Menu:
                        'health': player.health,
                        'max_health': player.max_health,
                        'inventario': player.inventario,
-                       'save_time': savetime                       
+                       'save_time': savetime,
+                       'axe_nv': equipamentos.axe_nv,
+                       'helmet_nv': equipamentos.helmet_nv,
+                       'armor_nv': equipamentos.armor_nv
                        }
         with open(f'save{number}.dat','wb') as arquivo:
             pickle.dump(dados_jogo,arquivo)
-            ##########DAR UM SINAL DE QUE O SAVE FUNCIONOU
 
     def quitgame(self):
-        #criar pop up perguntando se tem certeza?
         pygame.quit()
         sys.exit()
         
@@ -1012,7 +1588,7 @@ class Attack(pygame.sprite.Sprite):
         #Se equipamento lvl 10 --> dano = x
         #Se equipamento lvl 50 --> dano = 1000
             
-        def update(self, grupo_sprites, player, npc, inimigo, arvore, damage_show, delta_time, tela, font, grupo_obstaculos, equipamentos):
+        def update(self, grupo_sprites, player, npc, inimigo, arvore, damage_show, delta_time, tela, font, grupo_obstaculos, equipamentos, grupo_itens):
 
             self.mask = pygame.mask.from_surface(self.image) #Atualiza a mask
             
@@ -1027,58 +1603,45 @@ class Attack(pygame.sprite.Sprite):
                 
             # Movimenta o ataque na direção em que o jogador está se movendo
             if self.direction == 'left':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.x -= self.speed
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\left.png')
                     
             elif self.direction == 'right':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.x += self.speed
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\right.png')
                     
             elif self.direction == 'up':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.y -= self.speed
                     self.rect.x = player.rect.x - 10
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\up.png')
                     
             elif self.direction == 'down':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.y += self.speed
                     self.rect.x = player.rect.x - 10
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\down.png')
 
             elif self.direction == 'rightdown':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.y += self.speed
                     self.rect.x += self.speed
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\rightdown.png')
                     
             elif self.direction == 'rightup':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.y -= self.speed
                     self.rect.x += self.speed
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\rightup.png')
                     
             elif self.direction == 'leftdown':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.y += self.speed
                     self.rect.x -= self.speed
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\leftdown.png')
                     
             elif self.direction == 'leftup':
-                    if v.Norte == 3 and v.Oeste == 3:
-                        self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
                     self.rect.y -= self.speed
                     self.rect.x -= self.speed
                     self.image = pygame.image.load(r'Graphics\Character\Ataque\leftup.png')
+
+            if v.Norte == 3 and v.Oeste == 3:
+                self.image = pygame.image.load(r'Graphics\Character\Ataque\vazio.png')
 
 ###############################################
                     
@@ -1099,7 +1662,19 @@ class Attack(pygame.sprite.Sprite):
                         arvore.health -= self.dano
                         if arvore.health <= 0:                            
                             ####################################GERAR AQUI UMA ANIMAÇÃO DE ITEM
-                            player.inventario[arvore.tipo_tronco] += random.randrange(arvore.min_quant_tronco,arvore.quant_tronco)
+                            arvore_icone = {
+                                'troncos': pygame.image.load(r'Graphics\HUD\Inventario\tronco.png'),
+                                'troncos1': pygame.image.load(r'Graphics\HUD\Inventario\tronco1.png'),
+                                'troncos2': pygame.image.load(r'Graphics\HUD\Inventario\tronco2.png'),
+                                'troncos3': pygame.image.load(r'Graphics\HUD\Inventario\tronco3.png'),
+                                'troncos4': pygame.image.load(r'Graphics\HUD\Inventario\tronco4.png'),
+                                'troncos5': pygame.image.load(r'Graphics\HUD\Inventario\tronco5.png')
+                                }
+                            objeto = Objeto_chao(arvore_icone[arvore.tipo_tronco], arvore.old_rect.x, arvore.old_rect.y, tela, player, arvore.tipo_tronco, arvore.min_quant_tronco, arvore.quant_tronco)
+                            grupo_sprites.add(objeto)
+                            grupo_obstaculos.add(objeto)
+                            grupo_itens.add(objeto)
+                            
                             arvore.kill()
                             
                             randomizando = random.randrange(0,10)
@@ -1185,18 +1760,30 @@ class Attack(pygame.sprite.Sprite):
 
 #############################################################################################################################################################################################################################################################################################################################################################################################################################################    
 
+class Objeto_chao(pygame.sprite.Sprite):
+    def __init__(self, image, posx, posy, tela, player, tipo, minimo, maximo):
+        super().__init__()
+        self.type = 'objeto'
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.old_rect = self.rect.copy()
+        self.rect.x = posx + 25
+        self.rect.y = posy + 30
+        self.tela = tela
+        self.player = player
+        self.tipo = tipo
+        self.minimo = minimo
+        self.maximo = maximo
+
+    def adicionar(self):
+        self.player.inventario[self.tipo] += random.randrange(self.minimo, self.maximo)
+
+#############################################################################################################################################################################################################################################################################################################################################################################################################################################    
+        
 class HUD:
     def __init__(self,tela):
-        pass
-
-    def inventario(self,tela,personagem,fonte):
-        #definindo o fundo do inventario
-        fundo_inventario = pygame.image.load(r'Graphics\HUD\fundo.png')
-        fundo_inventario.set_alpha(10)
-        tela.blit(fundo_inventario,(0,0))
-
-        #definindo os recursos do inventario
-        recursos = {'troncos': pygame.image.load(r'Graphics\HUD\Inventario\tronco.png'),
+        self.tela = tela
+        self.recursos = {'troncos': pygame.image.load(r'Graphics\HUD\Inventario\tronco.png'),
                     'metais': pygame.image.load(r'Graphics\HUD\Inventario\metal.png'),
                     'tecidos': pygame.image.load(r'Graphics\HUD\Inventario\tecido.png'),
                     'couros': pygame.image.load(r'Graphics\HUD\Inventario\couro.png'),
@@ -1221,19 +1808,53 @@ class HUD:
                     'pocao_media': pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\pocao_media.png'),(30,30)),
                     'pocao_grande': pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\pocao_grande.png'),(30,30))
                     }
+
+    def inventario(self, player, fonte):
+        #definindo o fundo do inventario
+        fundo_inventario = pygame.image.load(r'Graphics\HUD\fundo.png')
+        fundo_inventario.set_alpha(10)
+        self.tela.blit(fundo_inventario,(0,0))
+
+        #definindo os recursos do inventario
+        
         
         #definindo os equipamentos do inventario
-        axe = pygame.image.load(r'Graphics\HUD\Craft\axe_button.png') #########PROVISÓRIO precisa ser 100x100
-        armor = pygame.image.load(r'Graphics\HUD\Craft\armor_button.png')  #########PROVISÓRIO precisa ser 100x100
-        helmet = pygame.image.load(r'Graphics\HUD\Craft\helmet_button.png') #########PROVISÓRIO precisa ser 100x100
+        if not player.axe_nv >= 150:
+            axe = pygame.transform.scale(pygame.image.load(fr'Graphics\HUD\Inventario\nv{player.axe_nv}\axe_icon.png'),(100,100))
+        elif player.axe_nv >= 150 and player.axe_nv < 500:
+            axe = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Lendarios\axe_icon.png'),(100,100))
+        elif player.axe_nv >= 500 and player.axe_nv < 999:
+            axe = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Misticos\axe_icon.png'),(100,100))
+        elif player.axe_nv >= 999:
+            axe = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Divinos\axe_icon.png'),(100,100))
+            
+        if not player.helmet_nv >= 150:
+            helmet = pygame.transform.scale(pygame.image.load(fr'Graphics\HUD\Inventario\nv{player.helmet_nv}\helmet_icon.png'),(100,100))
+        elif player.helmet_nv >= 150 and player.helmet_nv < 500:
+            helmet = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Lendarios\helmet_icon.png'),(100,100))
+        elif player.helmet_nv >= 500 and player.helmet_nv < 999:
+            helmet = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Misticos\helmet_icon.png'),(100,100))
+        elif player.helmet_nv >= 999:
+            helmet = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Divinos\helmet_icon.png'),(100,100))
+            
+        if not player.armor_nv >= 150:
+            armor = pygame.transform.scale(pygame.image.load(fr'Graphics\HUD\Inventario\nv{player.helmet_nv}\armor_icon.png'),(100,100))
+        elif player.armor_nv >= 150 and player.armor_nv < 500:
+            armor = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Lendarios\armor_icon.png'),(100,100))
+        elif player.armor_nv >= 500 and player.armor_nv < 999:
+            armor = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Misticos\armor_icon.png'),(100,100))
+        elif player.armor_nv >= 999:
+            armor = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\Inventario\Divinos\armoricon.png'),(100,100))
+            
+        
 
         #definindo os textos dos recursos
         posx_cont = 1
         posy_cont = 5
-        for key in personagem.inventario:
+        for key in player.inventario:
             if not key == 'ouro' and not key == 'diamante' and not key == 'ouro_vermelho' and not key == 'ouro_negro':
-                if not personagem.inventario[key] == 0:
-                    quant_item = fonte.render(str(personagem.inventario[key]), True, (255,255,255))
+                if not player.inventario[key] == 0:
+                    quant_item = fonte.render(str(player.inventario[key]), True, (255,255,255))
                     
                     #blitando os recursos
                     if posx_cont > 1:
@@ -1241,7 +1862,7 @@ class HUD:
                     else:
                         posx_image = (posx_cont*50)
                     posy_image = posy_cont*50
-                    tela.blit(recursos[key],(posx_image,posy_image))
+                    self.tela.blit(self.recursos[key],(posx_image,posy_image))
                     
                     #blitando as quantidades
                     if posx_cont > 1:
@@ -1249,7 +1870,7 @@ class HUD:
                     else:
                         posx_text = (posx_cont*50) + 20
                     posy_text = posy_cont*50 + 20
-                    tela.blit(quant_item,(posx_text,posy_text))          
+                    self.tela.blit(quant_item,(posx_text,posy_text))          
                     if posy_cont > 9:
                         posy_cont = 5
                         posx_cont += 1
@@ -1257,70 +1878,77 @@ class HUD:
                         posy_cont += 1
             else:
                 #criar o ouro na tela do inventario aqui
-                if not personagem.inventario['diamante'] == 0:
-                    diamante = fonte.render(str(personagem.inventario['diamante']), True, (0,255,255))
-                    diamante_icon = pygame.image.load(r'Graphics\HUD\Inventario\diamante.png')
+                if not player.inventario['diamante'] == 0:
+                    diamante = fonte.render(str(player.inventario['diamante']), True, (0,255,255))
+                    diamante_icon = pygame.image.load(r'Graphics\HUD\Inventario\diamante.png') ################## Coloco isso nos recursos??##############################################
                     diamante_icon = pygame.transform.scale(diamante_icon,(20,20))
-                    tela.blit(diamante, (670,250))
-                    tela.blit(diamante_icon, (640,253))
+                    self.tela.blit(diamante, (670,250))
+                    self.tela.blit(diamante_icon, (640,253))
                     
-                if not personagem.inventario['ouro_vermelho'] == 0:
-                    ouro_vermelho = fonte.render(str(personagem.inventario['ouro_vermelho']), True, (255,0,0))
-                    ouro_vermelho_icon = pygame.image.load(r'Graphics\HUD\Inventario\ouro_vermelho.png')
+                if not player.inventario['ouro_vermelho'] == 0:
+                    ouro_vermelho = fonte.render(str(player.inventario['ouro_vermelho']), True, (255,0,0))
+                    ouro_vermelho_icon = pygame.image.load(r'Graphics\HUD\Inventario\ouro_vermelho.png') ################## Coloco isso nos recursos??##############################################
                     ouro_vermelho_icon = pygame.transform.scale(ouro_vermelho_icon,(20,20))
-                    tela.blit(ouro_vermelho, (670,300))
-                    tela.blit(ouro_vermelho_icon, (640,303))
+                    self.tela.blit(ouro_vermelho, (670,300))
+                    self.tela.blit(ouro_vermelho_icon, (640,303))
                     
-                if not personagem.inventario['ouro_negro'] == 0:
-                    ouro_negro = fonte.render(str(personagem.inventario['ouro_negro']), True, (0,0,0))
-                    ouro_negro_icon = pygame.image.load(r'Graphics\HUD\Inventario\ouro_negro.png')
+                if not player.inventario['ouro_negro'] == 0:
+                    ouro_negro = fonte.render(str(player.inventario['ouro_negro']), True, (0,0,0))
+                    ouro_negro_icon = pygame.image.load(r'Graphics\HUD\Inventario\ouro_negro.png') ################## Coloco isso nos recursos??##############################################
                     ouro_negro_icon = pygame.transform.scale(ouro_negro_icon,(20,20))
-                    tela.blit(ouro_negro, (670,350))
-                    tela.blit(ouro_negro_icon, (640,353))
+                    self.tela.blit(ouro_negro, (670,350))
+                    self.tela.blit(ouro_negro_icon, (640,353))
                             
-                ouro = fonte.render(str(personagem.inventario['ouro']), True, (255,255,0))
-                ouro_icon = pygame.image.load(r'Graphics\HUD\Inventario\ouro.png')
+                ouro = fonte.render(str(player.inventario['ouro']), True, (255,255,0))
+                ouro_icon = pygame.image.load(r'Graphics\HUD\Inventario\ouro.png') ################## Coloco isso nos recursos??##############################################
                 ouro_icon = pygame.transform.scale(ouro_icon,(20,20))
-                tela.blit(ouro, (670,200))
-                tela.blit(ouro_icon, (640,203))
+                self.tela.blit(ouro, (670,200))
+                self.tela.blit(ouro_icon, (640,203))
             
 
         #blitando os itens
-        tela.blit(helmet,(450,200))
-        tela.blit(armor,(450,300))
-        tela.blit(axe,(350,300))
+        self.tela.blit(helmet,(450,200))
+        self.tela.blit(armor,(450,300))
+        self.tela.blit(axe,(350,300))
 
-    def bussola(self,tela,fonte):
-        bussola = pygame.image.load(r'Graphics\HUD\bussola.png') #Criar uma nova imagem de bussola, que condiz mais com o jogo? Talvez uma bussola tipo real, em pixel art?
-        bussola.set_alpha(50)
-        tela.fill((0,0,0))
-        tela.blit(bussola, (0,0))
+    def bussola(self, fonte):
+        bussola = pygame.transform.scale(pygame.image.load(r'Graphics\HUD\bussola.png'),(800,600))
+        #bussola.set_alpha(50)
+        self.tela.fill((0,0,0))
+        self.tela.blit(bussola, (-100,0))
 
         #definindo a pos do personagem para a bussola
+        pos_texto = fonte.render("Your position:", True, (255,255,255))
+        self.tela.blit(pos_texto,(500,10))
+        pos_texto_h = pos_texto.get_size()[1]
+        
         #Norte
-        norte_texto = fonte.render(str(v.Norte), True, (255,255,255))
-        tela.blit(norte_texto, (400, 15))
+        norte_texto = fonte.render('N: '+str(v.Norte), True, (255,255,255))
+        self.tela.blit(norte_texto, (550, 10+pos_texto_h))
         #Sul
-        sul_texto = fonte.render(str(v.Sul), True, (255,255,255))
-        tela.blit(sul_texto, (400, 560))
+        sul_texto = fonte.render('S: '+str(v.Sul), True, (255,255,255))
+        self.tela.blit(sul_texto, (550, 10+(pos_texto_h*2) ))
         #Leste
-        leste_texto = fonte.render(str(v.Leste), True, (255,255,255))
-        tela.blit(leste_texto, (660, 300))
+        leste_texto = fonte.render('E: '+str(v.Leste), True, (255,255,255))
+        self.tela.blit(leste_texto, (550, 10+(pos_texto_h*3)))
         #Oeste
-        oeste_texto = fonte.render(str(v.Oeste), True, (255,255,255))
-        tela.blit(oeste_texto, (130, 320))
+        oeste_texto = fonte.render('W: '+str(v.Oeste), True, (255,255,255))
+        self.tela.blit(oeste_texto, (550, 10+(pos_texto_h*4)))
 
-    def quest(self, tela, fonte, personagem): ###### Quest principal - armazenada no personagem
+    def quest(self, fonte, player): ###### Quest principal - armazenada no personagem
         quest = pygame.image.load(r'Graphics\HUD\Quests\fundoquest.png')
         quest.set_alpha(50)
-        tela.blit(quest, (0,0))
+        self.tela.blit(quest, (0,0))
 
+        #Criar lado esquerdo - MAIN QUEST###############################################################################################################################################
+        #Main quest é armazenada na class jogador
+        
         if v.quest_em_progresso == True:
-            escrever_dialogo("PROGRESS", (325,150), fonte, tela)
-            escrever_dialogo("You have to kill: ", (300,200), fonte, tela)
-            escrever_dialogo(str(v.score_alvo_quest), (300,225), fonte, tela)
-            escrever_dialogo(v.mob_atual, (300,250), fonte, tela)
-            escrever_dialogo("You killed: ", (300,275), fonte, tela)
+            escrever_dialogo("PROGRESS", (325,150), fonte, self.tela)
+            escrever_dialogo("You have to kill: ", (300,200), fonte, self.tela)
+            escrever_dialogo(str(v.score_alvo_quest), (300,225), fonte, self.tela)
+            escrever_dialogo(v.mob_atual, (300,250), fonte, self.tela)
+            escrever_dialogo("You killed: ", (300,275), fonte, self.tela)
             score_real = 0
             if v.mob_atual == 'spiders':
                 score_real = v.score_aranha - v.score_atual_quest              
@@ -1331,61 +1959,55 @@ class HUD:
                 
             if score_real >= v.score_alvo_quest :
                 score_real = v.score_alvo_quest
-            escrever_dialogo(str(score_real), (300,300), fonte, tela)
-            
-            #Criar lado esquerdo - MAIN QUEST
+            escrever_dialogo(str(score_real), (300,300), fonte, self.tela)
             
             #Lado direito da tela
-            escrever_dialogo("Total score: ", (555,100), fonte, tela)
-            escrever_dialogo(str(v.score),(555,120), fonte, tela)
+            escrever_dialogo("Total score: ", (555,100), fonte, self.tela)
+            escrever_dialogo(str(v.score),(555,120), fonte, self.tela)
             
             if v.score_aranha > 0:
-                escrever_dialogo("Spiders killed: ", (555,150), fonte, tela)
-                escrever_dialogo(str(v.score_aranha), (555,170), fonte, tela)
+                escrever_dialogo("Spiders killed: ", (555,150), fonte, self.tela)
+                escrever_dialogo(str(v.score_aranha), (555,170), fonte, self.tela)
                 
             if v.score_lobo > 0:
-                escrever_dialogo("Wolfs killed: ", (555,200), fonte, tela)
-                escrever_dialogo(str(v.score_lobo), (555,220), fonte, tela)
+                escrever_dialogo("Wolfs killed: ", (555,200), fonte, self.tela)
+                escrever_dialogo(str(v.score_lobo), (555,220), fonte, self.tela)
             if v.score_urso > 0:
-                escrever_dialogo("Bears killed: ", (555,250), fonte, tela)
-                escrever_dialogo(str(v.score_urso), (555,270), fonte, tela)
+                escrever_dialogo("Bears killed: ", (555,250), fonte, self.tela)
+                escrever_dialogo(str(v.score_urso), (555,270), fonte, self.tela)
                 
             if v.score_rainha_aranha > 0:
-                escrever_dialogo("Spider Queens killed: ", (555,300), fonte, tela)
-                escrever_dialogo(str(v.score_rainha_aranha), (555,320), fonte, tela)
+                escrever_dialogo("Spider Queens killed: ", (555,300), fonte, self.tela)
+                escrever_dialogo(str(v.score_rainha_aranha), (555,320), fonte, self.tela)
                 
             
         else:
-            escrever_dialogo("You don't have any quests.", (275,150), fonte, tela)
-
-            #Criar lado esquerdo - MAIN QUEST
+            escrever_dialogo("You don't have any quests.", (275,150), fonte, self.tela)
             
             #Lado direito da tela
-            escrever_dialogo("Total score: ", (555,100), fonte, tela)
-            escrever_dialogo(str(v.score),(555,120), fonte, tela)
+            escrever_dialogo("Total score: ", (555,100), fonte, self.tela)
+            escrever_dialogo(str(v.score),(555,120), fonte, self.tela)
             
             if v.score_aranha > 0:
-                escrever_dialogo("Spiders killed: ", (555,150), fonte, tela)
-                escrever_dialogo(str(v.score_aranha), (555,170), fonte, tela)
+                escrever_dialogo("Spiders killed: ", (555,150), fonte, self.tela)
+                escrever_dialogo(str(v.score_aranha), (555,170), fonte, self.tela)
                 
             if v.score_lobo > 0:
-                escrever_dialogo("Wolfs killed: ", (555,200), fonte, tela)
-                escrever_dialogo(str(v.score_lobo), (555,220), fonte, tela)
+                escrever_dialogo("Wolfs killed: ", (555,200), fonte, self.tela)
+                escrever_dialogo(str(v.score_lobo), (555,220), fonte, self.tela)
             if v.score_urso > 0:
-                escrever_dialogo("Bears killed: ", (555,250), fonte, tela)
-                escrever_dialogo(str(v.score_urso), (555,270), fonte, tela)
+                escrever_dialogo("Bears killed: ", (555,250), fonte, self.tela)
+                escrever_dialogo(str(v.score_urso), (555,270), fonte, self.tela)
                 
             if v.score_rainha_aranha > 0:
-                escrever_dialogo("Spider Queens killed: ", (555,300), fonte, tela)
-                escrever_dialogo(str(v.score_rainha_aranha), (555,320), fonte, tela)
+                escrever_dialogo("Spider Queens killed: ", (555,300), fonte, self.tela)
+                escrever_dialogo(str(v.score_rainha_aranha), (555,320), fonte, self.tela)
         
 
 
 
         
         pygame.display.update()
-
-        #####colocar os scores de cada mob morto no total, no topo e embaixo as quests ativas*************** Vou precisar terminar o sistema de quest antes disso111111111111111111111111111111111111111111111111111111111111111111111
 
 ########################################################################################################################################################################################################################################
 
@@ -1413,18 +2035,37 @@ class Arvore(pygame.sprite.Sprite):
         if self.nivel > 1:
             self.health = self.nivel*5
             self.last_health = self.health
+
+            if self.nivel == 2:
+                self.tipo_tronco = 'troncos'
+                self.quant_tronco = 10
+                self.min_quant_tronco = 3
+            
             if self.nivel == 5:
-                self.tipo_tronco = 'troncos_raros'
+                self.tipo_tronco = 'troncos1'
                 self.quant_tronco = 5
                 self.min_quant_tronco = 2
+                
             elif self.nivel == 10:
-                self.tipo_tronco = 'troncos_encantados'
+                self.tipo_tronco = 'troncos2'
                 self.quant_tronco = 10
                 self.min_quant_tronco = 5
+                
             elif self.nivel == 50:
-                self.tipo_tronco = 'troncos_lendarios'
+                self.tipo_tronco = 'troncos3'
                 self.quant_tronco = 20
                 self.min_quant_tronco = 5
+                
+            elif self.nivel == 75:
+                self.tipo_tronco = 'troncos4'
+                self.quant_tronco = 20
+                self.min_quant_tronco = 5
+                
+            elif self.nivel == 100:
+                self.tipo_tronco = 'troncos5'
+                self.quant_tronco = 50
+                self.min_quant_tronco = 10
+                
             else:                
                 self.tipo_tronco = 'troncos'
                 self.quant_tronco = 5
@@ -1449,11 +2090,8 @@ class Mapa_jogo():
         self.mapa_atual = pygame.image.load(r'Graphics\Mapa\floresta_negra.png') ######
         
     def mudar_mapa(self, npc_grupo, inimigo_grupo, arvore_grupo):
-        
-        if not v.Norte == 3 and not v.Oeste == 3:
-            for npc in npc_grupo:
-                npc.kill()
         if v.Norte == 3 and v.Oeste == 3:
+            v.in_city = True
             self.mapa_atual = pygame.image.load(r'Graphics\Mapa\mapa_cidade1.png')
             #cria os NPCs
             npc1 = NPC((100,100),pygame.image.load(r'Graphics\NPC\npc1.png').convert_alpha(),quest=True)
@@ -1466,14 +2104,8 @@ class Mapa_jogo():
             #criar_npc = NPC(pos,image) - esse é um ex de guarda, acrescentar o True para qual coisa o npc vai fazer, se não será guarda
             #npc_grupo.add(criar_npc)
         else:
+            v.in_city = False
             self.mapa_atual = pygame.image.load(r'Graphics\Mapa\floresta_negra.png')
-            
-            
-        for inimigo in inimigo_grupo:
-            inimigo.kill()
-            
-        for arvore in arvore_grupo:
-            arvore.kill()
 
         ##### DEFINIR AQUI ONDE ESTÁ O PERSONAGEM, CHECAR COORDS PARA CONFIGURAR A VARIAVEL in_city  ENTRE OUTRAS FUNÇÕES
 
@@ -1481,14 +2113,40 @@ class Mapa_jogo():
 
 def gerar_arvore(player_pos,arvore_grupo, grupo_obstaculo, tela):
     #Define a o nivel das arvores conforme a localização do player
-    #if pos_player >= Norte = 50, Sul = 50, Leste = 50, Oeste = 50:
-        #chance_raridade = 50 #numero limite da aleatoridade
-        #probabilidade_raridade = 10 #gerar arvore rara se aleatoridade for menor que esse numero
-        #raridade = 3 #nivel que a arvore receberá
-    #else:
-    chance_raridade = 100
-    probabilidade_raridade = 1
-    raridade = 2
+    
+    if v.Norte >= 50 or v.Sul >= 50:
+        chance_raridade = 50
+        probabilidade_raridade = 1
+        raridade = [2,5]
+        
+    elif (v.Oeste >= 50 or v.Leste >= 50) and not (v.Norte >= 50 or v.Sul >= 50):
+        chance_raridade = 100
+        probabilidade_raridade = 1
+        raridade = [2,5,10]
+
+    elif v.Norte >= 100 and v.Oeste >= 100:
+        chance_raridade = 200
+        probabilidade_raridade = 2
+        raridade = [10,50,75]
+
+    elif v.Sul >= 100 and v.Leste >= 100:
+        chance_raridade = 200
+        probabilidade_raridade = 2
+        raridade = [10,50,75]
+
+    elif v.Norte >= 300 or v.Sul >= 300 and v.Oeste >= 300 or v.Leste >= 300:
+        chance_raridade = 300
+        probabilidade_raridade = 5
+        raridade = [50,100]
+
+    elif v.Norte >= 1000 or v.Sul >= 1000 and v.Oeste >= 1000 or v.Leste >= 1000:
+        chance_raridade = 50
+        probabilidade_raridade = 10
+        raridade = [100]
+    else:
+        chance_raridade = 100 #numero limite da aleatoridade
+        probabilidade_raridade = 1 #gerar arvore rara se aleatoridade for menor que esse numero
+        raridade = [2,5] #nivel que a arvore receberá
     
     num_arvores = random.randrange(15,50)
     if v.Norte == 3 and v.Oeste == 3:
@@ -1517,7 +2175,7 @@ def gerar_arvore(player_pos,arvore_grupo, grupo_obstaculo, tela):
             if criar_arvores:
                 arvore_rara = random.randint(0,chance_raridade)
                 if arvore_rara <= probabilidade_raridade:
-                    arvore1 = Arvore((coordx,coordy),tela,nivel=raridade)
+                    arvore1 = Arvore((coordx,coordy),tela,nivel=random.choice(raridade))
                     arvore1.atualizar_raridade()
                     arvore_grupo.add(arvore1)
                     grupo_obstaculo.add(arvore1)
@@ -1539,7 +2197,7 @@ class Borda_topo(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = 75
 
-    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo, item_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
         for hits in hit:
             v.Norte += 1
@@ -1549,6 +2207,11 @@ class Borda_topo(pygame.sprite.Sprite):
                 arvore.kill()
             for inimigo in inimigo_grupo:
                 inimigo.kill()
+            for item in item_grupo:
+                item.kill()
+            for npc in npc_grupo:
+                npc.kill()
+                
             v.gerando_arvores = True
             self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
 
@@ -1580,7 +2243,7 @@ class Borda_baixo(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = 590
 
-    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo, item_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
         for hits in hit:
             v.Sul += 1
@@ -1590,6 +2253,11 @@ class Borda_baixo(pygame.sprite.Sprite):
                 arvore.kill()
             for inimigo in inimigo_grupo:
                 inimigo.kill()
+            for item in item_grupo:
+                item.kill()
+            for npc in npc_grupo:
+                npc.kill()
+                
             v.gerando_arvores = True
             self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
 
@@ -1621,7 +2289,7 @@ class Borda_esquerda(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = 0
 
-    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo, item_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
         for hits in hit:
             v.Oeste += 1
@@ -1631,6 +2299,11 @@ class Borda_esquerda(pygame.sprite.Sprite):
                 arvore.kill()
             for inimigo in inimigo_grupo:
                 inimigo.kill()
+            for item in item_grupo:
+                item.kill()
+            for npc in npc_grupo:
+                npc.kill()
+                
             v.gerando_arvores = True
             self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
 
@@ -1663,7 +2336,7 @@ class Borda_direita(pygame.sprite.Sprite):
         self.rect.x = 790
         self.rect.y = 0
 
-    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo):
+    def update(self, player_grupo, player, arvore_grupo, inimigo_grupo, mapa_jogo, npc_grupo, item_grupo):
         hit = pygame.sprite.spritecollide(self, player_grupo, False)
         for hits in hit:
             v.Leste += 1
@@ -1673,6 +2346,11 @@ class Borda_direita(pygame.sprite.Sprite):
                 arvore.kill()
             for inimigo in inimigo_grupo:
                 inimigo.kill()
+            for item in item_grupo:
+                item.kill()
+            for npc in npc_grupo:
+                npc.kill()
+                
             v.gerando_arvores = True
             self.passar_mapa(mapa_jogo, npc_grupo, inimigo_grupo, arvore_grupo)
 
@@ -1761,18 +2439,18 @@ class NPC(pygame.sprite.Sprite):
                 
                 if pygame.key.get_pressed()[pygame.K_y] == True:
                     v.quest_em_progresso = True
-                    if mob == 'spiders': #Preciso ajeitar isso aqui
+                    if mob == 'spiders':
                         v.score_atual_quest = v.score_aranha
                         v.mob_atual = 'spiders'
                         v.score_alvo_quest = mob_quest
-                    #elif mob == 'wolfs':
-                        #v.score_atual_quest = v.score_lobo
-                        #v.mob_atual = 'wolfs'
-                        #v.score_alvo_quest = mob_quest
-                    #elif mob == 'bears':
-                        #v.score_atual_quest = v.score_urso
-                        #v.mob_atual = 'bears'
-                        #v.score_alvo_quest = mob_quest
+                    elif mob == 'wolfs':
+                        v.score_atual_quest = v.score_lobo
+                        v.mob_atual = 'wolfs'
+                        v.score_alvo_quest = mob_quest
+                    elif mob == 'bears':
+                        v.score_atual_quest = v.score_urso
+                        v.mob_atual = 'bears'
+                        v.score_alvo_quest = mob_quest
                     quest_on = False
                         
                 if pygame.key.get_pressed()[pygame.K_n] == True:
@@ -1787,6 +2465,7 @@ class NPC(pygame.sprite.Sprite):
                     if v.score_aranha - v.score_atual_quest >= v.score_alvo_quest:
                         escrever_dialogo("Thank you so much!", (250,100), fonte, tela)#Atualizar pos disso!
                         escrever_dialogo("Here is your reward: ", (250,125), fonte, tela)#Atualizar pos disso!
+                        #Escrever os rewards aqui
                         escrever_dialogo("Press 'Y' to continue", (250,475), fonte, tela) #Atualizar pos disso!
                         #### BLITAR RECOMPENSA AQUI
                         pygame.display.update()
@@ -1801,42 +2480,42 @@ class NPC(pygame.sprite.Sprite):
                         if pygame.key.get_pressed()[pygame.K_y] == True:
                             quest_on = False
                                             
-                #elif v.mob_atual == 'wolfs':
-                    #if v.score_lobo - v.score_atual_quest >= v.score_alvo_quest:
-                     #   quests.escrever_dialogo("Thank you so much!", (250,100))
-                      #  quests.escrever_dialogo("Here is your reward: ", (250,125))
-                       # quests.escrever_dialogo("Press 'Y' to continue", (250,475))
+                elif v.mob_atual == 'wolfs':
+                    if v.score_lobo - v.score_atual_quest >= v.score_alvo_quest:
+                        quests.escrever_dialogo("Thank you so much!", (250,100))
+                        quests.escrever_dialogo("Here is your reward: ", (250,125))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))
                         ###BLITAR AQUI A RECOMPENSA
-                        #pygame.display.update()
-                        #if pygame.key.get_pressed()[pygame.K_y] == True:
-                        #    quest_on = False
-                        #    v.quest_num += 1
-                        #    v.quest_em_progresso = False
-                    #else:
-                    #    quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
-                    #    quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
-                    #    pygame.display.update()
-                    #    if pygame.key.get_pressed()[pygame.K_y] == True:
-                    #        quest_on = False
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
+                            v.quest_num += 1
+                            v.quest_em_progresso = False
+                    else:
+                        quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
 
-                #elif v.mob_atual == 'bears':
-                   # if v.score_urso - v.score_atual_quest >= v.score_alvo_quest:
-                    #    quests.escrever_dialogo("Thank you so much!", (250,100))
-                     #   quests.escrever_dialogo("Here is your reward: ", (250,125))
-                      #  quests.escrever_dialogo("Press 'Y' to continue", (250,475)) 
+                elif v.mob_atual == 'bears':
+                    if v.score_urso - v.score_atual_quest >= v.score_alvo_quest:
+                        quests.escrever_dialogo("Thank you so much!", (250,100))
+                        quests.escrever_dialogo("Here is your reward: ", (250,125))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475)) 
                         ###BLITAR AQUI A RECOMPENSA
-                      #  pygame.display.update()
-                       # if pygame.key.get_pressed()[pygame.K_y] == True:
-                        #    pygame.display.update()
-                         #   quest_on = False
-                          #  v.quest_num += 1
-                           # v.quest_em_progresso = False
-                    #else:
-                     #   quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
-                      #  quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
-                       # pygame.display.update()
-                        #if pygame.key.get_pressed()[pygame.K_y] == True:
-                         #   quest_on = False
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            pygame.display.update()
+                            quest_on = False
+                            v.quest_num += 1
+                            v.quest_em_progresso = False
+                    else:
+                        quests.escrever_dialogo("Oops, you didn't finish the quest!", (250,100))
+                        quests.escrever_dialogo("Press 'Y' to continue", (250,475))                                                 
+                        pygame.display.update()
+                        if pygame.key.get_pressed()[pygame.K_y] == True:
+                            quest_on = False
                             
 ###########################################################################
         
@@ -1847,10 +2526,13 @@ class NPC(pygame.sprite.Sprite):
         craft_on = True
 
         #definição dos niveis de equipamentos
-        #exemplo para o axe:
-        #if nv1 = 1 troncos e 1 metais
-        #if nv2 = 5 troncos e 10 metais
-        #if nv3 = 15 troncos e 20 metais       
+        #if equipamentos.axe_nv = 1 ---> 1 troncos e 1 metais
+        #if equipamentos.axe_nv = 2 ---> 5 troncos e 10 metais
+        #if equipamentos.axe_nv = 3 ---> 15 troncos e 20 metais
+
+        #if equipamentos.helmet_nv = 1 ---> 1 troncos e 1 metais
+        
+        #if equipamentos.armor_nv = 1 ---> 1 troncos e 1 metais
 
         while craft_on:
             for event in pygame.event.get():
@@ -1870,9 +2552,9 @@ class NPC(pygame.sprite.Sprite):
             
             tela.blit(self.NPChud, (0,0))
             
-            botao_head_img = pygame.image.load(r'graphics/helmet_button.png')
-            botao_armor_img = pygame.image.load(r'graphics/armor_button.png')
-            botao_axe_img = pygame.image.load(r'graphics/axe_button.png')
+            botao_head_img = pygame.image.load(r'Graphics\HUD\Craft\helmet_button.png')
+            botao_armor_img = pygame.image.load(r'Graphics\HUD\Craft\armor_button.png')
+            botao_axe_img = pygame.image.load(r'Graphics\HUD\Craft\axe_button.png')
             
             escrever_dialogo("Press 'ESC' to exit", (250,450), fonte, tela)
             
